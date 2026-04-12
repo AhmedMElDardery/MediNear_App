@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">medinear_app</string>
+
+    <string name="facebook_app_id">907335425076567</string>
+
+    <string name="fb_login_protocol_scheme">fb907335425076567</string>
+
+    <string name="facebook_client_token">5279f86939bdb323547a79fdd23e7219</string>
+</resources>

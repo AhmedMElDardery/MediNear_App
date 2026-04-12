@@ -1,0 +1,381 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import '../provider/map_provider.dart';
+import '../widgets/pharmacy_card.dart';
+
+class MapScreen extends StatefulWidget {
+  final String medicine;
+  const MapScreen({super.key, required this.medicine});
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  final Color _brandGreen = const Color(0xFF1E824C);
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      final provider = context.read<MapProvider>();
+      await provider.initLocation();
+      
+      // تأكد إننا بنحمل البيانات لو مش موجودة
+      if (provider.medicineSuggestions.isEmpty) {
+        provider.loadSearchData();
+      }
+
+      // البحث عن الدواء إذا تم تمريره من شاشة أخرى
+      if (widget.medicine.isNotEmpty) {
+        _searchController.text = widget.medicine;
+        provider.isMedicineSearch = true;
+        provider.search(widget.medicine);
+      }
+    });
+
+    // 🚀 مراقبة الفوكس
+    _searchFocusNode.addListener(() {
+      if (!_searchFocusNode.hasFocus) {
+        context.read<MapProvider>().setShowSuggestions(false);
+      }
+    });
+
+    // 🚀 الفلترة اللحظية (Real-time Filtering)
+    _searchController.addListener(() {
+      if (mounted) {
+        setState(() {}); // بيخلي ويدجت الاقتراحات تعيد بناء نفسها مع كل حرف
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<MapProvider>();
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          // --- Layer 1: Google Map ---
+          Positioned.fill(
+            child: provider.userLocation == null
+                ? const Center(child: CircularProgressIndicator())
+                : GoogleMap(
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(target: provider.userLocation!, zoom: 13.5),
+              markers: provider.markers,
+              circles: provider.circles,
+              onMapCreated: (controller) {
+                if (!provider.mapController.isCompleted) {
+                  provider.mapController.complete(controller);
+                }
+              },
+              onTap: (_) {
+                _searchFocusNode.unfocus(); // يقفل الكيبورد والاقتراحات
+                provider.setShowSuggestions(false);
+              },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              mapToolbarEnabled: false,
+            ),
+          ),
+
+          // --- Layer 2: Search Suggestions Overlay ---
+          if (provider.showSuggestions) _buildSearchSuggestions(provider),
+
+          // --- Layer 3: Glass Search Header ---
+          Positioned(top: 0, left: 0, right: 0, child: _buildGlassSearchHeader(provider)),
+
+          // --- Layer 4: Floating My Location Button ---
+          Positioned(
+            right: 16,
+            bottom: MediaQuery.of(context).size.height * 0.42,
+            child: FloatingActionButton(
+              onPressed: () async {
+                if (provider.userLocation != null) {
+                  final controller = await provider.mapController.future;
+                  controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: provider.userLocation!, zoom: 16.0)));
+                }
+              },
+              backgroundColor: Colors.white,
+              child: const Icon(Icons.my_location, color: Colors.black87),
+            ),
+          ),
+
+          // --- Layer 5: Draggable Bottom Sheet ---
+          if (!provider.showSuggestions) _buildResultsBottomSheet(provider),
+        ],
+      ),
+    );
+  }
+
+  // 🚀 ويدجت الاقتراحات - تعرض أدوية أو صيدليات حسب نوع البحث
+  Widget _buildSearchSuggestions(MapProvider provider) {
+    final query = _searchController.text.trim().toLowerCase();
+
+    // 1. فلترة البحث الأخير
+    final filteredRecent = query.isEmpty
+        ? provider.recentSearches
+        : provider.recentSearches.where((s) => s.displayText.toLowerCase().contains(query)).toList();
+
+    final bool isMedicine = provider.isMedicineSearch;
+
+    // 2a. لو Medicine mode: فلترة الأدوية
+    final filteredMedicines = isMedicine
+        ? (query.isEmpty
+            ? provider.medicineSuggestions
+            : provider.medicineSuggestions.where((m) => m.name.toLowerCase().contains(query)).toList())
+        : [];
+
+    // 2b. لو Pharmacy mode: فلترة الصيدليات
+    final filteredPharmacies = !isMedicine
+        ? (query.isEmpty
+            ? provider.pharmacySuggestions
+            : provider.pharmacySuggestions.where((p) => p.name.toLowerCase().contains(query)).toList())
+        : [];
+
+    final bool isEmpty = filteredRecent.isEmpty && filteredMedicines.isEmpty && filteredPharmacies.isEmpty;
+
+    return Positioned(
+      top: MediaQuery.of(context).padding.top + 130,
+      left: 16,
+      right: 16,
+      bottom: 100,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20)],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: isEmpty
+              ? const Center(child: Text("No suggestions match", style: TextStyle(color: Colors.grey)))
+              : Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    // --- Recent Searches ---
+                    if (filteredRecent.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text(query.isEmpty ? "Recent Searches" : "Matching Recent",
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                      ),
+                      ...filteredRecent.map((s) => ListTile(
+                        leading: const Icon(Icons.history, size: 20),
+                        title: Text(s.displayText),
+                        onTap: () {
+                          _searchController.text = s.displayText;
+                          provider.search(s.medicineId?.toString() ?? s.displayText);
+                          _searchFocusNode.unfocus();
+                        },
+                      )),
+                    ],
+                    // --- Medicine Suggestions ---
+                    if (isMedicine && filteredMedicines.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text(query.isEmpty ? "Available Medicines" : "Matching Medicines",
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                      ),
+                      ...filteredMedicines.map((m) => ListTile(
+                        leading: const Icon(Icons.medication_outlined, color: Color(0xFF1E824C)),
+                        title: Text(m.name),
+                        subtitle: m.categoryName != null ? Text(m.categoryName!, style: const TextStyle(fontSize: 10)) : null,
+                        onTap: () {
+                          _searchController.text = m.name;
+                          provider.search(m.id.toString());
+                          _searchFocusNode.unfocus();
+                        },
+                      )),
+                    ],
+                    // --- Pharmacy Suggestions ---
+                    if (!isMedicine && filteredPharmacies.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text(query.isEmpty ? "Nearby Pharmacies" : "Matching Pharmacies",
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                      ),
+                      ...filteredPharmacies.map((p) => ListTile(
+                        leading: const Icon(Icons.storefront, color: Color(0xFF1E824C)),
+                        title: Text(p.name),
+                        subtitle: Text(p.address, maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 11)),
+                        onTap: () {
+                          _searchController.text = p.name;
+                          provider.search(p.name);
+                          _searchFocusNode.unfocus();
+                        },
+                      )),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassSearchHeader(MapProvider provider) {
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: Colors.white.withValues(alpha: 0.90),
+          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, bottom: 15, left: 16, right: 16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  // 🚀 شيلنا الـ GestureDetector بتاع الدائرة البيضاء وشيلنا الـ SizedBox اللي بعده
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      // 🚀 علامة العدسة في الكيبورد
+                      textInputAction: TextInputAction.search,
+                      onTap: () {
+                        provider.setShowSuggestions(true);
+                      },
+                      onChanged: (val) {
+                        if (!provider.showSuggestions) {
+                          provider.setShowSuggestions(true);
+                        }
+                      },
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          provider.search(val.trim());
+                        }
+                        _searchFocusNode.unfocus();
+                      },
+                      decoration: InputDecoration(
+                        hintText: provider.isMedicineSearch ? 'Search Medicine...' : 'Search Pharmacy...',
+                        prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.grey, size: 20),
+                          onPressed: () {
+                            _searchController.clear();
+                            provider.setShowSuggestions(true);
+                          },
+                        )
+                            : null,
+                        filled: true, fillColor: Colors.grey[100], contentPadding: EdgeInsets.zero,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  _buildSearchTypeButton("Medicine", provider.isMedicineSearch, () => provider.toggleSearchType(true)),
+                  const SizedBox(width: 10),
+                  _buildSearchTypeButton("Pharmacy", !provider.isMedicineSearch, () => provider.toggleSearchType(false)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchTypeButton(String label, bool isSelected, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? _brandGreen : Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: isSelected ? _brandGreen : Colors.grey.shade300),
+          ),
+          child: Center(
+            child: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsBottomSheet(MapProvider provider) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.40,
+      minChildSize: 0.25,
+      maxChildSize: 0.85,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 15, spreadRadius: 5, offset: const Offset(0, -5))],
+          ),
+          child: Column(
+            children: [
+              Center(child: Container(margin: const EdgeInsets.only(top: 12, bottom: 8), width: 40, height: 5, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)))),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("${provider.pharmacies.length} Results Found", style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold)),
+                    Icon(Icons.sort, color: _brandGreen),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: provider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: provider.pharmacies.length,
+                  itemBuilder: (context, index) {
+                    final pharmacy = provider.pharmacies[index];
+                    return PharmacyCard(
+                      item: pharmacy,
+                      isSelected: provider.selectedPharmacyId == pharmacy.id,
+                      onTap: () => provider.selectPharmacy(pharmacy.id),
+                      onNotify: () => provider.notifyApi(pharmacy.id),
+                      onAddToCart: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Added ${provider.lastQuery.isEmpty ? "Item" : provider.lastQuery} to cart from ${pharmacy.name}"),
+                            backgroundColor: const Color(0xFF1E824C),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

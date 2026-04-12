@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "96211022209",
+    "project_id": "newmedinear",
+    "storage_bucket": "newmedinear.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96211022209:android:bc2e109c07bc52fb223880",
+        "android_client_info": {
+          "package_name": "com.medinear.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96211022209-mjtommvoqip8mgdqhpngr2mkgo4sf0kb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.medinear.app",
+            "certificate_hash": "9477ea13888985b7ee0fe052868e5c7f06759d6a"
+          }
+        },
+        {
+          "client_id": "96211022209-joq07itec1js87qnbqrv18v6uq001vb8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDugBhQ7bS88dIy2sjduP4A4qBAxgmmWG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96211022209-joq07itec1js87qnbqrv18v6uq001vb8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

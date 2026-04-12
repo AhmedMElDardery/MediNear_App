@@ -1,0 +1,532 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../manager/pharmacy_provider.dart';
+import '../widgets/pharmacy_cards.dart';
+
+class PharmacyScreen extends StatefulWidget {
+  final String pharmacyName;
+  final String doctorName;
+
+  const PharmacyScreen({
+    super.key,
+    required this.pharmacyName,
+    this.doctorName = 'Al-Noor Pharmacy',
+  });
+
+  @override
+  State<PharmacyScreen> createState() => _PharmacyScreenState();
+}
+
+class _PharmacyScreenState extends State<PharmacyScreen>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  late TabController _tabController;
+
+  // Countdown timer
+  Timer? _timer;
+  int _seconds = 10 * 3600 + 20 * 60 + 29; // 10:20:29
+
+  static const _green = Color(0xFF00965E);
+  static const _greenLight = Color(0xFFE0F5F2);
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PharmacyProvider>(context, listen: false)
+          .fetchPharmacyData(widget.pharmacyName);
+    });
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_seconds > 0) {
+        setState(() => _seconds--);
+      } else {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  String get _formattedTime {
+    final h = (_seconds ~/ 3600).toString().padLeft(2, '0');
+    final m = ((_seconds % 3600) ~/ 60).toString().padLeft(2, '0');
+    final s = (_seconds % 60).toString().padLeft(2, '0');
+    return '$h:$m:$s';
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _tabController.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Consumer<PharmacyProvider>(
+          builder: (context, provider, _) {
+            return Column(
+              children: [
+                // ── Premium Header ──────────────────────
+                _buildHeader(context),
+
+                // ── Body ────────────────────────────────
+                Expanded(
+                  child: provider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: _green))
+                      : Column(
+                          children: [
+                            // Flash Sale Banner
+                            _buildFlashSaleBanner(),
+
+                            // Search Bar
+                            _buildSearchBar(provider),
+
+                            // Tab Bar
+                            _buildTabBar(),
+
+                            // Tab Content
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  _buildList(
+                                    isEmpty: provider.filteredMedicines.isEmpty,
+                                    emptyMsg: 'No medicines found',
+                                    emptyIcon: Icons.medication_outlined,
+                                    itemCount: provider.filteredMedicines.length,
+                                    itemBuilder: (i) => PharmacyMedicineCard(
+                                      medicine: provider.filteredMedicines[i],
+                                      onToggleSave: () =>
+                                          provider.toggleMedicineSaved(
+                                              provider.filteredMedicines[i].id),
+                                      onToggleNotify: () =>
+                                          provider.toggleMedicineNotify(
+                                              provider.filteredMedicines[i].id),
+                                      onAddToCart: () => _showAddedToCart(
+                                          provider.filteredMedicines[i].name),
+                                    ),
+                                  ),
+                                  _buildList(
+                                    isEmpty: provider.filteredDoctors.isEmpty,
+                                    emptyMsg: 'No doctors found',
+                                    emptyIcon: Icons.person_outline_rounded,
+                                    itemCount: provider.filteredDoctors.length,
+                                    itemBuilder: (i) => PharmacyDoctorCard(
+                                      doctor: provider.filteredDoctors[i],
+                                      onToggleSave: () =>
+                                          provider.toggleDoctorSaved(
+                                              provider.filteredDoctors[i].id),
+                                    ),
+                                  ),
+                                  _buildList(
+                                    isEmpty: provider.filteredServices.isEmpty,
+                                    emptyMsg: 'No services found',
+                                    emptyIcon:
+                                        Icons.medical_services_outlined,
+                                    itemCount:
+                                        provider.filteredServices.length,
+                                    itemBuilder: (i) => PharmacyServiceCard(
+                                      service: provider.filteredServices[i],
+                                      onToggleSave: () =>
+                                          provider.toggleServiceSaved(
+                                              provider.filteredServices[i].id),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // HEADER
+  // ──────────────────────────────────────────────────────────
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF00C47A), _green],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+          child: Column(
+            children: [
+              // Top row — back + bookmark
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 18),
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.bookmark_border_rounded,
+                          color: Colors.white, size: 22),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Info row — avatar + name
+              Row(
+                children: [
+                  // Avatar
+                  Container(
+                    width: 82,
+                    height: 82,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 14,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.local_pharmacy_rounded,
+                        size: 42, color: _green),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.pharmacyName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            // Open badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.22),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.circle,
+                                      size: 7, color: Colors.white),
+                                  SizedBox(width: 4),
+                                  Text('Open Now',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // FLASH SALE BANNER
+  // ──────────────────────────────────────────────────────────
+  Widget _buildFlashSaleBanner() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF5722), Color(0xFFFF8C42)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF5722).withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Title row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text('⚡', style: TextStyle(fontSize: 22)),
+              SizedBox(width: 8),
+              Text(
+                'Flash Sale!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              SizedBox(width: 8),
+              Text('⚡', style: TextStyle(fontSize: 22)),
+            ],
+          ),
+
+          const SizedBox(height: 4),
+
+          // Subtitle
+          const Text(
+            'Up to 50% off on all medicines',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // Timer box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              _formattedTime,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          const Text(
+            'Time remaining',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  // ──────────────────────────────────────────────────────────
+  // SEARCH BAR
+  // ──────────────────────────────────────────────────────────
+  Widget _buildSearchBar(PharmacyProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (val) {
+          provider.search(val);
+          setState(() {});
+        },
+        style: const TextStyle(fontSize: 14),
+        decoration: InputDecoration(
+          hintText: 'Search medicines, doctors...',
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          prefixIcon:
+              const Icon(Icons.search_rounded, color: _green, size: 22),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? GestureDetector(
+                  onTap: () {
+                    _searchController.clear();
+                    provider.search('');
+                    setState(() {});
+                  },
+                  child: const Icon(Icons.close_rounded,
+                      color: Colors.grey, size: 18),
+                )
+              : null,
+          filled: true,
+          fillColor: const Color(0xFFF5F7FA),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Colors.grey.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: _green, width: 1.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // TAB BAR
+  // ──────────────────────────────────────────────────────────
+  Widget _buildTabBar() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        labelColor: _green,
+        unselectedLabelColor: Colors.grey.shade500,
+        indicatorColor: _green,
+        indicatorWeight: 3,
+        labelStyle: const TextStyle(
+            fontWeight: FontWeight.w700, fontSize: 13),
+        unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 13),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.medication_rounded, size: 17),
+            text: 'Medicines',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.person_rounded, size: 17),
+            text: 'Doctors',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.medical_services_rounded, size: 17),
+            text: 'Services',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // GENERIC LIST
+  // ──────────────────────────────────────────────────────────
+  Widget _buildList({
+    required bool isEmpty,
+    required String emptyMsg,
+    required IconData emptyIcon,
+    required int itemCount,
+    required Widget Function(int) itemBuilder,
+  }) {
+    if (isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: const BoxDecoration(
+                  color: _greenLight, shape: BoxShape.circle),
+              child: Icon(emptyIcon, size: 34, color: _green),
+            ),
+            const SizedBox(height: 14),
+            Text(emptyMsg,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF444444))),
+            const SizedBox(height: 4),
+            Text('Try adjusting your search',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
+          ],
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      itemCount: itemCount,
+      itemBuilder: (ctx, i) => itemBuilder(i),
+    );
+  }
+
+  void _showAddedToCart(String name) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.shopping_cart_rounded,
+                color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Expanded(child: Text('$name added to cart')),
+          ],
+        ),
+        backgroundColor: _green,
+        behavior: SnackBarBehavior.floating,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
