@@ -57,8 +57,10 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
     final auth = context.watch<AuthProvider>();
     final profile = context.watch<ProfileProvider>();
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: SafeArea(
         child: _buildBody(provider, auth, profile, context),
       ),
@@ -112,8 +114,8 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBody(
-      HomeProvider provider, AuthProvider auth, ProfileProvider profile, BuildContext context) {
+  Widget _buildBody(HomeProvider provider, AuthProvider auth,
+      ProfileProvider profile, BuildContext context) {
     // ⏳ Loading
     if (provider.isLoading) {
       return _buildLoadingState();
@@ -140,122 +142,127 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         },
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics()),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// HEADER
-            const HomeHeader(),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// HEADER
+              const HomeHeader(),
 
-            /// GREETING + USER INFO
-            _buildGreetingSection(auth, profile, provider),
+              /// GREETING + USER INFO
+              _buildGreetingSection(auth, profile, provider),
 
-            /// SEARCH BAR
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-              child: SearchBarWidget(
-                onSearch: (value) {
-                  context.read<HomeProvider>().search(value);
-                },
+              /// SEARCH BAR
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                child: SearchBarWidget(
+                  onSearch: (value) {
+                    context.read<HomeProvider>().search(value);
+                  },
+                ),
               ),
-            ),
 
-            /// QUICK STATS
-            _buildQuickStats(provider),
+              /// QUICK STATS
+              _buildQuickStats(provider),
 
-            /// ADS
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-              child: AdsSlider(ads: provider.ads),
-            ),
+              /// ADS
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+                child: AdsSlider(ads: provider.ads),
+              ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            /// NEAR PHARMACIES
-            _buildSectionHeader(
-              title: "Near Pharmacies",
-              icon: Icons.local_pharmacy_rounded,
-              count: provider.pharmacies.length,
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
-            ),
+              /// NEAR PHARMACIES
+              _buildSectionHeader(
+                title: "Near Pharmacies",
+                icon: Icons.local_pharmacy_rounded,
+                count: provider.pharmacies.length,
+                onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
+              ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            SizedBox(
-              height: 175,
-              child: provider.filteredPharmacies.isEmpty
-                  ? _buildEmptyState(
-                      icon: Icons.local_pharmacy_outlined,
-                      message: provider.searchQuery.isNotEmpty
-                          ? 'No pharmacies match "${provider.searchQuery}"'
-                          : "No pharmacies found nearby",
-                    )
-                  : ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: provider.filteredPharmacies.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 14),
-                      itemBuilder: (context, index) {
-                        final pharmacy = provider.filteredPharmacies[index];
-                        return PharmacyCard(
-                          pharmacy: pharmacy,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => PharmacyScreen(
-                                pharmacyName: pharmacy.name,
-                                doctorName: pharmacy.name,
+              SizedBox(
+                height: 175,
+                child: provider.filteredPharmacies.isEmpty
+                    ? _buildEmptyState(
+                        icon: Icons.local_pharmacy_outlined,
+                        message: provider.searchQuery.isNotEmpty
+                            ? 'No pharmacies match "${provider.searchQuery}"'
+                            : "No pharmacies found nearby",
+                      )
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: provider.filteredPharmacies.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 14),
+                        itemBuilder: (context, index) {
+                          final pharmacy = provider.filteredPharmacies[index];
+                          return PharmacyCard(
+                            pharmacy: pharmacy,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PharmacyScreen(
+                                  pharmacyId: pharmacy.id
+                                      .toString(), // 🚀 ضفنا الـ ID بتاع الصيدلية هنا
+                                  pharmacyName: pharmacy.name,
+                                  doctorName: pharmacy
+                                      .name, // زي ما هي مكتوبة عندك في الكود
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
+                          );
+                        },
+                      ),
+              ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            /// NEAR MEDICINES
-            _buildSectionHeader(
-              title: "Near Medicines",
-              icon: Icons.medication_rounded,
-              count: provider.medicines.length,
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
-            ),
+              /// NEAR MEDICINES
+              _buildSectionHeader(
+                title: "Near Medicines",
+                icon: Icons.medication_rounded,
+                count: provider.medicines.length,
+                onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
+              ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            /// MEDICINES LIST
-            SizedBox(
-              height: 210,
-              child: provider.filteredMedicines.isEmpty
-                  ? _buildEmptyState(
-                      icon: Icons.medication_outlined,
-                      message: provider.searchQuery.isNotEmpty
-                          ? 'No medicines match "${provider.searchQuery}"'
-                          : "No medicines found nearby",
-                    )
-                  : ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: provider.filteredMedicines.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) =>
-                          MedicineCard(medicine: provider.filteredMedicines[index]),
-                    ),
-            ),
+              /// MEDICINES LIST
+              SizedBox(
+                height: 210,
+                child: provider.filteredMedicines.isEmpty
+                    ? _buildEmptyState(
+                        icon: Icons.medication_outlined,
+                        message: provider.searchQuery.isNotEmpty
+                            ? 'No medicines match "${provider.searchQuery}"'
+                            : "No medicines found nearby",
+                      )
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: provider.filteredMedicines.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) => MedicineCard(
+                            medicine: provider.filteredMedicines[index]),
+                      ),
+              ),
 
-            const SizedBox(height: 32),
-          ],
-        ),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildGreetingSection(AuthProvider auth, ProfileProvider profile, HomeProvider provider) {
+  Widget _buildGreetingSection(
+      AuthProvider auth, ProfileProvider profile, HomeProvider provider) {
     // الاسم الكامل: من البروفايل أولاً، وإلا من الأوث
     final fullName = profile.user?.name ?? auth.currentUser?.name ?? "User";
 
@@ -314,9 +321,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               children: [
                 Text(
                   _getGreeting(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
-                    color: Color(0xFF888888),
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF888888),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -325,10 +332,10 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                   fullName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
-                    color: Color(0xFF1A1A1A),
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -344,8 +351,8 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                           provider.currentLocationName ?? "Locating...",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Color(0xFF888888),
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF888888),
                             fontSize: 11,
                             fontWeight: FontWeight.w400,
                           ),
@@ -362,7 +369,6 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
   Widget _buildQuickStats(HomeProvider provider) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -372,21 +378,21 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             icon: Icons.local_pharmacy_rounded,
             label: "${provider.pharmacies.length} Pharmacies",
             color: const Color(0xFF00965E),
-            bgColor: const Color(0xFFE8F5EE),
+            bgColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF00965E).withOpacity(0.15) : const Color(0xFFE8F5EE),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.medication_rounded,
             label: "${provider.medicines.length} Medicines",
-            color: const Color(0xFF1565C0),
-            bgColor: const Color(0xFFE3F0FF),
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.blue.shade300 : const Color(0xFF1565C0),
+            bgColor: Theme.of(context).brightness == Brightness.dark ? Colors.blue.withOpacity(0.15) : const Color(0xFFE3F0FF),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.near_me_rounded,
             label: "Nearby",
-            color: const Color(0xFFE65100),
-            bgColor: const Color(0xFFFFF3E0),
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.orange.shade300 : const Color(0xFFE65100),
+            bgColor: Theme.of(context).brightness == Brightness.dark ? Colors.orange.withOpacity(0.15) : const Color(0xFFFFF3E0),
           ),
         ],
       ),
@@ -416,10 +422,10 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A1A),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -470,14 +476,14 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               color: const Color(0xFFF0F0F0),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(icon, size: 30, color: Colors.grey.shade400),
+            child: Icon(icon, size: 30, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade600 : Colors.grey.shade400),
           ),
           const SizedBox(height: 10),
           Text(
             message,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade500,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade500,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -520,11 +526,11 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             "Finding pharmacies near you...",
             style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF555555),
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : const Color(0xFF555555),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -533,7 +539,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             "Getting your location 📍",
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade500,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade500,
             ),
           ),
         ],
@@ -559,22 +565,23 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                   size: 52, color: Color(0xFFE53935)),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               "Oops! Something went wrong",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A1A),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                 letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              provider.errorMessage ?? "Unable to fetch data. Please try again.",
+              provider.errorMessage ??
+                  "Unable to fetch data. Please try again.",
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Color(0xFF777777),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF777777),
                 height: 1.5,
               ),
             ),
@@ -761,10 +768,10 @@ class _CameraFabState extends State<_CameraFab> {
           height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00965E).withOpacity(0.2),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.black26 : const Color(0xFF00965E).withOpacity(0.2),
                 blurRadius: 12,
                 spreadRadius: 1,
                 offset: const Offset(0, 3),

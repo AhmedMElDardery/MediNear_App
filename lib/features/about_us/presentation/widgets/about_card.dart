@@ -6,14 +6,16 @@ class AboutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08), 
+            color: isDark ? Colors.black26 : Colors.black.withOpacity(0.08), 
             blurRadius: 20, 
             offset: const Offset(0, 8), 
           ),
@@ -38,12 +40,12 @@ class AboutCard extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           RichText(
-            text: const TextSpan(
-              style: TextStyle(color: Colors.grey, fontSize: 14, height: 1.5),
+            text: TextSpan(
+              style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey, fontSize: 14, height: 1.5),
               children: [
                 TextSpan(
                   text: "PharmaCare+",
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold),
                 ),
                 TextSpan(
                   text: " is your trusted digital pharmacy, making access easy with a wide range of services and fast delivery.",

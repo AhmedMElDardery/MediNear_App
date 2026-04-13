@@ -81,6 +81,7 @@ class _PharmacyCardState extends State<PharmacyCard>
     final screenWidth = MediaQuery.of(context).size.width;
     final isOpen = _isOpen();
     final hasPhone = widget.pharmacy.phone != null && widget.pharmacy.phone!.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
@@ -98,7 +99,7 @@ class _PharmacyCardState extends State<PharmacyCard>
         child: Container(
           width: screenWidth * 0.78,
           decoration: BoxDecoration(
-            color: const Color(0xFFE0F5F2),
+            color: isDark ? const Color(0xFF1E272E) : const Color(0xFFE0F5F2),
             borderRadius: BorderRadius.circular(24),
           ),
           padding: const EdgeInsets.all(16),
@@ -121,10 +122,10 @@ class _PharmacyCardState extends State<PharmacyCard>
                       widget.pharmacy.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
-                        color: Color(0xFF1A1A1A),
+                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -185,9 +186,9 @@ class _PharmacyCardState extends State<PharmacyCard>
                               widget.pharmacy.workingHours!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10.5,
-                                color: Color(0xFF888888),
+                                color: isDark ? Colors.grey.shade400 : const Color(0xFF888888),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

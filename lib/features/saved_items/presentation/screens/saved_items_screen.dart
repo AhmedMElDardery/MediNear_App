@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../manager/saved_items_provider.dart';
 import '../widgets/saved_item_cards.dart';
+import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 
 class SavedItemsScreen extends StatefulWidget {
   const SavedItemsScreen({super.key});
@@ -184,13 +185,26 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
             provider.removePharmacy(pharmacy);
             _showUndoSnackBar(context, '${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
           },
-          child: SavedPharmacyCard(
-            pharmacy: pharmacy,
-            theme: theme,
-            onRemove: () {
-              provider.removePharmacy(pharmacy);
-              _showUndoSnackBar(context, '${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PharmacyScreen(
+                    pharmacyId: pharmacy.id,
+                    pharmacyName: pharmacy.name,
+                  ),
+                ),
+              );
             },
+            child: SavedPharmacyCard(
+              pharmacy: pharmacy,
+              theme: theme,
+              onRemove: () {
+                provider.removePharmacy(pharmacy);
+                _showUndoSnackBar(context, '${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+              },
+            ),
           ),
         );
       },

@@ -32,6 +32,7 @@ class PharmacyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const brandGreen = Color(0xFF1E824C);
     const accentYellow = Color(0xFFFFC107);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: onTap,
@@ -40,16 +41,18 @@ class PharmacyCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? brandGreen.withValues(alpha: 0.04) : Colors.white,
+          color: isSelected 
+              ? brandGreen.withValues(alpha: isDark ? 0.2 : 0.04) 
+              : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? brandGreen : Colors.grey.shade200,
+            color: isSelected ? brandGreen : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
             width: isSelected ? 1.5 : 1,
           ),
           boxShadow: [
             if (!isSelected)
               BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4)
               ),
@@ -64,18 +67,18 @@ class PharmacyCard extends StatelessWidget {
                   children: [
                     Container(
                       width: 60, height: 60,
-                      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-                      child: Icon(Icons.storefront, color: Colors.grey[400], size: 30),
+                      decoration: BoxDecoration(color: isDark ? Colors.grey[800] : Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.storefront, color: isDark ? Colors.grey[400] : Colors.grey[400], size: 30),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
                           const SizedBox(height: 4),
                           Text("${item.address} • ${item.distance.toStringAsFixed(1)} km",
-                            style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                            style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[500], fontSize: 13),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -90,13 +93,17 @@ class PharmacyCard extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                    color: item.hasMedicine ? Colors.green[50] : Colors.red[50],
+                                    color: item.hasMedicine 
+                                        ? (isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green[50]) 
+                                        : (isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red[50]),
                                     borderRadius: BorderRadius.circular(4)
                                 ),
                                 child: Text(
                                   item.hasMedicine ? "In Stock" : "Out of Stock",
                                   style: TextStyle(
-                                      color: item.hasMedicine ? Colors.green[700] : Colors.red[700],
+                                      color: item.hasMedicine 
+                                          ? (isDark ? Colors.green[400] : Colors.green[700]) 
+                                          : (isDark ? Colors.red[400] : Colors.red[700]),
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold
                                   ),
@@ -145,6 +152,7 @@ class PharmacyCard extends StatelessWidget {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: item.hasMedicine ? brandGreen : Colors.redAccent,
+                          foregroundColor: Colors.white,
                           elevation: 0,
                         ),
                       ),
@@ -163,11 +171,11 @@ class PharmacyCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF121212) : Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

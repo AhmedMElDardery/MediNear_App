@@ -137,6 +137,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       decoration: BoxDecoration(
@@ -145,7 +147,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
           BoxShadow(
             color: (_isFocused || _isListening)
                 ? const Color(0xFF00965E).withOpacity(0.18)
-                : Colors.black.withOpacity(0.05),
+                : (isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05)),
             blurRadius: _isFocused || _isListening ? 18 : 8,
             offset: const Offset(0, 4),
           ),
@@ -157,7 +159,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
         textInputAction: TextInputAction.search,
         onChanged: _onTextChanged,
         onSubmitted: (value) => widget.onSearch(value.trim()),
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: isDark ? Colors.white : Colors.black,
+        ),
         decoration: InputDecoration(
           hintText: _isListening ? "Listening..." : "Search for medicine or pharmacy...",
           hintStyle: TextStyle(
@@ -231,8 +237,10 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
 
           filled: true,
           fillColor: _isListening
-              ? const Color(0xFFE8F5EE)
-              : (_isFocused ? Colors.white : const Color(0xFFF5F7FA)),
+              ? (isDark ? const Color(0xFF00965E).withOpacity(0.15) : const Color(0xFFE8F5EE))
+              : (_isFocused 
+                  ? (isDark ? Colors.grey.shade800 : Colors.white) 
+                  : (isDark ? Colors.grey.shade900 : const Color(0xFFF5F7FA))),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           border: OutlineInputBorder(
@@ -241,7 +249,10 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),
+            borderSide: BorderSide(
+              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200, 
+              width: 1.5,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),

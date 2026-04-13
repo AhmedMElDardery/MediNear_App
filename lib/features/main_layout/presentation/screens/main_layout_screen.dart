@@ -30,6 +30,7 @@ class MainLayoutScreen extends StatelessWidget {
 
     return Scaffold(
       extendBody: true,
+      resizeToAvoidBottomInset: false, // يمنع البار السفلي والزر العائم من الارتفاع أعلى الكيبورد
       body: IndexedStack(
         index: nav.currentIndex,
         children: pages,

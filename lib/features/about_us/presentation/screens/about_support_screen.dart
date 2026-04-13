@@ -25,16 +25,18 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textLight),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.textLight),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("About Us & Support", style: TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text("About Us & Support", style: TextStyle(color: isDark ? Colors.white : AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
       ),
       body: Consumer<AboutProvider>(
@@ -50,7 +52,7 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
               children: [
                 const AboutCard(),
                 const SizedBox(height: 30),
-                const Text("Support", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Support", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
                 const SizedBox(height: 15),
 
                 // 🚀 عرض خيارات الدعم من البروفايدر
@@ -61,9 +63,9 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
                 )),
 
                 const SizedBox(height: 30),
-                const Text("Follow Us", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Follow Us", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
                 const SizedBox(height: 15),
-                _buildFollowUsCard(provider.version),
+                _buildFollowUsCard(provider.version, isDark),
                 const SizedBox(height: 30),
               ],
             ),
@@ -73,17 +75,22 @@ class _AboutSupportScreenState extends State<AboutSupportScreen> {
     );
   }
 
-  Widget _buildFollowUsCard(String version) {
+  Widget _buildFollowUsCard(String version, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15)],
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+          )
+        ],
       ),
       child: Row(
         children: [
-          Text("App Version $version", style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textLight)),
+          Text("App Version $version", style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.grey.shade400 : AppColors.textLight)),
           const Spacer(),
           // ✅ تم التغيير لـ FaIcon لحل الإيرور
           const FaIcon(FontAwesomeIcons.facebook, color: Color(0xFF1877F2), size: 24),

@@ -18,11 +18,16 @@ class PharmacyMedicineModel {
 
   factory PharmacyMedicineModel.fromJson(Map<String, dynamic> json) {
     return PharmacyMedicineModel(
-      id: json['id'] ?? 0, name: json['name'] ?? '', oldPrice: (json['oldPrice'] ?? 0).toDouble(),
-      price: (json['price'] ?? 0).toDouble(), discount: json['discount'] ?? 0,
-      rating: (json['rating'] ?? 0).toDouble(), inStock: json['inStock'] ?? true,
-      image: json['image'] ?? '', notifyAvailable: json['notifyAvailable'] ?? false,
-      isSaved: json['isSaved'] ?? false,
+      id: json['id'] ?? json['medicine_id'] ?? 0, 
+      name: json['name'] ?? '', 
+      oldPrice: (json['oldPrice'] ?? 0).toDouble(),
+      price: (json['price'] ?? 0).toDouble(), 
+      discount: json['discount'] ?? 0,
+      rating: (json['rating'] ?? 0).toDouble(), 
+      inStock: json['inStock'] ?? (json['status'] == 'available') ?? true,
+      image: json['image'] ?? '', 
+      notifyAvailable: json['notifyAvailable'] ?? false,
+      isSaved: json['isSaved'] ?? json['is_saved'] ?? false,
     );
   }
 }

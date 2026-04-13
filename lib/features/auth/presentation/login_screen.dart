@@ -9,14 +9,16 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white, // خلفية بيضا تماماً
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
             // 🚀 1. خلفية النقوش الطبية
             Positioned.fill(
-              child: _buildMedicalPatternBackground(),
+              child: _buildMedicalPatternBackground(isDark),
             ),
 
             // 🚀 2. المحتوى الأساسي
@@ -35,8 +37,8 @@ class LoginScreen extends StatelessWidget {
                       height: 130,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
-                        boxShadow: [
+                        color: isDark ? Colors.white : Colors.white, // To keep the white background for logo image
+                        boxShadow: isDark ? [] : [
                           BoxShadow(
                             color: Colors.green.withValues(alpha: 0.15),
                             blurRadius: 30,
@@ -76,26 +78,24 @@ class LoginScreen extends StatelessWidget {
 
                     const SizedBox(height: 10),
 
-                    // 🚀 كلمة "Welcome"
-                    const Text(
+                    Text(
                       "Welcome",
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: isDark ? Colors.white : Colors.black87,
                         fontFamily: 'Cairo',
                       ),
                     ),
 
                     const SizedBox(height: 5),
 
-                    // 🚀 كلمة Log in to continue
                     Text(
                       "Log in to continue",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey.shade600,
+                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                       ),
                     ),
 
@@ -114,9 +114,10 @@ class LoginScreen extends StatelessWidget {
                             return const FaIcon(FontAwesomeIcons.google, color: Color(0xFFDB4437), size: 22);
                           },
                         ),
-                        backgroundColor: Colors.white,
-                        textColor: Colors.black87,
-                        shadowColor: Colors.black.withValues(alpha: 0.08),
+                        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                        textColor: isDark ? Colors.white : Colors.black87,
+                        shadowColor: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.08),
+                        isDark: isDark,
                         onPressed: () async {
                           final authProvider = Provider.of<AuthProvider>(context, listen: false);
                           final success = await authProvider.loginWithGoogle();
@@ -139,12 +140,12 @@ class LoginScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 60),
                       child: Row(
                         children: [
-                          Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15),
-                            child: Text("or", style: TextStyle(color: Colors.grey, fontSize: 14)),
+                          Expanded(child: Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade300, thickness: 1)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: Text("or", style: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey, fontSize: 14)),
                           ),
-                          Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+                          Expanded(child: Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade300, thickness: 1)),
                         ],
                       ),
                     ),
@@ -160,6 +161,7 @@ class LoginScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF3B5998),
                         textColor: Colors.white,
                         shadowColor: const Color(0xFF3B5998).withValues(alpha: 0.3),
+                        isDark: isDark,
                         onPressed: () async {
                           final authProvider = Provider.of<AuthProvider>(context, listen: false);
                           final success = await authProvider.loginWithFacebook();
@@ -312,7 +314,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   // 🚀 دالة بناء نقشة الخلفية الطبية
-  Widget _buildMedicalPatternBackground() {
+  Widget _buildMedicalPatternBackground(bool isDark) {
     final List<Widget> iconWidgets = [
       FaIcon(FontAwesomeIcons.pills, color: Colors.green[200], size: 30),
       FaIcon(FontAwesomeIcons.capsules, color: Colors.green[200], size: 30),
@@ -328,7 +330,7 @@ class LoginScreen extends StatelessWidget {
     ];
 
     return Opacity(
-      opacity: 0.3,
+      opacity: isDark ? 0.05 : 0.3,
       child: GridView.builder(
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -357,6 +359,7 @@ class LoginScreen extends StatelessWidget {
     required Color backgroundColor,
     required Color textColor,
     required Color shadowColor,
+    required bool isDark,
     required VoidCallback onPressed,
   }) {
     return GestureDetector(
@@ -373,8 +376,8 @@ class LoginScreen extends StatelessWidget {
               offset: const Offset(0, 5),
             ),
           ],
-          border: backgroundColor == Colors.white
-              ? Border.all(color: Colors.grey.shade200, width: 1)
+          border: (backgroundColor == Colors.white || backgroundColor == const Color(0xFF1E1E1E))
+              ? Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200, width: 1)
               : null,
         ),
         child: Row(

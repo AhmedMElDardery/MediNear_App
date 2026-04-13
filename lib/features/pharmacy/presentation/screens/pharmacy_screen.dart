@@ -4,16 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../manager/pharmacy_provider.dart';
 import '../widgets/pharmacy_cards.dart';
+import '../../../../features/saved_items/presentation/manager/saved_items_provider.dart';
 
 class PharmacyScreen extends StatefulWidget {
+  final String pharmacyId;    // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
   final String pharmacyName;
   final String doctorName;
 
   const PharmacyScreen({
     super.key,
+    required this.pharmacyId,   // 🚀 خليناه مطلوب
     required this.pharmacyName,
     this.doctorName = 'Al-Noor Pharmacy',
   });
+//...
 
   @override
   State<PharmacyScreen> createState() => _PharmacyScreenState();
@@ -37,8 +41,11 @@ class _PharmacyScreenState extends State<PharmacyScreen>
     _tabController = TabController(length: 3, vsync: this);
     _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final isLocallySaved = Provider.of<SavedItemsProvider>(context, listen: false)
+          .isPharmacySaved(widget.pharmacyId);
+      // 🚀 هنا بنقول للبروفايدر: "روح هات بيانات الصيدلية بالـ ID بتاعها"
       Provider.of<PharmacyProvider>(context, listen: false)
-          .fetchPharmacyData(widget.pharmacyName);
+          .fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved); 
     });
   }
 
@@ -69,10 +76,12 @@ class _PharmacyScreenState extends State<PharmacyScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
         body: Consumer<PharmacyProvider>(
           builder: (context, provider, _) {
             return Column(
@@ -91,10 +100,10 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                             _buildFlashSaleBanner(),
 
                             // Search Bar
-                            _buildSearchBar(provider),
+                            _buildSearchBar(provider, isDark),
 
                             // Tab Bar
-                            _buildTabBar(),
+                            _buildTabBar(isDark),
 
                             // Tab Content
                             Expanded(
@@ -102,6 +111,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                 controller: _tabController,
                                 children: [
                                   _buildList(
+                                    isDark: isDark,
                                     isEmpty: provider.filteredMedicines.isEmpty,
                                     emptyMsg: 'No medicines found',
                                     emptyIcon: Icons.medication_outlined,
@@ -119,18 +129,17 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                     ),
                                   ),
                                   _buildList(
+                                    isDark: isDark,
                                     isEmpty: provider.filteredDoctors.isEmpty,
                                     emptyMsg: 'No doctors found',
                                     emptyIcon: Icons.person_outline_rounded,
                                     itemCount: provider.filteredDoctors.length,
                                     itemBuilder: (i) => PharmacyDoctorCard(
                                       doctor: provider.filteredDoctors[i],
-                                      onToggleSave: () =>
-                                          provider.toggleDoctorSaved(
-                                              provider.filteredDoctors[i].id),
                                     ),
                                   ),
                                   _buildList(
+                                    isDark: isDark,
                                     isEmpty: provider.filteredServices.isEmpty,
                                     emptyMsg: 'No services found',
                                     emptyIcon:
@@ -139,9 +148,6 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                         provider.filteredServices.length,
                                     itemBuilder: (i) => PharmacyServiceCard(
                                       service: provider.filteredServices[i],
-                                      onToggleSave: () =>
-                                          provider.toggleServiceSaved(
-                                              provider.filteredServices[i].id),
                                     ),
                                   ),
                                 ],
@@ -181,28 +187,35 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 18),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
                     ),
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.bookmark_border_rounded,
-                          color: Colors.white, size: 22),
-                    ),
+                  // 🚀 زرار الـ Save الجديد والمربوط بالـ API
+                  Consumer<PharmacyProvider>(
+                    builder: (context, provider, child) {
+                      return GestureDetector(
+                        onTap: () async {
+                          // 🚀 لما بتدوس، بينادي دالة الحفظ في البروفايدر
+                          await provider.togglePharmacySave();
+                          if (context.mounted) {
+                            // 🚀 بنقول لصفحة المحفوظات تحدث بياناتها في الخلفية من غير ما تظهر لودينج
+                            Provider.of<SavedItemsProvider>(context, listen: false).fetchSavedItems(silent: true);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            // شكل الأيقونة بيتغير: مقفولة لو محفوظة، ومفتوحة لو لأ
+                            provider.isPharmacySaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                            color: Colors.white, 
+                            size: 28
+                          ),
+                        ),
+                      );
+                    }
                   ),
                 ],
               ),
@@ -381,7 +394,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
   // ──────────────────────────────────────────────────────────
   // SEARCH BAR
   // ──────────────────────────────────────────────────────────
-  Widget _buildSearchBar(PharmacyProvider provider) {
+  Widget _buildSearchBar(PharmacyProvider provider, bool isDark) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
       child: TextField(
@@ -390,10 +403,10 @@ class _PharmacyScreenState extends State<PharmacyScreen>
           provider.search(val);
           setState(() {});
         },
-        style: const TextStyle(fontSize: 14),
+        style: TextStyle(fontSize: 14, color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: 'Search medicines, doctors...',
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          hintStyle: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade400, fontSize: 14),
           prefixIcon:
               const Icon(Icons.search_rounded, color: _green, size: 22),
           suffixIcon: _searchController.text.isNotEmpty
@@ -408,7 +421,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                 )
               : null,
           filled: true,
-          fillColor: const Color(0xFFF5F7FA),
+          fillColor: isDark ? Colors.grey.shade900 : const Color(0xFFF5F7FA),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           border: OutlineInputBorder(
@@ -417,7 +430,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderSide: BorderSide(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -431,15 +444,15 @@ class _PharmacyScreenState extends State<PharmacyScreen>
   // ──────────────────────────────────────────────────────────
   // TAB BAR
   // ──────────────────────────────────────────────────────────
-  Widget _buildTabBar() {
+  Widget _buildTabBar(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        border: Border(bottom: BorderSide(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200)),
       ),
       child: TabBar(
         controller: _tabController,
         labelColor: _green,
-        unselectedLabelColor: Colors.grey.shade500,
+        unselectedLabelColor: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
         indicatorColor: _green,
         indicatorWeight: 3,
         labelStyle: const TextStyle(
@@ -471,6 +484,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
   // GENERIC LIST
   // ──────────────────────────────────────────────────────────
   Widget _buildList({
+    required bool isDark,
     required bool isEmpty,
     required String emptyMsg,
     required IconData emptyIcon,
@@ -491,13 +505,13 @@ class _PharmacyScreenState extends State<PharmacyScreen>
             ),
             const SizedBox(height: 14),
             Text(emptyMsg,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF444444))),
+                    color: isDark ? Colors.white : const Color(0xFF444444))),
             const SizedBox(height: 4),
             Text('Try adjusting your search',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
+                style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400)),
           ],
         ),
       );

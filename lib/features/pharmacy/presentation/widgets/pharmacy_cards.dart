@@ -27,7 +27,9 @@ class PharmacyMedicineCard extends StatelessWidget {
             decoration: BoxDecoration(color: theme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(medicine.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor, size: 40)),
+              child: medicine.image.startsWith('http')
+                  ? Image.network(medicine.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor, size: 40))
+                  : Image.asset(medicine.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor, size: 40)),
             ),
           ),
           const SizedBox(width: 12),
@@ -72,9 +74,8 @@ class PharmacyMedicineCard extends StatelessWidget {
 
 class PharmacyDoctorCard extends StatelessWidget {
   final PharmacyDoctorModel doctor;
-  final VoidCallback onToggleSave;
 
-  const PharmacyDoctorCard({super.key, required this.doctor, required this.onToggleSave});
+  const PharmacyDoctorCard({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +91,11 @@ class PharmacyDoctorCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 35, backgroundColor: theme.primaryColor.withOpacity(0.1),
-            backgroundImage: doctor.image != null ? AssetImage(doctor.image!) : null,
+            backgroundImage: doctor.image != null && doctor.image!.isNotEmpty
+                ? (doctor.image!.startsWith('http') ? NetworkImage(doctor.image!) : AssetImage(doctor.image!)) as ImageProvider
+                : null,
             onBackgroundImageError: (_, __) {},
-            child: doctor.image == null ? Icon(Icons.person, size: 35, color: theme.primaryColor) : null,
+            child: (doctor.image == null || doctor.image!.trim().isEmpty) ? Icon(Icons.person, size: 35, color: theme.primaryColor) : null,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -107,7 +110,6 @@ class PharmacyDoctorCard extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(icon: Icon(doctor.isSaved ? Icons.bookmark : Icons.bookmark_border, color: theme.primaryColor), onPressed: onToggleSave),
         ],
       ),
     );
@@ -116,9 +118,8 @@ class PharmacyDoctorCard extends StatelessWidget {
 
 class PharmacyServiceCard extends StatelessWidget {
   final PharmacyServiceModel service;
-  final VoidCallback onToggleSave;
 
-  const PharmacyServiceCard({super.key, required this.service, required this.onToggleSave});
+  const PharmacyServiceCard({super.key, required this.service});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +138,9 @@ class PharmacyServiceCard extends StatelessWidget {
             decoration: BoxDecoration(color: theme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(service.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medical_services, color: theme.primaryColor, size: 40)),
+              child: service.image.startsWith('http')
+                  ? Image.network(service.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medical_services, color: theme.primaryColor, size: 40))
+                  : Image.asset(service.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.medical_services, color: theme.primaryColor, size: 40)),
             ),
           ),
           const SizedBox(width: 12),
@@ -153,7 +156,6 @@ class PharmacyServiceCard extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(icon: Icon(service.isSaved ? Icons.bookmark : Icons.bookmark_border, color: theme.primaryColor), onPressed: onToggleSave),
         ],
       ),
     );

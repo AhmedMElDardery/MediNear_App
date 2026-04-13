@@ -74,6 +74,8 @@ class _AdsSliderState extends State<AdsSlider> {
   Widget build(BuildContext context) {
     if (widget.ads.isEmpty) return const SizedBox.shrink();
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         SizedBox(
@@ -199,7 +201,7 @@ class _AdsSliderState extends State<AdsSlider> {
                 width: isActive ? 20 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: isActive ? const Color(0xFF00965E) : Colors.grey.shade300,
+                  color: isActive ? const Color(0xFF00965E) : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(3),
                 ),
               );

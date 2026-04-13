@@ -64,6 +64,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<MapProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -74,6 +75,7 @@ class _MapScreenState extends State<MapScreen> {
             child: provider.userLocation == null
                 ? const Center(child: CircularProgressIndicator())
                 : GoogleMap(
+              style: isDark ? _darkMapStyle : null,
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(target: provider.userLocation!, zoom: 13.5),
               markers: provider.markers,
@@ -95,10 +97,10 @@ class _MapScreenState extends State<MapScreen> {
           ),
 
           // --- Layer 2: Search Suggestions Overlay ---
-          if (provider.showSuggestions) _buildSearchSuggestions(provider),
+          if (provider.showSuggestions) _buildSearchSuggestions(provider, isDark),
 
           // --- Layer 3: Glass Search Header ---
-          Positioned(top: 0, left: 0, right: 0, child: _buildGlassSearchHeader(provider)),
+          Positioned(top: 0, left: 0, right: 0, child: _buildGlassSearchHeader(provider, isDark)),
 
           // --- Layer 4: Floating My Location Button ---
           Positioned(
@@ -111,20 +113,20 @@ class _MapScreenState extends State<MapScreen> {
                   controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: provider.userLocation!, zoom: 16.0)));
                 }
               },
-              backgroundColor: Colors.white,
-              child: const Icon(Icons.my_location, color: Colors.black87),
+              backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              child: Icon(Icons.my_location, color: isDark ? Colors.white : Colors.black87),
             ),
           ),
 
           // --- Layer 5: Draggable Bottom Sheet ---
-          if (!provider.showSuggestions) _buildResultsBottomSheet(provider),
+          if (!provider.showSuggestions) _buildResultsBottomSheet(provider, isDark),
         ],
       ),
     );
   }
 
   // 🚀 ويدجت الاقتراحات - تعرض أدوية أو صيدليات حسب نوع البحث
-  Widget _buildSearchSuggestions(MapProvider provider) {
+  Widget _buildSearchSuggestions(MapProvider provider, bool isDark) {
     final query = _searchController.text.trim().toLowerCase();
 
     // 1. فلترة البحث الأخير
@@ -157,14 +159,14 @@ class _MapScreenState extends State<MapScreen> {
       bottom: 100,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20)],
+          boxShadow: [BoxShadow(color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.1), blurRadius: 20)],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: isEmpty
-              ? const Center(child: Text("No suggestions match", style: TextStyle(color: Colors.grey)))
+              ? Center(child: Text("No suggestions match", style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey)))
               : Column(
             children: [
               Expanded(
@@ -235,12 +237,12 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildGlassSearchHeader(MapProvider provider) {
+  Widget _buildGlassSearchHeader(MapProvider provider, bool isDark) {
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          color: Colors.white.withValues(alpha: 0.90),
+          color: isDark ? const Color(0xFF121212).withValues(alpha: 0.85) : Colors.white.withValues(alpha: 0.90),
           padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, bottom: 15, left: 16, right: 16),
           child: Column(
             children: [
@@ -269,6 +271,7 @@ class _MapScreenState extends State<MapScreen> {
                       },
                       decoration: InputDecoration(
                         hintText: provider.isMedicineSearch ? 'Search Medicine...' : 'Search Pharmacy...',
+                        hintStyle: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
                         prefixIcon: const Icon(Icons.search, color: Colors.grey),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
@@ -279,7 +282,7 @@ class _MapScreenState extends State<MapScreen> {
                           },
                         )
                             : null,
-                        filled: true, fillColor: Colors.grey[100], contentPadding: EdgeInsets.zero,
+                        filled: true, fillColor: isDark ? Colors.grey.shade900 : Colors.grey[100], contentPadding: EdgeInsets.zero,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
                       ),
                     ),
@@ -289,9 +292,9 @@ class _MapScreenState extends State<MapScreen> {
               const SizedBox(height: 15),
               Row(
                 children: [
-                  _buildSearchTypeButton("Medicine", provider.isMedicineSearch, () => provider.toggleSearchType(true)),
+                  _buildSearchTypeButton("Medicine", provider.isMedicineSearch, isDark, () => provider.toggleSearchType(true)),
                   const SizedBox(width: 10),
-                  _buildSearchTypeButton("Pharmacy", !provider.isMedicineSearch, () => provider.toggleSearchType(false)),
+                  _buildSearchTypeButton("Pharmacy", !provider.isMedicineSearch, isDark, () => provider.toggleSearchType(false)),
                 ],
               ),
             ],
@@ -301,26 +304,26 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSearchTypeButton(String label, bool isSelected, VoidCallback onTap) {
+  Widget _buildSearchTypeButton(String label, bool isSelected, bool isDark, VoidCallback onTap) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? _brandGreen : Colors.white,
+            color: isSelected ? _brandGreen : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
             borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: isSelected ? _brandGreen : Colors.grey.shade300),
+            border: Border.all(color: isSelected ? _brandGreen : (isDark ? Colors.grey.shade800 : Colors.grey.shade300)),
           ),
           child: Center(
-            child: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+            child: Text(label, style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey.shade300 : Colors.black87), fontWeight: FontWeight.bold, fontSize: 13)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildResultsBottomSheet(MapProvider provider) {
+  Widget _buildResultsBottomSheet(MapProvider provider, bool isDark) {
     return DraggableScrollableSheet(
       initialChildSize: 0.40,
       minChildSize: 0.25,
@@ -328,9 +331,9 @@ class _MapScreenState extends State<MapScreen> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF121212) : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 15, spreadRadius: 5, offset: const Offset(0, -5))],
+            boxShadow: [BoxShadow(color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.1), blurRadius: 15, spreadRadius: 5, offset: const Offset(0, -5))],
           ),
           child: Column(
             children: [
@@ -379,3 +382,185 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
+
+// 🚀 Dark Mode JSON String لخرائط جوجل
+const String _darkMapStyle = '''
+[
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.country",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.locality",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#181818"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#1b1b1b"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#2c2c2c"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8a8a8a"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#373737"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#3c3c3c"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#4e4e4e"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#3d3d3d"
+      }
+    ]
+  }
+]
+''';

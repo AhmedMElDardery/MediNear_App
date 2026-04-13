@@ -11,7 +11,6 @@ import 'package:medinear_app/features/notifications/presentation/pages/notificat
 
 import 'package:medinear_app/features/onboarding/onboarding_screen.dart';
 import 'package:medinear_app/features/orders/presentation/screens/my_orders_screen.dart';
-import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 import 'package:medinear_app/features/saved_items/presentation/screens/saved_items_screen.dart';
 import 'package:medinear_app/features/splash/splash_screen.dart';
 
@@ -41,7 +40,6 @@ class AppRoutes {
     notification : (_) => const NotificationsScreen(),
     map : (_) => const MapScreen(medicine: ""),
     saveditems : (_) => const SavedItemsScreen(),
-    pharmacy : (_) => const PharmacyScreen(pharmacyName: "Al Noor",),
     mycart : (_) => const MyCartScreen(pharmacyName: "Al Noor",),
     cart : (_) => const CartPharmaciesScreen(),
     about : (_) => const AboutSupportScreen(),

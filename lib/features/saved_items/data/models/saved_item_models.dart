@@ -17,7 +17,7 @@ class SavedPharmacyModel {
 
   factory SavedPharmacyModel.fromJson(Map<String, dynamic> json) {
     return SavedPharmacyModel(
-      id: json['name'] ?? '', // نستخدم الاسم كأنه id مؤقتاً
+      id: json['id']?.toString() ?? json['name'] ?? '',
       name: json['name'] ?? '',
       location: json['location'] ?? '',
       image: json['image'] ?? '',
@@ -46,7 +46,7 @@ class SavedMedicationModel {
 
   factory SavedMedicationModel.fromJson(Map<String, dynamic> json) {
     return SavedMedicationModel(
-      id: json['name'] ?? '', // نستخدم الاسم كأنه id مؤقتاً
+      id: json['id']?.toString() ?? json['name'] ?? '',
       name: json['name'] ?? '',
       price: json['price'] ?? '0 EGP',
       image: json['image'] ?? '',

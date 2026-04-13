@@ -1,29 +1,79 @@
+import 'package:dio/dio.dart';
+import 'package:medinear_app/core/services/token_storage.dart';
 import '../models/saved_item_models.dart';
 
 class SavedItemsRemoteDataSource {
+  final Dio dio = Dio(BaseOptions(baseUrl: 'https://medinear-eg.com/api'));
+  final TokenStorage tokenStorage = TokenStorage();
+
+  // 1. جلب المحفوظات (GET)
   Future<Map<String, List<dynamic>>> getSavedItems() async {
-    // محاكاة تأخير الـ API
-    await Future.delayed(const Duration(milliseconds: 500)); 
+    try {
+      final token = await tokenStorage.getToken();
+      
+      
+      final response = await dio.get(
+        '/pharmacy/pharmacy/saved',
+        options: Options(headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json" // 🚀 عشان نضمن إنه يرجع JSON دايماً
+        }),
+      );
 
-    // نفس الداتا اللي كانت في الكود القديم
-    final pharmacies = [
-      {'name': 'Al-Noor Pharmacy', 'location': 'egypt,salah salem', 'products': '434 Products', 'image': 'assets/images/dr1.jpg', 'isSaved': true},
-      {'name': 'El-Seha Pharmacy', 'location': 'egypt,Fayoum', 'products': '123 Products', 'image': 'assets/images/dr2.jpg', 'isSaved': true},
-      {'name': 'El-Hayaa Pharmacy', 'location': 'egypt,Alexandria', 'products': '765 Products', 'image': 'assets/images/dr3.jpg', 'isSaved': true},
-      {'name': 'Dr. Samir Pharmacy', 'location': 'egypt,Beni_suef', 'products': '156 Products', 'image': 'assets/images/dr4.jpg', 'isSaved': true},
-      {'name': 'Dr. Mohamed Pharmacy', 'location': 'egypt,Al-Absiri', 'products': '841 Products', 'image': 'assets/images/dr5.jpg', 'isSaved': true},
-    ];
+      // 🚀 1. فك شفرة الصفحات (Pagination)
+      // الداتا جاية جوه response.data['data']['data']
+      final rawData = response.data['data']?['data'] as List? ?? [];
 
-    final medications = [
-      {'name': 'Voltaren Emulgel', 'price': '90 EGP', 'available': false, 'image': 'assets/images/medicine_2.png', 'isSaved': true},
-      {'name': 'Hypooeh', 'price': '110 EGP', 'available': false, 'image': 'assets/images/medicine_1.png', 'isSaved': true},
-      {'name': 'Aspirin 100mg', 'price': '180 EGP', 'available': false, 'image': 'assets/images/medicine_3.png', 'isSaved': true},
-      {'name': 'Kollangel', 'price': '200 EGP', 'available': false, 'image': 'assets/images/medicine_4.png', 'isSaved': true},
-    ];
+      // 🚀 2. الترجمة (Mapping): بنحول أسماء السيرفر لأسماء الموديل بتاعك
+      List<SavedPharmacyModel> realPharmacies = rawData.map((item) {
+        // بننضف العنوان من المسافات الزيادة والسطور الجديدة
+        String fullAddress = '${item['city'] ?? ''} - ${item['address'] ?? ''}'.replaceAll('\n', ' ');
 
-    return {
-      'pharmacies': pharmacies.map((e) => SavedPharmacyModel.fromJson(e)).toList(),
-      'medications': medications.map((e) => SavedMedicationModel.fromJson(e)).toList(),
-    };
+        return SavedPharmacyModel.fromJson({
+          'id': item['pharmacy_id']?.toString() ?? item['pharmacy']?['id']?.toString() ?? item['id'].toString(), 
+          'name': item['pharmacy_name'] ?? 'صيدلية بدون اسم', // بناخد الاسم من pharmacy_name
+          'location': fullAddress, // بندمج المدينة مع العنوان
+          'products': item['distance_text'] ?? 'متوفرة', // ممكن نعرض المسافة مؤقتاً هنا
+          'image': item['image'] ?? 'assets/images/dr1.jpg', // صورة افتراضية لو مفيش
+          'isSaved': true,
+
+        });
+      }).toList();
+
+      // أدوية وهمية مؤقتة لحد ما تظبطوا الـ API بتاعها
+      final dummyMedications = [
+        {'id': '101', 'name': 'Voltaren Emulgel', 'price': '90 EGP', 'available': false, 'image': 'assets/images/medicine_2.png', 'isSaved': true},
+        {'id': '102', 'name': 'Hypooeh', 'price': '110 EGP', 'available': false, 'image': 'assets/images/medicine_1.png', 'isSaved': true},
+      ];
+
+      return {
+        'pharmacies': realPharmacies, 
+        'medications': dummyMedications.map((e) => SavedMedicationModel.fromJson(e)).toList(),
+      };
+    } catch (e) {
+      throw Exception("Failed to fetch saved items: $e");
+    }
+  }
+
+  // 2. إلغاء/إعادة الحفظ (POST)
+  Future<bool> toggleSavePharmacy(String pharmacyId) async {
+    try {
+      final token = await tokenStorage.getToken();
+      final response = await dio.post(
+        '/pharmacy/save/pharmacy',
+        data: {'pharmacy_id': pharmacyId},
+        options: Options(headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json"
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final isSuccess = response.data['success'] ?? response.data['status'] ?? true;
+        return isSuccess == true;
+      }
+      return false;
+    } catch (e) {
+      return false; 
+    }
   }
 }

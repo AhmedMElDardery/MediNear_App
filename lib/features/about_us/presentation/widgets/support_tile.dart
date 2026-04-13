@@ -15,15 +15,17 @@ class SupportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: isDark ? Colors.black26 : Colors.black.withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -36,10 +38,10 @@ class SupportTile extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: AppColors.textLight, //
+                color: isDark ? Colors.white : AppColors.textLight, //
               ),
             ),
           ),

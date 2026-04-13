@@ -23,23 +23,33 @@ class SavedItemsProvider extends ChangeNotifier {
   int get savedPharmaciesCount => _filteredPharmacies.length;
   int get savedMedicationsCount => _filteredMedications.length;
 
-  Future<void> fetchSavedItems() async {
-    if (_allPharmacies.isNotEmpty || _allMedications.isNotEmpty) return;
-
-    _isLoading = true;
-    notifyListeners();
+  // 🚀 جلب البيانات من السيرفر
+  // 🚀 جلب البيانات من السيرفر
+  Future<void> fetchSavedItems({bool silent = false}) async {
+    // ❌ مسحنا السطر اللي كان بيعمل "بلوك" للـ API 
+    // وبكده كل ما تفتح الصفحة هيكلم السيرفر ويجيب أحدث حاجة
+    
+    if (!silent) {
+      _isLoading = true;
+      notifyListeners();
+    }
 
     try {
       final data = await _dataSource.getSavedItems();
       _allPharmacies = data['pharmacies'] as List<SavedPharmacyModel>;
       _allMedications = data['medications'] as List<SavedMedicationModel>;
+      
+      for (var p in _allPharmacies) { p.isSaved = true; }
+      
       _applyFilters();
     } catch (e) {
       debugPrint("Error fetching saved items: $e");
+    } finally {
+      if (!silent) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   void search(String query) {
@@ -72,22 +82,46 @@ class SavedItemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removePharmacy(SavedPharmacyModel item) {
+  // 🚀 دالة الحذف (لما اليوزر يدوس مسح أو Swipe)
+  Future<void> removePharmacy(SavedPharmacyModel item) async {
     final index = _allPharmacies.indexWhere((element) => element.id == item.id);
     if (index != -1) {
+      // 1. مسح من الشاشة فوراً (Optimistic UI)
       _allPharmacies[index].isSaved = false;
       _applyFilters();
+
+      // 2. إرسال الطلب للسيرفر في الخلفية
+      bool success = await _dataSource.toggleSavePharmacy(item.id.toString());
+      if (!success) {
+        // لو السيرفر فشل (مفيش نت مثلاً)، نرجعها تاني للشاشة
+        _allPharmacies[index].isSaved = true;
+        _applyFilters();
+        debugPrint("API Error: Failed to remove pharmacy from server.");
+      }
     }
   }
 
-  void undoRemovePharmacy(SavedPharmacyModel item) {
+  // 🚀 دالة التراجع (لما اليوزر يدوس Undo من رسالة الـ SnackBar)
+  Future<void> undoRemovePharmacy(SavedPharmacyModel item) async {
     final index = _allPharmacies.indexWhere((element) => element.id == item.id);
     if (index != -1) {
+      // 1. إرجاع للشاشة فوراً
       _allPharmacies[index].isSaved = true;
       _applyFilters();
+
+      // 2. إرسال الطلب للسيرفر يعيد حفظها
+      bool success = await _dataSource.toggleSavePharmacy(item.id.toString());
+      if (!success) {
+        // لو فشل، نمسحها تاني
+        _allPharmacies[index].isSaved = false;
+        _applyFilters();
+      }
     }
   }
 
+  // ----------------------------------------------------
+  // باقي دوال الأدوية (بدون تغيير)
+  // ----------------------------------------------------
   void removeMedication(SavedMedicationModel item) {
     final index = _allMedications.indexWhere((element) => element.id == item.id);
     if (index != -1) {
@@ -104,24 +138,16 @@ class SavedItemsProvider extends ChangeNotifier {
     }
   }
 
-  // ==========================================
-  // 🚀 الإضافات الجديدة للربط مع شاشة الصيدلية
-  // ==========================================
-
-  // 1. التأكد هل الصيدلية محفوظة بناءً على اسمها/الـ ID
   bool isPharmacySaved(String id) {
     final index = _allPharmacies.indexWhere((p) => p.id == id);
     return index != -1 && _allPharmacies[index].isSaved;
   }
 
-  // 2. إضافة أو مسح الصيدلية لما ندوس على علامة الـ Bookmark
   void togglePharmacySavedStatus(SavedPharmacyModel newPharmacy) {
     final index = _allPharmacies.indexWhere((p) => p.id == newPharmacy.id);
     if (index != -1) {
-      // لو موجودة، اعكس حالتها
       _allPharmacies[index].isSaved = !_allPharmacies[index].isSaved;
     } else {
-      // لو مش موجودة خالص، ضيفها
       _allPharmacies.add(newPharmacy);
     }
     _applyFilters(); 

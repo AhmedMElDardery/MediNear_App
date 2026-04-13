@@ -367,9 +367,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (dialogCtx) => Dialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25)),
+                      builder: (dialogCtx) {
+                        final isDark = Theme.of(context).brightness == Brightness.dark;
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25)),
                         elevation: 10,
                         backgroundColor: Colors.transparent, // لجعل الخلفية شفافة
                         child: Stack(
@@ -382,24 +384,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               // 🚀 قللنا المسافة العلوية من 60 لـ 50 عشان العنوان يرتفع ويكون مريح
                               padding: const EdgeInsets.fromLTRB(25, 50, 25, 25), 
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
                                 borderRadius: BorderRadius.circular(25),
-                                boxShadow: const [
-                                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 10))
+                                boxShadow: [
+                                  BoxShadow(color: isDark ? Colors.black26 : Colors.black12, blurRadius: 10, offset: const Offset(0, 10))
                                 ],
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Logout',
-                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
                                   ),
                                   const SizedBox(height: 15),
-                                  const Text(
+                                  Text(
                                     'Are you sure you want to log out? You will need to sign in again to access your account.',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.4),
+                                    style: TextStyle(fontSize: 16, color: isDark ? Colors.grey.shade400 : Colors.grey, height: 1.4),
                                   ),
                                   const SizedBox(height: 30),
                                   Row(
@@ -408,12 +410,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Expanded(
                                         child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: Colors.grey.shade300),
+                                            side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                                             padding: const EdgeInsets.symmetric(vertical: 14),
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                           ),
                                           onPressed: () => Navigator.pop(dialogCtx),
-                                          child: Text('Cancel', style: TextStyle(color: Colors.grey.shade700, fontSize: 16, fontWeight: FontWeight.bold)),
+                                          child: Text('Cancel', style: TextStyle(color: isDark ? Colors.grey.shade300 : Colors.grey.shade700, fontSize: 16, fontWeight: FontWeight.bold)),
                                         ),
                                       ),
                                       const SizedBox(width: 15),
@@ -441,28 +443,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ],
                               ),
                             ),
-                            // 🚀 2️⃣ الأيقونة التي تم تصغيرها وتعديلها لتكون "بروفيشنال"
                             Positioned(
-                              top: -35, // قللنا التداخل الخارجي ليكون أنعم (كان -45)
+                              top: -24, 
                               child: CircleAvatar(
-                                radius: 35, // قللنا نصف القطر ليكون مريح ومتناسق (كان 45)
+                                radius: 24, 
                                 backgroundColor: const Color(0xFFD32F2F),
                                 child: Container(
                                   // إضافة حدود بيضاء أنعم وأنحف
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 3), // حدود بيضاء شيك
+                                    border: Border.all(color: isDark ? const Color(0xFF121212) : Colors.white, width: 2.5), 
                                   ),
                                   // تصغير الأيقونة لتناسب الحجم الجديد
-                                  child: const Icon(Icons.logout, color: Colors.white, size: 30), // (كانت 45)
+                                  child: const Icon(Icons.logout, color: Colors.white, size: 24), 
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  );
+                },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [

@@ -35,6 +35,8 @@ class _MedicineCardState extends State<MedicineCard>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) => _controller.reverse(),
@@ -48,11 +50,11 @@ class _MedicineCardState extends State<MedicineCard>
         child: Container(
           width: 150,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF1E272E) : Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.07),
+                color: isDark ? Colors.black26 : Colors.black.withOpacity(0.07),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -72,22 +74,37 @@ class _MedicineCardState extends State<MedicineCard>
                     child: Container(
                       height: 105,
                       width: double.infinity,
-                      color: const Color(0xFFF0FBF5),
+                      color: isDark ? const Color(0xFF121212) : const Color(0xFFF0FBF5),
                       child: widget.medicine.imageUrl.isNotEmpty
-                          ? Image.network(
-                              widget.medicine.imageUrl,
-                              height: 105,
-                              width: double.infinity,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                child: Icon(
-                                  Icons.medication_rounded,
-                                  size: 45,
-                                  color: Color(0xFF00965E),
-                                ),
-                              ),
-                            )
+                          ? (widget.medicine.imageUrl.startsWith('http') 
+                              ? Image.network(
+                                  widget.medicine.imageUrl,
+                                  height: 105,
+                                  width: double.infinity,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                    child: Icon(
+                                      Icons.medication_rounded,
+                                      size: 45,
+                                      color: Color(0xFF00965E),
+                                    ),
+                                  ),
+                                )
+                              : Image.asset(
+                                  widget.medicine.imageUrl,
+                                  height: 105,
+                                  width: double.infinity,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                    child: Icon(
+                                      Icons.medication_rounded,
+                                      size: 45,
+                                      color: Color(0xFF00965E),
+                                    ),
+                                  ),
+                                ))
                           : const Center(
                               child: Icon(
                                 Icons.medication_rounded,
@@ -130,10 +147,10 @@ class _MedicineCardState extends State<MedicineCard>
                       widget.medicine.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A1A1A),
+                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                         height: 1.3,
                       ),
                     ),

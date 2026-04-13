@@ -11,22 +11,29 @@ class PharmacyProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   String _searchQuery = '';
-  String _currentPharmacyName = '';
+  String _currentPharmacyId = ''; // 🚀 غيرناها لـ ID
+
+  // 🚀 المتغير اللي هينور زرار الحفظ
+  bool _isPharmacySaved = false;
 
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
+  bool get isPharmacySaved => _isPharmacySaved; // 🚀 Getter عشان الـ UI يقراه
 
   // 1. جلب البيانات من الـ API
-  Future<void> fetchPharmacyData(String pharmacyName) async {
-    // لو نفس الصيدلية متعملش لودينج تاني، لكن لو صيدلية جديدة امسح القديم وحمل
-    if (_currentPharmacyName == pharmacyName && _medicines.isNotEmpty) return;
-    
-    _currentPharmacyName = pharmacyName;
-    _isLoading = true;
-    notifyListeners();
-
+  Future<void> fetchPharmacyData(String pharmacyId, {bool isSavedLocally = false}) async {
+    bool isSilent = _currentPharmacyId == pharmacyId && _medicines.isNotEmpty;
+    _currentPharmacyId = pharmacyId;
+    if (!isSilent) {
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
-      final data = await _dataSource.getPharmacyDetails(pharmacyName);
+      final data = await _dataSource.getPharmacyDetails(pharmacyId);
+      
+      // 🚀 بنقرا حالة الحفظ اللي جاية من الـ API، ولو مش موجودة بنعتمد على اللوكال
+      _isPharmacySaved = (data['is_saved'] == true) || isSavedLocally;
+      
       _medicines = data['medicines'] as List<PharmacyMedicineModel>;
       _doctors = data['doctors'] as List<PharmacyDoctorModel>;
       _services = data['services'] as List<PharmacyServiceModel>;
@@ -38,46 +45,57 @@ class PharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 2. الفلترة
+  // 🚀 2. دالة الضغط على زرار الحفظ
+  Future<void> togglePharmacySave() async {
+    if (_currentPharmacyId.isEmpty) return;
+
+    // بنعكس الحالة فوراً قدام اليوزر (عشان يحس بالسرعة)
+    _isPharmacySaved = !_isPharmacySaved;
+    notifyListeners();
+
+    // بنكلم السيرفر في الخلفية
+    bool success = await _dataSource.toggleSavePharmacy(_currentPharmacyId);
+    
+    if (!success) {
+      // لو السيرفر رفض أو حصل إيرور، بنرجع الزرار زي ما كان
+      _isPharmacySaved = !_isPharmacySaved;
+      notifyListeners();
+      debugPrint("API Error: Failed to toggle save state");
+    }
+  }
+
+  // ... (باقي كود الفلترة بتاعتك search و filteredMedicines الخ زي ما هو بالظبط متقلقش عليه) ...
   void search(String query) {
     _searchQuery = query;
     notifyListeners();
   }
-
   List<PharmacyMedicineModel> get filteredMedicines {
     if (_searchQuery.isEmpty) return _medicines;
     return _medicines.where((m) => m.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
   }
-
   List<PharmacyDoctorModel> get filteredDoctors {
     if (_searchQuery.isEmpty) return _doctors;
     return _doctors.where((d) => d.name.toLowerCase().contains(_searchQuery.toLowerCase()) || d.specialty.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
   }
-
   List<PharmacyServiceModel> get filteredServices {
     if (_searchQuery.isEmpty) return _services;
     return _services.where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
   }
-
-  // 3. التفاعلات (حفظ، تنبيه)
   void toggleMedicineSaved(int id) {
     final item = _medicines.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;
     notifyListeners();
   }
-
   void toggleMedicineNotify(int id) {
     final item = _medicines.firstWhere((e) => e.id == id);
     item.notifyAvailable = !item.notifyAvailable;
     notifyListeners();
   }
-
   void toggleDoctorSaved(int id) {
     final item = _doctors.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;
     notifyListeners();
   }
-
   void toggleServiceSaved(int id) {
     final item = _services.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;
