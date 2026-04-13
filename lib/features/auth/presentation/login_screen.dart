@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
 
                     // 🚀 كلمة Digital Pharmacy
                     const Text(
-                      " MidiNear Pharmacies",
+                      " MediNear Pharmacies",
                       style: TextStyle(
                         fontSize: 23,
                         fontWeight: FontWeight.w600,
