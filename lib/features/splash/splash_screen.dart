@@ -39,8 +39,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: isDark ? const Color(0xFF121212) : AppColors.backgroundLight,
       body: Center(
         child: FadeTransition(
           opacity: _fade,
@@ -57,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 Text(
                   'Medinear',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.primaryLight,
+                    color: isDark ? Colors.white : AppColors.primaryLight,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
