@@ -493,30 +493,38 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildLoadingState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 100,
+            height: 100,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF00965E), Color(0xFF00C47A)],
-              ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
+              shape: BoxShape.circle,
+              color: Colors.white, 
+              boxShadow: isDark ? [] : [
                 BoxShadow(
-                  color: const Color(0xFF00965E).withOpacity(0.3),
-                  blurRadius: 20,
+                  color: const Color(0xFF00965E).withOpacity(0.15),
+                  blurRadius: 25,
+                  spreadRadius: 2,
                   offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: const Icon(Icons.local_pharmacy_rounded,
-                color: Colors.white, size: 40),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           const SizedBox(
             width: 40,
             height: 40,
