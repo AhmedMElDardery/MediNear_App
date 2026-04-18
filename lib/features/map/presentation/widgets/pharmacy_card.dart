@@ -8,6 +8,8 @@ class PharmacyCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onNotify;
   final VoidCallback? onAddToCart; // 🆕
+  final VoidCallback? onGoTap;
+  final bool isMapMode;
 
   const PharmacyCard({
     super.key,
@@ -16,6 +18,8 @@ class PharmacyCard extends StatelessWidget {
     required this.onTap,
     required this.onNotify,
     this.onAddToCart,
+    this.onGoTap,
+    this.isMapMode = false,
   });
 
   // 🚀 دالة لفتح الروابط الخارجية (خرائط أو اتصال)
@@ -88,27 +92,29 @@ class PharmacyCard extends StatelessWidget {
                               const Icon(Icons.star, size: 14, color: accentYellow),
                               const SizedBox(width: 4),
                               const Text("4.8", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                              const SizedBox(width: 10),
-                              // 🚀 حالة التوفر بناءً على الداتا الحقيقية
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                    color: item.hasMedicine 
-                                        ? (isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green[50]) 
-                                        : (isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red[50]),
-                                    borderRadius: BorderRadius.circular(4)
-                                ),
-                                child: Text(
-                                  item.hasMedicine ? "In Stock" : "Out of Stock",
-                                  style: TextStyle(
+                              if (!isMapMode) ...[
+                                const SizedBox(width: 10),
+                                // 🚀 حالة التوفر بناءً على الداتا الحقيقية
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
                                       color: item.hasMedicine 
-                                          ? (isDark ? Colors.green[400] : Colors.green[700]) 
-                                          : (isDark ? Colors.red[400] : Colors.red[700]),
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold
+                                          ? (isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green[50]) 
+                                          : (isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red[50]),
+                                      borderRadius: BorderRadius.circular(4)
+                                  ),
+                                  child: Text(
+                                    item.hasMedicine ? "In Stock" : "Out of Stock",
+                                    style: TextStyle(
+                                        color: item.hasMedicine 
+                                            ? (isDark ? Colors.green[400] : Colors.green[700]) 
+                                            : (isDark ? Colors.red[400] : Colors.red[700]),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold
+                                    ),
                                   ),
                                 ),
-                              )
+                              ]
                             ],
                           ),
                         ],
@@ -135,27 +141,39 @@ class PharmacyCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    // --- زرار الاتصال أو الإشعار ---
+                    // --- الزرار الثاني (ديناميكي) ---
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: item.hasMedicine
-                            ? () => _launchURL('tel:123456789') // 🚀 حط هنا رقم الصيدلية لو موجود في الـ Entity
-                            : onNotify,
-                        icon: Icon(
-                            item.hasMedicine ? Icons.call : Icons.notifications_active,
-                            size: 16,
-                            color: Colors.white
-                        ),
-                        label: Text(
-                            item.hasMedicine ? "Call" : "Notify Me",
-                            style: const TextStyle(color: Colors.white)
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: item.hasMedicine ? brandGreen : Colors.redAccent,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
-                      ),
+                      child: isMapMode 
+                        ? ElevatedButton.icon(
+                            onPressed: onGoTap ?? onTap,
+                            icon: const Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.white),
+                            label: const Text("Go", style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: brandGreen,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            ),
+                          )
+                        : ElevatedButton.icon(
+                            onPressed: item.hasMedicine
+                                ? () => _launchURL('tel:123456789') // 🚀 حط هنا رقم الصيدلية لو موجود في الـ Entity
+                                : onNotify,
+                            icon: Icon(
+                                item.hasMedicine ? Icons.call : Icons.notifications_active,
+                                size: 16,
+                                color: Colors.white
+                            ),
+                            label: Text(
+                                item.hasMedicine ? "Call" : "Notify Me",
+                                style: const TextStyle(color: Colors.white)
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: item.hasMedicine ? brandGreen : Colors.redAccent,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                            ),
+                          ),
                     ),
                   ],
                 )

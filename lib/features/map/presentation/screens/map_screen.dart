@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../provider/map_provider.dart';
 import '../widgets/pharmacy_card.dart';
+import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 
 class MapScreen extends StatefulWidget {
   final String medicine;
@@ -359,8 +360,19 @@ class _MapScreenState extends State<MapScreen> {
                     final pharmacy = provider.pharmacies[index];
                     return PharmacyCard(
                       item: pharmacy,
+                      isMapMode: !(provider.isMedicineSearch && provider.lastQuery.isNotEmpty),
                       isSelected: provider.selectedPharmacyId == pharmacy.id,
                       onTap: () => provider.selectPharmacy(pharmacy.id),
+                      onGoTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PharmacyScreen(
+                            pharmacyId: pharmacy.id.toString(),
+                            pharmacyName: pharmacy.name,
+                            doctorName: pharmacy.name,
+                          ),
+                        ),
+                      ),
                       onNotify: () => provider.notifyApi(pharmacy.id),
                       onAddToCart: () {
                         ScaffoldMessenger.of(context).showSnackBar(
