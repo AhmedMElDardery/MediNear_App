@@ -33,6 +33,9 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    
     bool isEmail = widget.item.title == "Email Us";
     bool isCall = widget.item.title == "Call Us";
     bool isWhatsapp = widget.item.title == "WhatsApp";
@@ -57,7 +60,7 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
     }
 
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
+      tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 400 + (widget.index * 100)),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
@@ -82,16 +85,17 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? theme.cardColor : Colors.white,
               borderRadius: BorderRadius.circular(24),
+              border: isDark ? Border.all(color: theme.dividerColor.withOpacity(0.1)) : null,
               boxShadow: [
                 BoxShadow(
-                  color: baseColor.withOpacity(0.08),
+                  color: baseColor.withOpacity(isDark ? 0.05 : 0.08),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withOpacity(isDark ? 0.1 : 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -116,11 +120,15 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(widget.item.title,
-                          style: const TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF0F172A), letterSpacing: -0.3)),
+                          style: TextStyle(
+                              fontSize: 17, 
+                              fontWeight: FontWeight.w700, 
+                              color: isDark ? theme.textTheme.bodyLarge?.color ?? Colors.white : const Color(0xFF0F172A), 
+                              letterSpacing: -0.3)
+                      ),
                       const SizedBox(height: 4),
                       Text(widget.item.subtitle,
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.2)),
+                          style: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade600, fontSize: 13, height: 1.2)),
                     ],
                   ),
                 ),
