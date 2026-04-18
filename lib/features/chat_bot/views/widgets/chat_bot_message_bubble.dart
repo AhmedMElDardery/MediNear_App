@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+// ✅ مفيش أي استدعاء لمكتبة الماركداون هنا خالص
 import '../../provider/chat_bot_provider.dart';
 import '../../data/models/chat_bot_model.dart';
 import 'chat_bot_styles.dart';
@@ -13,26 +14,26 @@ class ChatBotMessageBubble extends StatelessWidget {
 
   const ChatBotMessageBubble({super.key, required this.msg, required this.vm});
 
+  // ✅ دالة لاكتشاف اللغة لضبط الاتجاهات
+  bool _isArabic(String text) {
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isBot = msg.isBot;
 
     return Padding(
-      // ✅ تباعد رأسي (8) لمنع التصاق الفقاعات، وتقليل جانبي (4) للالتصاق بالحافة
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: Row(
-        // البوت يسار والمستخدم يمين
         mainAxisAlignment:
             isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // 1. صورة البوت (أقصى اليسار)
           if (isBot) ...[
             _buildGlowAvatar(),
             const SizedBox(width: 4),
           ],
-
-          // 2. فقاعة الرسالة - الحل السحري IntrinsicWidth
           Flexible(
             child: IntrinsicWidth(
               child: Column(
@@ -44,13 +45,11 @@ class ChatBotMessageBubble extends StatelessWidget {
                     onLongPress: () => _showReactionSheet(context, msg, vm),
                     child: _buildMessengerBubble(context),
                   ),
-                  if (msg.reaction != null) _buildReactionBadge(isBot),
+                  if (msg.reaction != null) _buildReactionBadge(isBot, context),
                 ],
               ),
             ),
           ),
-
-          // 3. صورة المستخدم (أقصى اليمين)
           if (!isBot) ...[
             const SizedBox(width: 4),
             AvatarDot(isBot: false, r: avatarRadius),
@@ -77,16 +76,20 @@ class ChatBotMessageBubble extends StatelessWidget {
   }
 
   Widget _buildMessengerBubble(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final bool isBot = msg.isBot;
-    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
     final String time = DateFormat('hh:mm a').format(msg.timestamp);
 
+    final bool isMsgArabic = _isArabic(msg.text);
+    final TextDirection bubbleDirection = 
+        isMsgArabic ? TextDirection.rtl : TextDirection.ltr;
+
     return Container(
-      // ✅ أقصى عرض 85% من الشاشة، لكنها ستنكمش بفضل IntrinsicWidth
       constraints: BoxConstraints(maxWidth: screenWidth * 0.85),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       decoration: BoxDecoration(
-        color: isBot ? ChatBotStyles.botBubble : Colors.white,
+        color: isBot ? (isDark ? const Color(0xFF2C2C2E) : ChatBotStyles.botBubble) : (isDark ? const Color(0xFF1A7A60) : Colors.white),
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(20),
           topRight: const Radius.circular(20),
@@ -95,21 +98,22 @@ class ChatBotMessageBubble extends StatelessWidget {
           bottomRight:
               isBot ? const Radius.circular(20) : const Radius.circular(4),
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0x0D000000),
             blurRadius: 10,
-            offset: const Offset(0, 3),
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: bubbleDirection,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start, 
           children: [
             isBot
+                // ✅ استخدمنا آلة الكتابة الذكية بتاعتنا اللي بتفهم الخط العريض
                 ? TypewriterText(
                     key: ValueKey(msg.text),
                     text: msg.text,
@@ -117,23 +121,22 @@ class ChatBotMessageBubble extends StatelessWidget {
                   )
                 : Text(
                     msg.text,
-                    style: const TextStyle(
-                      color: Color(0xFF2D3132),
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF2D3132),
                       fontSize: 15.5,
                       height: 1.4,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
             const SizedBox(height: 5),
-            // ✅ محاذاة الوقت لليمين داخل الفقاعة
             Align(
-              alignment: Alignment.bottomRight,
+              alignment: AlignmentDirectional.bottomEnd, 
               child: Text(
                 time,
                 style: TextStyle(
                   color: isBot
                       ? ChatBotStyles.g3.withValues(alpha: 0.7)
-                      : Colors.black26,
+                      : (isDark ? Colors.white70 : Colors.black26),
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
                 ),
@@ -145,19 +148,19 @@ class ChatBotMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionBadge(bool isBot) {
+  Widget _buildReactionBadge(bool isBot, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Transform.translate(
       offset: Offset(isBot ? 12 : -12, -8),
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[800] : Colors.white,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15), blurRadius: 8)
+          boxShadow: const [
+            BoxShadow(color: Color(0x26000000), blurRadius: 8)
           ],
-          border: Border.all(color: const Color(0xFFF0F4F4), width: 1.5),
+          border: Border.all(color: isDark ? const Color(0xFF444444) : const Color(0xFFF0F4F4), width: 1.5),
         ),
         child: Text(msg.reaction!, style: const TextStyle(fontSize: 12)),
       ),
@@ -166,6 +169,7 @@ class ChatBotMessageBubble extends StatelessWidget {
 
   void _showReactionSheet(
       BuildContext context, ChatMessage msg, ChatBotProvider vm) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -176,7 +180,7 @@ class ChatBotMessageBubble extends StatelessWidget {
           child: Container(
             height: 110,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.85),
+              color: isDark ? Colors.grey[900]!.withValues(alpha: 0.85) : Colors.white.withValues(alpha: 0.85),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(30)),
             ),

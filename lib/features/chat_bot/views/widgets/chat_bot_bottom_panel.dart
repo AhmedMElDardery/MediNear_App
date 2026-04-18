@@ -18,6 +18,7 @@ class ChatBotBottomPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).padding.bottom;
     final isEmpty = vm.messages.isEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       decoration: BoxDecoration(
@@ -30,6 +31,7 @@ class ChatBotBottomPanel extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
+        // ✅ إضافة const هنا بتمنع إعادة حساب الحواف الدائرية مع حركة الكيبورد
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -39,7 +41,8 @@ class ChatBotBottomPanel extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: ChatBotStyles.panelBg.withAlpha(180),
+              color: isDark ? const Color(0xFF1E1E1E).withAlpha(200) : ChatBotStyles.panelBg.withAlpha(180),
+              // ✅ إضافة const للحواف
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
@@ -81,7 +84,7 @@ class ChatBotBottomPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // تم إزالة زر الميكروفون بناءً على طلبك السابق
-                      Expanded(child: _buildTextField()),
+                      Expanded(child: _buildTextField(isDark)),
                       const SizedBox(width: 10),
                       _buildSendButton(vm),
                     ],
@@ -95,13 +98,14 @@ class ChatBotBottomPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField() {
+  Widget _buildTextField(bool isDark) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(200),
-        borderRadius: BorderRadius.circular(24),
+        color: isDark ? const Color(0xFF2C2C2E) : Colors.white.withAlpha(200),
+        // ✅ تحويلها لـ const
+        borderRadius: const BorderRadius.all(Radius.circular(24)),
         border: Border.all(color: ChatBotStyles.g1.withAlpha(50), width: 0.8),
       ),
       // المحاذاة لليسار للغة الإنجليزية
@@ -111,12 +115,12 @@ class ChatBotBottomPanel extends StatelessWidget {
         // تغيير الاتجاه ليكون LTR
         textDirection: TextDirection.ltr,
         textAlignVertical: TextAlignVertical.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: ChatBotStyles.dark,
+          color: isDark ? Colors.white : ChatBotStyles.dark,
         ),
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: "Type your message...",
           hintTextDirection: TextDirection.ltr,
           border: InputBorder.none,
@@ -139,7 +143,9 @@ class ChatBotBottomPanel extends StatelessWidget {
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 18),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          // ✅ تحويلها لـ const
+          borderRadius: const BorderRadius.all(Radius.circular(24)),
+          // ✅ الجراديانت هنا بقت const فمش هتترسم تاني
           gradient: const LinearGradient(
             colors: [ChatBotStyles.g1, ChatBotStyles.g3],
             begin: Alignment.topLeft,
@@ -153,6 +159,7 @@ class ChatBotBottomPanel extends StatelessWidget {
             ),
           ],
         ),
+        // ✅ الـ Row دي محتواها ثابت، فبقت كلها const
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [

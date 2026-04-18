@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../provider/chat_bot_provider.dart';
 import 'chat_bot_styles.dart';
@@ -10,7 +9,9 @@ class ChatBotHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final top = MediaQuery.of(context).padding.top;
+    // ✅ تحسين: استخدام sizeOf لتقليل الـ Rebuilds
+    final top = MediaQuery.paddingOf(context).top;
+    
     return Container(
       padding: EdgeInsets.fromLTRB(10, top + 10, 10, 14),
       decoration: BoxDecoration(
@@ -36,7 +37,6 @@ class ChatBotHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              // زر الرجوع - تم تغيير الأيقونة لتناسب الاتجاه الإنجليزي LTR
               GlassBtn(
                 icon: Icons.arrow_back_rounded,
                 onTap: () => Navigator.pop(context),
@@ -54,7 +54,6 @@ class ChatBotHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              // زر إعادة ضبط المحادثة
               GlassBtn(
                 icon: Icons.refresh_rounded,
                 onTap: () => vm.clearChat(),
@@ -71,46 +70,51 @@ class ChatBotHeader extends StatelessWidget {
   }
 
   Widget _buildStatusPill(ChatBotProvider vm) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withAlpha(26),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withAlpha(50), width: 0.8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
+      decoration: BoxDecoration(
+        // ✅ شلنا الـ BackdropFilter وحطينا لون شفاف ثابت (أسرع بـ 100 مرة في الرندر)
+        color: Colors.white.withAlpha(40),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withAlpha(50), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ✅ الـ PulsingDot لوحدها هي اللي بتتحرك، مفيش Blur وراها يتقل السكرول
+          vm.isTyping
+              ? const PulsingDot()
+              : const _StaticOnlineDot(),
+          const SizedBox(width: 8),
+          Text(
+            vm.isTyping ? "Typing..." : "Online",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            // الترتيب الآن: النقطة ثم النص (من اليسار لليمين)
-            children: [
-              vm.isTyping
-                  ? const PulsingDot()
-                  : Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF6EFFD8),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: Color(0x886EFFD8), blurRadius: 5),
-                        ],
-                      ),
-                    ),
-              const SizedBox(width: 8),
-              Text(
-                vm.isTyping ? "Typing..." : "Online",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ],
+      ),
+    );
+  }
+}
+
+// ✅ فصلنا النقطة الثابتة في Widget مستقلة عشان الكود يبقى أنضف
+class _StaticOnlineDot extends StatelessWidget {
+  const _StaticOnlineDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 7,
+      height: 7,
+      decoration: const BoxDecoration(
+        color: Color(0xFF6EFFD8),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(color: Color(0x886EFFD8), blurRadius: 5),
+        ],
       ),
     );
   }

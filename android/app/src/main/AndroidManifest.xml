@@ -21,6 +21,10 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBjUkDs59q6R2-3Q3cLqt_sYHsZ6OMsX7U"/>
 
+        <meta-data
+            android:name="io.flutter.app.android.EnableImpeller"
+            android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

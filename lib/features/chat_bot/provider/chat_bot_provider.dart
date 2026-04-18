@@ -1,8 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/models/chat_bot_model.dart'; 
+import 'package:medinear_app/core/services/gemini_service.dart';
+import 'package:medinear_app/core/services/groq_service.dart'; // ✅ ضفنا جرّوك هنا
 
 class ChatBotProvider extends ChangeNotifier {
+  // ✅ عرفنا السيرفرين مع بعض عشان يشتغلوا كبدلاء لبعض
+  final GeminiService _geminiService = GeminiService(); 
+  final GroqService _groqService = GroqService(); 
+
   List<ChatMessage> _messages = [];
 
   bool _isTyping = false;
@@ -40,10 +46,11 @@ class ChatBotProvider extends ChangeNotifier {
     }
   }
 
-  void sendMessage(String text) {
+  // ✅ التعديل هنا فقط: دمجنا الذكاء الاصطناعي مع خطة بديلة (Fallback)
+  void sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
-    // إضافة رسالة المستخدم
+    // 1. إضافة رسالة المستخدم
     _messages.add(
       ChatMessage(
         id: DateTime.now().toString(),
@@ -53,42 +60,66 @@ class ChatBotProvider extends ChangeNotifier {
       ),
     );
 
-    _isTyping = true; // البدء في إظهار علامة الكتابة
+    _isTyping = true;
     notifyListeners();
 
-    // تأخير بسيط لمحاكاة تفكير البوت (1.5 ثانية)
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      String response = _analyzeMedicalInput(text);
-      
-      // إضافة رد البوت
-      _messages.add(
-        ChatMessage(
-          id: DateTime.now().toString(),
-          text: response,
-          isBot: true,
-          timestamp: DateTime.now(),
-        ),
-      );
-      
-      // ✅ التعديل هنا: علامة الكتابة بتفضل شغالة لوقت إضافي 
-      // بيتحسب بناءً على طول الرسالة (تقريباً 30-40 ملي ثانية لكل حرف)
-      // ده بيضمن إن العلامة ما تختفيش غير لما الأنميشن يخلص لآخر حرف.
-      int extraWait = response.length * 35; 
+    // 2. محاولة الرد من الأسئلة الثابتة أولاً
+    String response = _analyzeMedicalInput(text);
+    
+    // 3. لو الرد هو "الرد الافتراضي" (يعني مش فاهم)، يروح لـ الذكاء الاصطناعي
+    if (response.startsWith("Sorry, I didn't quite understand")) {
+      try {
+        // نجرب جيميناي الأول
+        response = await _geminiService.getResponse(text);
+        
+        // لو جيميناي عليه ضغط أو رجع إيرور، نحول الطلب لـ جروك فوراً
+        if (response.contains("خطأ") || 
+            response.contains("رفض") || 
+            response.contains("Unavailable") ||
+            response.contains("Error")) {
+          debugPrint("⚠️ جيميناي مشغول.. جاري التحويل لـ جروك...");
+          response = await _groqService.getResponse(text);
+        }
+      } catch (e) {
+        // لو حصل أي كراش في جيميناي، جروك يشيل الليلة
+        debugPrint("⚠️ كراش في جيميناي.. جاري التحويل لـ جروك...");
+        try {
+          response = await _groqService.getResponse(text);
+        } catch (e2) {
+          // لو النت فصل خالص والسيرفرين وقعوا، يرجع للرد الافتراضي
+          response = _analyzeMedicalInput(text); 
+        }
+      }
+    } else {
+      // لو السؤال موجود في القائمة الثابتة، بنعمل تأخير بسيط عشان نحاكي التفكير
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
 
-      Future.delayed(Duration(milliseconds: extraWait), () {
-        _isTyping = false; 
-        notifyListeners();
-      });
+    // 4. إضافة رد البوت (سواء ثابت أو من AI)
+    _messages.add(
+      ChatMessage(
+        id: DateTime.now().toString(),
+        text: response,
+        isBot: true,
+        timestamp: DateTime.now(),
+      ),
+    );
+    
+    // ✅ حساب وقت الانتظار لعلامة الكتابة حسب طول الرد (سرعناه عشان يواكب سرعة الكتابة الجديدة)
+    int extraWait = response.length * 12; 
 
+    Future.delayed(Duration(milliseconds: extraWait), () {
+      _isTyping = false; 
       notifyListeners();
     });
+
+    notifyListeners();
   }
 
-  // ✅ تحليل النصوص والردود (محفوظة بالكامل كما طلبت)
+  // ✅ الأسئلة والردود الثابتة (زي ما هي بالظبط)
   String _analyzeMedicalInput(String input) {
     input = input.toLowerCase().trim();
 
-    // 1. الترحيب
     if (input == 'hi' ||
         input == 'hey' ||
         input.startsWith('hi ') ||
@@ -97,7 +128,6 @@ class ChatBotProvider extends ChangeNotifier {
       return 'Welcome! I am your MidiNear assistant 💙\nHow can I guide you today?';
     }
 
-    // 2. دليل طلب الأدوية
     if (input.contains('medicine') ||
         input.contains('order') ||
         input.contains('guide') ||
@@ -105,14 +135,12 @@ class ChatBotProvider extends ChangeNotifier {
       return 'To complete your order easily, follow these steps:\n1. Use the Smart Search bar on the home screen.\n2. Select the required medicine and add it to your cart.\n3. Click "Checkout" to confirm the process.';
     }
 
-    // 3. تتبع الشحنة
     if (input.contains('track') ||
         input.contains('shipment') ||
         input.contains('status')) {
       return 'To follow up on your order:\n1. Open "My Orders" history.\n2. You will find shipment details and real-time status.';
     }
 
-    // 4. استشارة طبية
     if (input.contains('instant') ||
         input.contains('consultation') ||
         input.contains('doctor') ||
@@ -120,7 +148,6 @@ class ChatBotProvider extends ChangeNotifier {
       return 'To get a medical consultation:\n1. Go to the "Messages" tab.\n2. Choose the specialized doctor and start the conversation immediately.';
     }
 
-    // 5. البحث عن صيدلية
     if (input.contains('find') ||
         input.contains('pharmacy') ||
         input.contains('search') ||
@@ -128,7 +155,6 @@ class ChatBotProvider extends ChangeNotifier {
       return 'To find a pharmacy:\n1. Open the "Map" section.\n2. The nearest available pharmacies around you will appear.';
     }
 
-    // 6. الجدول الدوائي
     if (input.contains('medication') ||
         input.contains('schedule') ||
         input.contains('reminder') ||
@@ -136,14 +162,12 @@ class ChatBotProvider extends ChangeNotifier {
       return 'To set your medication times:\n1. Access the "Medicine Reminder" feature.\n2. Add the doses, and I will alert you at the scheduled time.';
     }
 
-    // 7. الحساب والمحفظة
     if (input.contains('account') ||
         input.contains('wallet') ||
         input.contains('pay')) {
       return 'To manage your account and payment:\n1. Open "Profile" to edit your data.\n2. You can pay via E-wallet or cards.';
     }
 
-    // 8. الرد الافتراضي
     return "Sorry, I didn't quite understand your inquiry.\nI am the MidiNear guide, does your question concern:\n- Medicine Order Guide\n- Track Shipment\n- Instant Consultation\n- Find a Pharmacy\n- Medication Schedule\n- Account & Wallet? 💙";
   }
 
