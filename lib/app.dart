@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/features/alarm/view_models/alarm_view_model.dart';
+import 'package:medinear_app/features/chat_bot/provider/chat_bot_provider.dart';
+import 'package:medinear_app/features/support/presentation/provider/support_provider.dart';
+import 'package:medinear_app/features/wallet/view_models/wallet_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -136,6 +140,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
         ChangeNotifierProvider<OrderProvider>(create: (_) => OrderProvider()),
         ChangeNotifierProvider<ChatsViewModel>(create: (_) => ChatsViewModel()),
+        ChangeNotifierProvider<ChatBotProvider>(create: (_) => ChatBotProvider()),
+        ChangeNotifierProvider<WalletViewModel>(create: (_) => WalletViewModel()),
+        ChangeNotifierProvider<AlarmViewModel>(create: (_) => AlarmViewModel()),
+        ChangeNotifierProvider<SupportProvider>(create: (_) => SupportProvider()),
       ],
 
       child: Builder(

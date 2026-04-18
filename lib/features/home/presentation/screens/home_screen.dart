@@ -705,6 +705,9 @@ class _AIChatFabState extends State<_AIChatFab>
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) => setState(() => _pressed = false),
       onTapCancel: () => setState(() => _pressed = false),
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.chatbot);
+      },
       child: AnimatedScale(
         scale: _pressed ? 0.92 : 1.0,
         duration: const Duration(milliseconds: 100),
@@ -728,7 +731,7 @@ class _AIChatFabState extends State<_AIChatFab>
                 ),
               ],
             ),
-            child: const Icon(
+            child:  Icon(
               Icons.smart_toy_rounded,
               color: Colors.white,
               size: 26,

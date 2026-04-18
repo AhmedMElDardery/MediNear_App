@@ -1,9 +1,11 @@
 import 'package:medinear_app/features/about_us/presentation/screens/about_support_screen.dart';
+import 'package:medinear_app/features/alarm/views/alarm_view.dart';
 import 'package:medinear_app/features/auth/presentation/login_screen.dart';
 import 'package:medinear_app/features/cart/presentation/screens/cart_pharmacies_screen.dart';
 import 'package:medinear_app/features/cart/presentation/screens/my_cart_screen.dart';
 import 'package:medinear_app/features/chat/views/chat_details_view.dart';
 import 'package:medinear_app/features/chat/views/chats_view.dart';
+import 'package:medinear_app/features/chat_bot/views/chat_bot_view.dart';
 
 import 'package:medinear_app/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:medinear_app/features/map/presentation/screens/map_screen.dart';
@@ -13,6 +15,8 @@ import 'package:medinear_app/features/onboarding/onboarding_screen.dart';
 import 'package:medinear_app/features/orders/presentation/screens/my_orders_screen.dart';
 import 'package:medinear_app/features/saved_items/presentation/screens/saved_items_screen.dart';
 import 'package:medinear_app/features/splash/splash_screen.dart';
+import 'package:medinear_app/features/support/presentation/screen/support_screen.dart';
+import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 
 class AppRoutes {
   static const splash = '/';
@@ -31,6 +35,13 @@ class AppRoutes {
   static const profile = '/profile';
   static const chats = '/chats';
   static const chatdetails = '/chatdetails';
+  static const chatbot = '/chatbot';
+  static const alarm = '/alarm';
+  static const wallet = '/wallet';
+  static const support = '/support';
+
+
+
 
   static final  routes = {
     splash: (_) => const SplashScreen(),
@@ -47,6 +58,10 @@ class AppRoutes {
     profile : (_) => const MainLayoutScreen(), 
     chats : (_) => const ChatsView(),
     chatdetails : (_) => const ChatDetailsView(),
+    chatbot : (_) => const ChatBotView(),
+    alarm : (_) => const AlarmView(),
+    wallet : (_) => const WalletView(),
+    support : (_) => const SupportScreen(),
 
     
 

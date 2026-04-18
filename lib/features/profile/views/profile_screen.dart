@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medinear_app/features/alarm/views/alarm_view.dart';
+import 'package:medinear_app/features/support/presentation/screen/support_screen.dart';
+import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 import 'package:provider/provider.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 import '../view_models/profile_provider.dart';
@@ -339,21 +342,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             icon: Icons.assignment,
                             onTap: () => _navigateTo(const MyOrdersScreen()))),
                     const SizedBox(width: 15),
-                    const Expanded(
+                     Expanded(
                         child: FeatureCard(
-                            title: 'Packet', icon: Icons.inventory_2_rounded)),
+                            title: 'Packet', 
+                            icon: Icons.inventory_2_rounded, 
+                            onTap: () => _navigateTo(const WalletView()),
+                            )),
                   ],
                 ),
                 const SizedBox(height: 15),
                 Row(
-                  children: const [
+                  children:  [
                     Expanded(
                         child: FeatureCard(
                             title: 'Family', icon: Icons.family_restroom)),
                     SizedBox(width: 15),
                     Expanded(
                         child: FeatureCard(
-                            title: 'Reminder', icon: Icons.access_alarm)),
+                            title: 'Reminder', 
+                            icon: Icons.access_alarm,
+                            onTap: () => _navigateTo(const AlarmView()),
+                            )),
                   ],
                 ),
                 const SizedBox(height: 25),
@@ -481,9 +490,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    const Expanded(
+                     Expanded(
                         child: SmallCard(
-                            title: 'Support', icon: Icons.headset_mic)),
+                            title: 'Support', icon: Icons.headset_mic,
+                            onTap: () => _navigateTo(const SupportScreen())
+                            )),
                     const SizedBox(width: 15),
                     Expanded(
                         child: SmallCard(
