@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  'Medinear',
+                  'MediNear Pharmacies',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: isDark ? Colors.white : AppColors.primaryLight,
                     fontSize: 22,
