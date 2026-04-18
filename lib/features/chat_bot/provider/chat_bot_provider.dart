@@ -5,7 +5,7 @@ import 'package:medinear_app/core/services/gemini_service.dart';
 import 'package:medinear_app/core/services/groq_service.dart'; // ✅ ضفنا جرّوك هنا
 
 class ChatBotProvider extends ChangeNotifier {
-  // ✅ عرفنا السيرفرين مع بعض عشان يشتغلوا كبدلاء لبعض
+  // عرفنا السيرفرين مع بعض عشان يشتغلوا كبدلاء لبعض
   final GeminiService _geminiService = GeminiService(); 
   final GroqService _groqService = GroqService(); 
 
