@@ -212,6 +212,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                                   pharmacyName: pharmacy.name,
                                   doctorName: pharmacy
                                       .name, // زي ما هي مكتوبة عندك في الكود
+                                  pharmacyImage: pharmacy.image,
                                 ),
                               ),
                             ),

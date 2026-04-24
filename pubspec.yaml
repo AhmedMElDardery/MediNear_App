@@ -53,6 +53,7 @@ dependencies:
   url_launcher: ^6.3.2
   onesignal_flutter: ^5.4.1
   speech_to_text: ^7.3.0
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

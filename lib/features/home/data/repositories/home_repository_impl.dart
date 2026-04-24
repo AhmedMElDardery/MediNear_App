@@ -23,17 +23,27 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<PharmacyEntity>> getNearbyPharmacies(double lat, double lng) async {
     final data = await remote.getNearbyPharmacies(lat, lng);
-    return data.map((e) => PharmacyEntity(
-      id: e["id"]?.toString() ?? '',           // ✅ int → String
-      name: e["pharmacy_name"]?.toString() ?? 'Unknown',
-      image: e["image"]?.toString() ?? '',
-      address: e['address']?.toString() ?? '',
-      phone: e['phone']?.toString(),
-      workingHours: e['working_hours']?.toString(),
-      distance: e['distance'] != null
-          ? "${double.tryParse(e['distance'].toString())?.toStringAsFixed(2) ?? e['distance']} km"
-          : null,
-    )).toList();
+    return data.map((e) {
+      final img = e["logo"]?.toString() ?? 
+                  e["image"]?.toString() ?? 
+                  e["pharmacy_logo"]?.toString() ?? 
+                  e["pharmacy_image"]?.toString();
+      final fullImg = (img != null && img.isNotEmpty)
+          ? (img.startsWith('http') ? img : 'https://medinear-eg.com/storage/$img')
+          : '';
+
+      return PharmacyEntity(
+        id: e["id"]?.toString() ?? '',
+        name: e["pharmacy_name"]?.toString() ?? 'Unknown',
+        image: fullImg,
+        address: e['address']?.toString() ?? '',
+        phone: e['phone']?.toString(),
+        workingHours: e['working_hours']?.toString(),
+        distance: e['distance'] != null
+            ? "${double.tryParse(e['distance'].toString())?.toStringAsFixed(2) ?? e['distance']} km"
+            : null,
+      );
+    }).toList();
   }
 
   @override

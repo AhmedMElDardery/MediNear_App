@@ -54,12 +54,17 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // ⚡️ ابدأ جلب الإعلانات فوراً بالتوازي وماتستناش اللوكيشن!
+      Future<void> fetchAds = repository.getAds()
+          .then((value) => ads = value)
+          .catchError((_) => ads = []);
+
       // 1️⃣ جيب اللوكيشن
       currentLocation = await LocationService.getCurrentLocation();
 
-      // 🆕 ابعت اللوكيشن للباك إند الأول عشان الداتا بيز تتحدث
+      // 🆕 ابعت اللوكيشن للباك إند (شغله في الخلفية عشان ميعطلش الشاشة)
       if (currentLocation != null) {
-        await _sendLocationToServer(currentLocation!.latitude, currentLocation!.longitude);
+        _sendLocationToServer(currentLocation!.latitude, currentLocation!.longitude);
       }
 
       // 2️⃣ حوّل الإحداثيات لاسم مكان مقروء بدون ما نأخر باقي الصفحة
@@ -75,8 +80,6 @@ class HomeProvider extends ChangeNotifier {
         });
       }
 
-      // 3️⃣ جيب الداتا من الباك إند بشكل متوازي (Parallel) عشان نسرع التحميل
-      Future<void> fetchAds = repository.getAds().then((value) => ads = value).catchError((_) => ads = []);
       Future<void> fetchPharmacies = Future.value();
       Future<void> fetchMedicines = Future.value();
 
@@ -95,6 +98,7 @@ class HomeProvider extends ChangeNotifier {
         ).then((value) => medicines = value);
       }
 
+      // استنى الإعلانات والصيدليات والأدوية تخلص
       await Future.wait([fetchAds, fetchPharmacies, fetchMedicines]);
 
       isLoading = false;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/pharmacy_entity.dart';
 
 class PharmacyCard extends StatefulWidget {
@@ -282,10 +284,18 @@ class _PharmacyAvatar extends StatelessWidget {
       ),
       child: ClipOval(
         child: imageUrl.isNotEmpty
-            ? Image.network(
-                imageUrl,
+            ? CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _placeholder(),
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
+                memCacheWidth: 150,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(color: Colors.white),
+                ),
+                errorWidget: (_, __, ___) => _placeholder(),
               )
             : _placeholder(),
       ),

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/ad_entity.dart';
 
 class AdsSlider extends StatefulWidget {
@@ -119,10 +121,18 @@ class _AdsSliderState extends State<AdsSlider> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
-                          ad.imageUrl,
+                        CachedNetworkImage(
+                          imageUrl: ad.imageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                          memCacheWidth: 800,
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                            highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                            child: Container(color: Colors.white),
+                          ),
+                          errorWidget: (context, url, error) => Container(
                             decoration: const BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [Color(0xFF00965E), Color(0xFF00C47A)],

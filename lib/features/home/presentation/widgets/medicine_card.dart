@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/medicine_entity.dart';
 
 class MedicineCard extends StatefulWidget {
@@ -77,12 +79,20 @@ class _MedicineCardState extends State<MedicineCard>
                       color: isDark ? const Color(0xFF121212) : const Color(0xFFF0FBF5),
                       child: widget.medicine.imageUrl.isNotEmpty
                           ? (widget.medicine.imageUrl.startsWith('http') 
-                              ? Image.network(
-                                  widget.medicine.imageUrl,
+                              ? CachedNetworkImage(
+                                  imageUrl: widget.medicine.imageUrl,
                                   height: 105,
                                   width: double.infinity,
                                   fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) =>
+                                  fadeInDuration: Duration.zero,
+                                  fadeOutDuration: Duration.zero,
+                                  memCacheWidth: 200,
+                                  placeholder: (context, url) => Shimmer.fromColors(
+                                    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                                    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                                    child: Container(color: Colors.white),
+                                  ),
+                                  errorWidget: (context, url, error) =>
                                       const Center(
                                     child: Icon(
                                       Icons.medication_rounded,

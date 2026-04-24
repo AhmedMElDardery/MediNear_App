@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../manager/pharmacy_provider.dart';
 import '../widgets/pharmacy_cards.dart';
@@ -10,12 +11,14 @@ class PharmacyScreen extends StatefulWidget {
   final String pharmacyId;    // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
   final String pharmacyName;
   final String doctorName;
+  final String? pharmacyImage;
 
   const PharmacyScreen({
     super.key,
     required this.pharmacyId,   // 🚀 خليناه مطلوب
     required this.pharmacyName,
     this.doctorName = 'Al-Noor Pharmacy',
+    this.pharmacyImage,
   });
 //...
 
@@ -238,8 +241,21 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.local_pharmacy_rounded,
-                        size: 42, color: _green),
+                    child: ClipOval(
+                      child: widget.pharmacyImage != null && widget.pharmacyImage!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: widget.pharmacyImage!,
+                              fit: BoxFit.cover,
+                              fadeInDuration: Duration.zero,
+                              fadeOutDuration: Duration.zero,
+                              memCacheWidth: 160,
+                              placeholder: (context, url) =>
+                                  const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
+                            )
+                          : const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
