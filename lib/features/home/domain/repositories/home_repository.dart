@@ -1,6 +1,7 @@
 import 'package:medinear_app/features/home/domain/entities/ad_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/pharmacy_entity.dart';
+import 'package:medinear_app/features/home/domain/entities/category_entity.dart';
 
 abstract class HomeRepository {
   Future<List<AdEntity>> getAds();
@@ -10,4 +11,6 @@ abstract class HomeRepository {
 
   // 🚀 نفس الكلام للأدوية عشان يجيب المتاح حوالينا بس
   Future<List<MedicineEntity>> getNearbyMedicines(double lat, double lng);
+
+  Future<List<CategoryEntity>> getCategories(int page, int perPage);
 }

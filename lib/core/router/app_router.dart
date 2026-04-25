@@ -12,6 +12,9 @@ import 'package:medinear_app/features/chat_bot/views/chat_bot_view.dart';
 
 import 'package:medinear_app/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:medinear_app/features/map/presentation/screens/map_screen.dart';
+import 'package:medinear_app/features/home/presentation/screens/categories_screen.dart';
+import 'package:medinear_app/features/pharmacy/presentation/screens/medicine_details_screen.dart';
+import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/features/notifications/presentation/pages/notifications_screen.dart';
 
 import 'package:medinear_app/features/onboarding/onboarding_screen.dart';
@@ -54,6 +57,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.saveditems,
       builder: (context, state) => const SavedItemsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.categories,
+      builder: (context, state) => const CategoriesScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.medicineDetails,
+      builder: (context, state) {
+        final medicine = state.extra as MedicineEntity;
+        return MedicineDetailsScreen(medicine: medicine);
+      },
     ),
     GoRoute(
       path: '${AppRoutes.mycart}/:pharmacyId/:pharmacyName',

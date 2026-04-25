@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:medinear_app/features/home/domain/entities/ad_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/pharmacy_entity.dart';
+import 'package:medinear_app/features/home/domain/entities/category_entity.dart';
 import 'package:medinear_app/features/home/domain/repositories/home_repository.dart';
 import 'package:medinear_app/core/services/location_service.dart';
 import 'package:medinear_app/core/services/token_storage.dart';
@@ -17,6 +18,7 @@ class HomeProvider extends ChangeNotifier {
   List<AdEntity> ads = [];
   List<PharmacyEntity> pharmacies = [];
   List<MedicineEntity> medicines = [];
+  List<CategoryEntity> categories = [];
 
   // 🔍 Search
   String searchQuery = '';
@@ -57,11 +59,16 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // ⚡️ ابدأ جلب الإعلانات فوراً بالتوازي وماتستناش اللوكيشن!
+      // ⚡️ ابدأ جلب الإعلانات والأقسام فوراً بالتوازي وماتستناش اللوكيشن!
       Future<void> fetchAds = repository
           .getAds()
           .then((value) => ads = value)
           .catchError((_) => ads = []);
+          
+      Future<void> fetchCats = repository
+          .getCategories(1, 100) // 🚀 Fetch up to 100 categories (ALL)
+          .then((value) => categories = value)
+          .catchError((_) => categories = []);
 
       // 1️⃣ جيب اللوكيشن
       currentLocation = await LocationService.getCurrentLocation();
@@ -107,8 +114,8 @@ class HomeProvider extends ChangeNotifier {
             .then((value) => medicines = value);
       }
 
-      // استنى الإعلانات والصيدليات والأدوية تخلص
-      await Future.wait([fetchAds, fetchPharmacies, fetchMedicines]);
+      // استنى الإعلانات والصيدليات والأدوية والأقسام تخلص
+      await Future.wait([fetchAds, fetchCats, fetchPharmacies, fetchMedicines]);
 
       isLoading = false;
       notifyListeners();

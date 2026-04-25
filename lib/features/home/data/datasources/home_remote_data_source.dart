@@ -7,4 +7,6 @@ abstract class HomeRemoteDataSource {
 
   // 🚀 ونفس الكلام للأدوية عشان ترجع المتاحة في نفس المنطقة بس
   Future<List<Map<String, dynamic>>> getNearbyMedicines(double lat, double lng);
+
+  Future<List<Map<String, dynamic>>> getCategories(int page, int perPage);
 }
