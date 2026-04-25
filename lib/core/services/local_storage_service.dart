@@ -5,9 +5,10 @@ class LocalStorageService {
 
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
-
   }
+
   static bool isFirstTime() => _prefs.getBool("first_time") ?? true;
 
-  static Future setFirstTimeFalse() async => _prefs.setBool("first_time", false);
+  static Future setFirstTimeFalse() async =>
+      _prefs.setBool("first_time", false);
 }

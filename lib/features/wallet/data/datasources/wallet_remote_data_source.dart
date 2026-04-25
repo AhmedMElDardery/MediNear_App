@@ -7,9 +7,9 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
   @override
   Future<List<dynamic>> fetchWalletData() async {
     // محاكاة لطلب البيانات من الخادم عبر إطار عمل مثل Dio أو Http
-    await Future.delayed(const Duration(seconds: 1)); 
-    
+    await Future.delayed(const Duration(seconds: 1));
+
     // إرجاع قائمة فارغة مؤقتاً لحين ربط الـ API الفعلي
-    return []; 
+    return [];
   }
 }

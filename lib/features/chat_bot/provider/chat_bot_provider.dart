@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../data/models/chat_bot_model.dart'; 
+import '../data/models/chat_bot_model.dart';
 import 'package:medinear_app/core/services/gemini_service.dart';
 import 'package:medinear_app/core/services/groq_service.dart'; // ✅ ضفنا جرّوك هنا
 
 class ChatBotProvider extends ChangeNotifier {
   // عرفنا السيرفرين مع بعض عشان يشتغلوا كبدلاء لبعض
-  final GeminiService _geminiService = GeminiService(); 
-  final GroqService _groqService = GroqService(); 
+  final GeminiService _geminiService = GeminiService();
+  final GroqService _groqService = GroqService();
 
   List<ChatMessage> _messages = [];
 
@@ -32,9 +32,8 @@ class ChatBotProvider extends ChangeNotifier {
   void addReaction(String messageId, String emoji) {
     final index = _messages.indexWhere((m) => m.id == messageId);
     if (index != -1) {
-      _messages[index].reaction = (_messages[index].reaction == emoji)
-          ? null
-          : emoji;
+      _messages[index].reaction =
+          (_messages[index].reaction == emoji) ? null : emoji;
       notifyListeners();
     }
   }
@@ -65,16 +64,16 @@ class ChatBotProvider extends ChangeNotifier {
 
     // 2. محاولة الرد من الأسئلة الثابتة أولاً
     String response = _analyzeMedicalInput(text);
-    
+
     // 3. لو الرد هو "الرد الافتراضي" (يعني مش فاهم)، يروح لـ الذكاء الاصطناعي
     if (response.startsWith("Sorry, I didn't quite understand")) {
       try {
         // نجرب جيميناي الأول
         response = await _geminiService.getResponse(text);
-        
+
         // لو جيميناي عليه ضغط أو رجع إيرور، نحول الطلب لـ جروك فوراً
-        if (response.contains("خطأ") || 
-            response.contains("رفض") || 
+        if (response.contains("خطأ") ||
+            response.contains("رفض") ||
             response.contains("Unavailable") ||
             response.contains("Error")) {
           debugPrint("⚠️ جيميناي مشغول.. جاري التحويل لـ جروك...");
@@ -87,7 +86,7 @@ class ChatBotProvider extends ChangeNotifier {
           response = await _groqService.getResponse(text);
         } catch (e2) {
           // لو النت فصل خالص والسيرفرين وقعوا، يرجع للرد الافتراضي
-          response = _analyzeMedicalInput(text); 
+          response = _analyzeMedicalInput(text);
         }
       }
     } else {
@@ -104,12 +103,12 @@ class ChatBotProvider extends ChangeNotifier {
         timestamp: DateTime.now(),
       ),
     );
-    
+
     // ✅ حساب وقت الانتظار لعلامة الكتابة حسب طول الرد (سرعناه عشان يواكب سرعة الكتابة الجديدة)
-    int extraWait = response.length * 12; 
+    int extraWait = response.length * 12;
 
     Future.delayed(Duration(milliseconds: extraWait), () {
-      _isTyping = false; 
+      _isTyping = false;
       notifyListeners();
     });
 

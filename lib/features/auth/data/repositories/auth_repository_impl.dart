@@ -10,7 +10,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final TokenStorage tokenStorage;
   final UserStorage userStorage;
 
-  AuthRepositoryImpl(this.remoteDataSource, this.tokenStorage, this.userStorage);
+  AuthRepositoryImpl(
+      this.remoteDataSource, this.tokenStorage, this.userStorage);
 
   @override
   Future<UserEntity?> loginWithGoogle() async {

@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:flutter/material.dart';
 
 // class OnboardingPage extends StatelessWidget {
@@ -19,9 +20,9 @@
 //       child: Column(
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
-            
+
 //           Text(
-//             title, 
+//             title,
 //             textAlign: TextAlign.center,
 //             style: const TextStyle(
 //               fontSize: 22,
@@ -32,18 +33,18 @@
 //           Image.asset(image, height: 250,),
 //           const SizedBox(height: 30,),
 //           Text(
-//             desc, 
+//             desc,
 //             textAlign: TextAlign.center,
 //           )
 
 //         ],
-//       ), 
+//       ),
 //     );
 //   }
 // }
 import 'package:flutter/material.dart';
 
-class OnboardingPage extends StatefulWidget {
+class OnboardingPage extends ConsumerStatefulWidget {
   final String image;
   final String title;
   final String desc;
@@ -56,12 +57,11 @@ class OnboardingPage extends StatefulWidget {
   });
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage>
+class _OnboardingPageState extends ConsumerState<OnboardingPage>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -107,14 +107,11 @@ class _OnboardingPageState extends State<OnboardingPage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               Image.asset(
                 widget.image,
                 height: 250,
               ),
-
               const SizedBox(height: 30),
-
               Text(
                 widget.title,
                 textAlign: TextAlign.center,
@@ -123,9 +120,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 15),
-
               Text(
                 widget.desc,
                 textAlign: TextAlign.center,

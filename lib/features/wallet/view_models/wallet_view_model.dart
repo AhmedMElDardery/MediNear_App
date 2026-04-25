@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medinear_app/features/medication/data/models/medication_model.dart';
 
-
 class WalletViewModel extends ChangeNotifier {
   // القائمة الافتراضية
   List<MedicationModel> medications = [
@@ -25,13 +24,13 @@ class WalletViewModel extends ChangeNotifier {
   // وظيفة تحديث الفلتر
   void updateFilter(String filter) {
     selectedFilter = filter;
-    notifyListeners(); 
+    notifyListeners();
   }
 
   // وظيفة حذف الدواء
   void deleteMedication(String id) {
     medications.removeWhere((element) => element.id == id);
-    notifyListeners(); 
+    notifyListeners();
   }
 
   // الوظيفة الجديدة: إضافة دواء للقائمة

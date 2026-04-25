@@ -4,7 +4,7 @@ abstract class AuthRepository {
   Future<UserEntity?> loginWithGoogle();
   // 🚀 إضافة الفيسبوك لطبقة الـ Domain
   Future<UserEntity?> loginWithFacebook();
-  
+
   // 🚀 إضافة الخروج (جديدة)
   Future<void> logout();
 }

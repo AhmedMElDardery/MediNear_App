@@ -1,14 +1,16 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:medinear_app/core/routes/routes.dart';
-import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:medinear_app/core/theme/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -24,7 +26,8 @@ class LoginScreen extends StatelessWidget {
             // 🚀 2. المحتوى الأساسي
             SingleChildScrollView(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+                height: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top,
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,21 +40,26 @@ class LoginScreen extends StatelessWidget {
                       height: 130,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isDark ? Colors.white : Colors.white, // To keep the white background for logo image
-                        boxShadow: isDark ? [] : [
-                          BoxShadow(
-                            color: Colors.green.withValues(alpha: 0.15),
-                            blurRadius: 30,
-                            spreadRadius: 10,
-                            offset: const Offset(0, 0),
-                          ),
-                          const BoxShadow(
-                            color: Colors.white,
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                            offset: Offset(-2, -2),
-                          ),
-                        ],
+                        color: isDark
+                            ? Colors.white
+                            : Colors
+                                .white, // To keep the white background for logo image
+                        boxShadow: isDark
+                            ? []
+                            : [
+                                BoxShadow(
+                                  color: Colors.green.withValues(alpha: 0.15),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                  offset: const Offset(0, 0),
+                                ),
+                                const BoxShadow(
+                                  color: Colors.white,
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                  offset: Offset(-2, -2),
+                                ),
+                              ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
@@ -95,7 +103,9 @@ class LoginScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                       ),
                     ),
 
@@ -111,23 +121,27 @@ class LoginScreen extends StatelessWidget {
                           height: 24,
                           width: 24,
                           errorBuilder: (context, error, stackTrace) {
-                            return const FaIcon(FontAwesomeIcons.google, color: Color(0xFFDB4437), size: 22);
+                            return const FaIcon(FontAwesomeIcons.google,
+                                color: Color(0xFFDB4437), size: 22);
                           },
                         ),
-                        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                        backgroundColor:
+                            isDark ? const Color(0xFF1E1E1E) : Colors.white,
                         textColor: isDark ? Colors.white : Colors.black87,
-                        shadowColor: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.08),
+                        shadowColor: isDark
+                            ? Colors.black26
+                            : Colors.black.withValues(alpha: 0.08),
                         isDark: isDark,
                         onPressed: () async {
-                          final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                          final success = await authProvider.loginWithGoogle();
+                          final provider = ref.read(authProvider);
+                          final success = await provider.loginWithGoogle();
 
                           if (success) {
                             if (!context.mounted) return;
-                            Navigator.pushReplacementNamed(context, AppRoutes.home);
-                          } else if (authProvider.errorMessage != null) {
+                            context.go(AppRoutes.home);
+                          } else if (provider.errorMessage != null) {
                             if (!context.mounted) return;
-                            _showTopError(context, authProvider.errorMessage!);
+                            _showTopError(context, provider.errorMessage!);
                           }
                         },
                       ),
@@ -140,12 +154,27 @@ class LoginScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 60),
                       child: Row(
                         children: [
-                          Expanded(child: Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade300, thickness: 1)),
+                          Expanded(
+                              child: Divider(
+                                  color: isDark
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade300,
+                                  thickness: 1)),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Text("or", style: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey, fontSize: 14)),
+                            child: Text("or",
+                                style: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey.shade500
+                                        : Colors.grey,
+                                    fontSize: 14)),
                           ),
-                          Expanded(child: Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade300, thickness: 1)),
+                          Expanded(
+                              child: Divider(
+                                  color: isDark
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade300,
+                                  thickness: 1)),
                         ],
                       ),
                     ),
@@ -157,21 +186,23 @@ class LoginScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 35),
                       child: _buildLoginButton(
                         text: "Log in with Facebook",
-                        iconWidget: const FaIcon(FontAwesomeIcons.facebookF, color: Colors.white, size: 22),
+                        iconWidget: const FaIcon(FontAwesomeIcons.facebookF,
+                            color: Colors.white, size: 22),
                         backgroundColor: const Color(0xFF3B5998),
                         textColor: Colors.white,
-                        shadowColor: const Color(0xFF3B5998).withValues(alpha: 0.3),
+                        shadowColor:
+                            const Color(0xFF3B5998).withValues(alpha: 0.3),
                         isDark: isDark,
                         onPressed: () async {
-                          final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                          final success = await authProvider.loginWithFacebook();
+                          final provider = ref.read(authProvider);
+                          final success = await provider.loginWithFacebook();
 
                           if (success) {
                             if (!context.mounted) return;
-                            Navigator.pushReplacementNamed(context, AppRoutes.home);
-                          } else if (authProvider.errorMessage != null) {
+                            context.go(AppRoutes.home);
+                          } else if (provider.errorMessage != null) {
                             if (!context.mounted) return;
-                            _showTopError(context, authProvider.errorMessage!);
+                            _showTopError(context, provider.errorMessage!);
                           }
                         },
                       ),
@@ -184,7 +215,7 @@ class LoginScreen extends StatelessWidget {
             ),
 
             // 🚀 3. شاشة التحميل
-            if (Provider.of<AuthProvider>(context).isLoading)
+            if (ref.watch(authProvider).isLoading)
               Container(
                 color: Colors.black.withValues(alpha: 0.3),
                 child: const Center(
@@ -252,7 +283,6 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 15),
-
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -280,12 +310,12 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     GestureDetector(
                       onTap: () {
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       },
-                      child: const Icon(Icons.close_rounded, color: Colors.white60, size: 20),
+                      child: const Icon(Icons.close_rounded,
+                          color: Colors.white60, size: 20),
                     )
                   ],
                 ),
@@ -318,7 +348,8 @@ class LoginScreen extends StatelessWidget {
     final List<Widget> iconWidgets = [
       FaIcon(FontAwesomeIcons.pills, color: Colors.green[200], size: 30),
       FaIcon(FontAwesomeIcons.capsules, color: Colors.green[200], size: 30),
-      FaIcon(FontAwesomeIcons.prescriptionBottle, color: Colors.green[200], size: 30),
+      FaIcon(FontAwesomeIcons.prescriptionBottle,
+          color: Colors.green[200], size: 30),
       FaIcon(FontAwesomeIcons.syringe, color: Colors.green[200], size: 30),
       FaIcon(FontAwesomeIcons.stethoscope, color: Colors.green[200], size: 30),
       Icon(Icons.medical_services_outlined, color: Colors.green[200], size: 30),
@@ -376,8 +407,11 @@ class LoginScreen extends StatelessWidget {
               offset: const Offset(0, 5),
             ),
           ],
-          border: (backgroundColor == Colors.white || backgroundColor == const Color(0xFF1E1E1E))
-              ? Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200, width: 1)
+          border: (backgroundColor == Colors.white ||
+                  backgroundColor == const Color(0xFF1E1E1E))
+              ? Border.all(
+                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                  width: 1)
               : null,
         ),
         child: Row(

@@ -23,8 +23,12 @@ class UserModel extends UserEntity {
       imageUrl: json['photo_url'],
       // جلب الموقع أو استخدام null إذا لم يكن موجوداً
       location: json['location'] ?? json['address'] ?? json['city'],
-      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      latitude: json['latitude'] != null
+          ? double.tryParse(json['latitude'].toString())
+          : null,
+      longitude: json['longitude'] != null
+          ? double.tryParse(json['longitude'].toString())
+          : null,
       role: json['role'],
       token: token,
     );

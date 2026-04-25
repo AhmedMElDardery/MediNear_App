@@ -17,12 +17,15 @@ class CartProvider extends ChangeNotifier {
 
   // 🚀 2. جلب منتجات صيدلية معينة
   List<CartItemModel> getItemsByPharmacy(String pharmacyName) {
-    return _cartItems.where((item) => item.pharmacyName == pharmacyName).toList();
+    return _cartItems
+        .where((item) => item.pharmacyName == pharmacyName)
+        .toList();
   }
 
   // 🚀 3. حساب التوتال لصيدلية معينة
   double getPharmacyTotal(String pharmacyName) {
-    return getItemsByPharmacy(pharmacyName).fold(0, (sum, item) => sum + item.totalPrice);
+    return getItemsByPharmacy(pharmacyName)
+        .fold(0, (sum, item) => sum + item.totalPrice);
   }
 
   // 🚀 4. مسح منتجات صيدلية معينة فقط (بعد الدفع)
@@ -30,9 +33,10 @@ class CartProvider extends ChangeNotifier {
     _cartItems.removeWhere((item) => item.pharmacyName == pharmacyName);
     notifyListeners();
   }
-  
+
   // الحساب الكلي لكل السلة (لو احتاجناه)
-  double get grandTotal => _cartItems.fold(0, (sum, item) => sum + item.totalPrice);
+  double get grandTotal =>
+      _cartItems.fold(0, (sum, item) => sum + item.totalPrice);
 
   Future<void> loadCartData() async {
     if (_cartItems.isNotEmpty) return;
@@ -68,7 +72,7 @@ class CartProvider extends ChangeNotifier {
     _cartItems.remove(item);
     notifyListeners();
   }
-  
+
   void clearCart() {
     _cartItems.clear();
     notifyListeners();

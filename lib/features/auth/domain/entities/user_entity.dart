@@ -4,8 +4,8 @@ class UserEntity {
   final String? email;
   final String? phone;
   final String? imageUrl;
-  final String? location;  // تمت إضافة العنوان / الموقع
-  final double? latitude;  // تمت إضافة خط العرض
+  final String? location; // تمت إضافة العنوان / الموقع
+  final double? latitude; // تمت إضافة خط العرض
   final double? longitude; // تمت إضافة خط الطول
   final String role;
   final String token;

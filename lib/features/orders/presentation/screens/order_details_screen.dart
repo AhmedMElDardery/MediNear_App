@@ -18,7 +18,8 @@ class OrderDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("Orders Details", style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text("Orders Details",
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -32,7 +33,11 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 25),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text("Order Items", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+              child: Text("Order Items",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: textColor)),
             ),
             const SizedBox(height: 15),
             ListView.separated(
@@ -41,7 +46,8 @@ class OrderDetailsScreen extends StatelessWidget {
               itemCount: order.items.length, // بنستخدم الطول الحقيقي
               separatorBuilder: (context, index) => const SizedBox(height: 15),
               itemBuilder: (context, index) {
-                return OrderItemCard(item: order.items[index]); // بنبعت الصنف الحقيقي
+                return OrderItemCard(
+                    item: order.items[index]); // بنبعت الصنف الحقيقي
               },
             ),
             const SizedBox(height: 25),
@@ -50,11 +56,18 @@ class OrderDetailsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: cardColor,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 5)
+                ],
               ),
               child: Text(
                 "Total Price : ${order.total} EGP", // السعر المحسوب
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: textColor),
               ),
             ),
             const SizedBox(height: 25),

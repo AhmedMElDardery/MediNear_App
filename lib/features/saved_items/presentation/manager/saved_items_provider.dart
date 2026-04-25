@@ -26,9 +26,9 @@ class SavedItemsProvider extends ChangeNotifier {
   // 🚀 جلب البيانات من السيرفر
   // 🚀 جلب البيانات من السيرفر
   Future<void> fetchSavedItems({bool silent = false}) async {
-    // ❌ مسحنا السطر اللي كان بيعمل "بلوك" للـ API 
+    // ❌ مسحنا السطر اللي كان بيعمل "بلوك" للـ API
     // وبكده كل ما تفتح الصفحة هيكلم السيرفر ويجيب أحدث حاجة
-    
+
     if (!silent) {
       _isLoading = true;
       notifyListeners();
@@ -38,9 +38,11 @@ class SavedItemsProvider extends ChangeNotifier {
       final data = await _dataSource.getSavedItems();
       _allPharmacies = data['pharmacies'] as List<SavedPharmacyModel>;
       _allMedications = data['medications'] as List<SavedMedicationModel>;
-      
-      for (var p in _allPharmacies) { p.isSaved = true; }
-      
+
+      for (var p in _allPharmacies) {
+        p.isSaved = true;
+      }
+
       _applyFilters();
     } catch (e) {
       debugPrint("Error fetching saved items: $e");
@@ -64,11 +66,13 @@ class SavedItemsProvider extends ChangeNotifier {
 
   void _applyFilters() {
     _filteredPharmacies = _allPharmacies.where((item) {
-      return item.name.toLowerCase().contains(_currentQuery.toLowerCase()) && item.isSaved;
+      return item.name.toLowerCase().contains(_currentQuery.toLowerCase()) &&
+          item.isSaved;
     }).toList();
 
     _filteredMedications = _allMedications.where((item) {
-      return item.name.toLowerCase().contains(_currentQuery.toLowerCase()) && item.isSaved;
+      return item.name.toLowerCase().contains(_currentQuery.toLowerCase()) &&
+          item.isSaved;
     }).toList();
 
     if (_isAscending) {
@@ -78,7 +82,7 @@ class SavedItemsProvider extends ChangeNotifier {
       _filteredPharmacies.sort((a, b) => b.name.compareTo(a.name));
       _filteredMedications.sort((a, b) => b.name.compareTo(a.name));
     }
-    
+
     notifyListeners();
   }
 
@@ -169,6 +173,6 @@ class SavedItemsProvider extends ChangeNotifier {
     } else {
       _allPharmacies.add(newPharmacy);
     }
-    _applyFilters(); 
+    _applyFilters();
   }
 }

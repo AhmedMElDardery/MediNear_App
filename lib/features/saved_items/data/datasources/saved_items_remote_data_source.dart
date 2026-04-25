@@ -10,7 +10,6 @@ class SavedItemsRemoteDataSource {
   Future<Map<String, List<dynamic>>> getSavedItems() async {
     try {
       final token = await tokenStorage.getToken();
-      
       // 🚀 إرسال طلبين في نفس الوقت عشان السرعة
       final responses = await Future.wait([
         dio.get(
@@ -124,15 +123,15 @@ class SavedItemsRemoteDataSource {
         }),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final isSuccess = response.data['success'] ?? response.data['status'] ?? true;
+        final isSuccess =
+            response.data['success'] ?? response.data['status'] ?? true;
         return isSuccess == true;
       }
       return false;
     } catch (e) {
-      return false; 
+      return false;
     }
   }
-
   // 3. إلغاء/إعادة حفظ الدواء (POST)
   Future<dynamic> toggleSaveMedicine(String medicineId, String pharmacyId) async {
     try {

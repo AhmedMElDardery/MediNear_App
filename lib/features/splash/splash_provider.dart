@@ -1,4 +1,4 @@
-
+import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/routes/routes.dart';
@@ -11,27 +11,25 @@ class SplashProvider extends ChangeNotifier {
   SplashProvider(this.storage);
 
   Future<void> checkAppState(BuildContext context) async {
-    print("Checking app state");
+    debugPrint("Checking app state");
     bool isFirstTime = LocalStorageService.isFirstTime();
-    String? token = await storage.getToken(); 
+    String? token = await storage.getToken();
 
     await Future.delayed(const Duration(seconds: 2));
 
-    //is first  
-    if (isFirstTime  ){
-      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+    //is first
+    if (isFirstTime) {
+      context.go(AppRoutes.onboarding);
       return;
     }
 
     // token => home
-    if (token != null && token.isNotEmpty){
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    if (token != null && token.isNotEmpty) {
+      context.go(AppRoutes.home);
       return;
     }
-    
-    //not token => login
-    Navigator.pushReplacementNamed(context, AppRoutes.login);
-  }
 
-  
+    //not token => login
+    context.go(AppRoutes.login);
+  }
 }

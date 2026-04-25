@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'chat_bot_styles.dart';
 
@@ -12,7 +13,7 @@ class GlassBtn extends StatelessWidget {
     this.size = 40,
     this.iconSize = 20,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -35,7 +36,7 @@ class AvatarDot extends StatelessWidget {
   final bool isBot;
   final double r;
   const AvatarDot({super.key, required this.isBot, required this.r});
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -52,7 +53,7 @@ class AvatarDot extends StatelessWidget {
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1A000000), 
+            color: Color(0x1A000000),
             blurRadius: 7,
             offset: Offset(0, 2),
           ),
@@ -71,7 +72,7 @@ class SugChip extends StatelessWidget {
   final String text;
   final double maxWidth;
   const SugChip({super.key, required this.text, required this.maxWidth});
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,7 +93,7 @@ class SugChip extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr, 
+        textDirection: TextDirection.ltr,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
@@ -108,11 +109,11 @@ class SugChip extends StatelessWidget {
 class SugChipSolid extends StatelessWidget {
   final String text;
   const SugChipSolid({super.key, required this.text});
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 8), 
+      margin: const EdgeInsets.only(left: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       constraints: const BoxConstraints(maxWidth: 200),
       decoration: BoxDecoration(
@@ -143,17 +144,17 @@ class SugChipSolid extends StatelessWidget {
   }
 }
 
-class PulsingDot extends StatefulWidget {
+class PulsingDot extends ConsumerStatefulWidget {
   const PulsingDot({super.key});
   @override
-  State<PulsingDot> createState() => _PulsingDotState();
+  ConsumerState<PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<PulsingDot>
+class _PulsingDotState extends ConsumerState<PulsingDot>
     with SingleTickerProviderStateMixin {
   late AnimationController _c;
   late Animation<double> _a;
-  
+
   @override
   void initState() {
     super.initState();
@@ -161,8 +162,8 @@ class _PulsingDotState extends State<PulsingDot>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     )..repeat(reverse: true);
-    _a = Tween(begin: 1.0, end: 1.6).animate(
-        CurvedAnimation(parent: _c, curve: Curves.easeInOut));
+    _a = Tween(begin: 1.0, end: 1.6)
+        .animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut));
   }
 
   @override
@@ -190,35 +191,37 @@ class _PulsingDotState extends State<PulsingDot>
   }
 }
 
-class TypewriterText extends StatefulWidget {
+class TypewriterText extends ConsumerStatefulWidget {
   final String text;
   final VoidCallback? onComplete;
   const TypewriterText({super.key, required this.text, this.onComplete});
   @override
-  State<TypewriterText> createState() => TypewriterTextState();
+  ConsumerState<TypewriterText> createState() => TypewriterTextState();
 }
 
-class TypewriterTextState extends State<TypewriterText>
+class TypewriterTextState extends ConsumerState<TypewriterText>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late AnimationController _c;
   late Animation<int> _n;
   late String _cleanText;
-  
+
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   void initState() {
     super.initState();
     // ✅ هنا بنمسح أي نجوم ** من النص قبل ما نعرضه عشان ميبوظش شكل الشات
     _cleanText = widget.text.replaceAll('**', '');
-    
+
     _c = AnimationController(
-      duration: Duration(milliseconds: _cleanText.length * 10), // ✅ خليناها * 10 عشان تبقي سريعة ومريحة
+      duration: Duration(
+          milliseconds:
+              _cleanText.length * 10), // ✅ خليناها * 10 عشان تبقي سريعة ومريحة
       vsync: this,
     );
-    _n = StepTween(begin: 0, end: _cleanText.length).animate(
-        CurvedAnimation(parent: _c, curve: Curves.easeIn));
+    _n = StepTween(begin: 0, end: _cleanText.length)
+        .animate(CurvedAnimation(parent: _c, curve: Curves.easeIn));
     _c.forward();
     _c.addStatusListener((s) {
       if (s == AnimationStatus.completed) widget.onComplete?.call();
@@ -240,7 +243,9 @@ class TypewriterTextState extends State<TypewriterText>
         builder: (_, __) => Text(
           _cleanText.substring(0, _n.value),
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF2D3132),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : const Color(0xFF2D3132),
             fontSize: 15.5,
             height: 1.4,
             fontWeight: FontWeight.w500, // ✅ وزن ثابت ومريح للعين لكل الكلام

@@ -11,7 +11,7 @@ class ChatBotHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     // ✅ تحسين: استخدام sizeOf لتقليل الـ Rebuilds
     final top = MediaQuery.paddingOf(context).top;
-    
+
     return Container(
       padding: EdgeInsets.fromLTRB(10, top + 10, 10, 14),
       decoration: BoxDecoration(
@@ -82,9 +82,7 @@ class ChatBotHeader extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // ✅ الـ PulsingDot لوحدها هي اللي بتتحرك، مفيش Blur وراها يتقل السكرول
-          vm.isTyping
-              ? const PulsingDot()
-              : const _StaticOnlineDot(),
+          vm.isTyping ? const PulsingDot() : const _StaticOnlineDot(),
           const SizedBox(width: 8),
           Text(
             vm.isTyping ? "Typing..." : "Online",

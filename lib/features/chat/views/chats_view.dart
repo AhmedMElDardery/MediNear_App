@@ -1,7 +1,7 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 // Core & Theme - المسارات العالمية بتبدأ بـ package
-
 
 // Models - المسار الجديد داخل الميزة
 import '../data/models/chat_model.dart';
@@ -12,27 +12,27 @@ import 'archived_chats_view.dart';
 // Widgets - نقلنا الـ chat_list_item لمجلد الـ widgets الخاص بالـ chat
 import 'widgets/chat_list_item.dart';
 
-class ChatsView extends StatefulWidget {
+class ChatsView extends ConsumerStatefulWidget {
   const ChatsView({super.key});
 
   @override
-  State<ChatsView> createState() => _ChatsViewState();
+  ConsumerState<ChatsView> createState() => _ChatsViewState();
 }
 
-class _ChatsViewState extends State<ChatsView> {
+class _ChatsViewState extends ConsumerState<ChatsView> {
   final ChatsViewModel _viewModel = ChatsViewModel();
 
   void _deleteWithUndo(int index, ChatModel chat) {
     setState(() {
-      _viewModel.chats.remove(chat); 
-      _viewModel.search(_viewModel.lastSearchQuery); 
+      _viewModel.chats.remove(chat);
+      _viewModel.search(_viewModel.lastSearchQuery);
     });
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Deleted ${chat.doctorName}"),
-        backgroundColor: AppColors.primaryLight, 
+        backgroundColor: AppColors.primaryLight,
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",
@@ -50,7 +50,7 @@ class _ChatsViewState extends State<ChatsView> {
 
   void _archiveChat(ChatModel chat) {
     setState(() {
-      chat.isArchived = true; 
+      chat.isArchived = true;
       _viewModel.search(_viewModel.lastSearchQuery);
     });
   }
@@ -80,7 +80,8 @@ class _ChatsViewState extends State<ChatsView> {
       body: ListenableBuilder(
         listenable: _viewModel,
         builder: (context, child) {
-          final archivedCount = _viewModel.chats.where((c) => c.isArchived).length;
+          final archivedCount =
+              _viewModel.chats.where((c) => c.isArchived).length;
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -89,7 +90,8 @@ class _ChatsViewState extends State<ChatsView> {
                 const SizedBox(height: 8),
                 _buildSearchBar(context),
                 const SizedBox(height: 16),
-                if (archivedCount > 0) _buildArchiveHeader(archivedCount, context),
+                if (archivedCount > 0)
+                  _buildArchiveHeader(archivedCount, context),
                 Expanded(
                   child: ListView.builder(
                     itemCount: _viewModel.filteredChats.length,
@@ -120,7 +122,8 @@ class _ChatsViewState extends State<ChatsView> {
         // ✅ استخدام لون الكارت المخصص للدارك من ملف الألوان
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
+        border:
+            Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -161,18 +164,18 @@ class _ChatsViewState extends State<ChatsView> {
           // ✅ ألوان متفاعلة مع الدارك مود لمنع البهتان أو البياض الزائد
           color: isDarkMode ? const Color(0xFF1A2E28) : const Color(0xFFF0F5F2),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
+          border:
+              Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             const Icon(Icons.archive_outlined, color: AppColors.primaryLight),
             const SizedBox(width: 12),
-            Text("Archived Chats", 
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryLight // نص واضح
-              )
-            ),
+            Text("Archived Chats",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryLight // نص واضح
+                    )),
             const Spacer(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -180,7 +183,8 @@ class _ChatsViewState extends State<ChatsView> {
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text("$count", style: const TextStyle(color: Colors.white, fontSize: 12)),
+              child: Text("$count",
+                  style: const TextStyle(color: Colors.white, fontSize: 12)),
             ),
             const SizedBox(width: 8),
             const Icon(Icons.chevron_right, color: Colors.grey),

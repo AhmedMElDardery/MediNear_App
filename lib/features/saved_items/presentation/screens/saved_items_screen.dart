@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 import '../manager/saved_items_provider.dart';
 import '../widgets/saved_item_cards.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 
-class SavedItemsScreen extends StatefulWidget {
+class SavedItemsScreen extends ConsumerStatefulWidget {
   const SavedItemsScreen({super.key});
 
   @override
-  State<SavedItemsScreen> createState() => _SavedItemsScreenState();
+  ConsumerState<SavedItemsScreen> createState() => _SavedItemsScreenState();
 }
 
-class _SavedItemsScreenState extends State<SavedItemsScreen> {
+class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
   int _selectedTab = 0;
   final TextEditingController _searchController = TextEditingController();
 
@@ -19,7 +20,7 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<SavedItemsProvider>(context, listen: false);
+      final provider = ref.read(savedItemsProvider);
       // 🚀 تصفير البحث القديم عشان ميظهرش داتا غلط لو اليوزر خرج ورجع
       provider.search('');
       provider.fetchSavedItems();
@@ -53,17 +54,20 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
         ),
         centerTitle: true,
       ),
-      body: Consumer<SavedItemsProvider>(
-        builder: (context, provider, child) {
+      body: Consumer(
+        builder: (context, ref, child) {
+          final provider = ref.watch(savedItemsProvider);
           if (provider.isLoading) {
-            return Center(child: CircularProgressIndicator(color: theme.primaryColor));
+            return Center(
+                child: CircularProgressIndicator(color: theme.primaryColor));
           }
 
           return Column(
             children: [
               // ----------- Search Bar & Sort Button -----------
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 color: theme.scaffoldBackgroundColor,
                 child: Row(
                   children: [
@@ -71,14 +75,24 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
                       child: TextField(
                         controller: _searchController,
                         onChanged: (val) => provider.search(val),
-                        style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                        style:
+                            TextStyle(color: theme.textTheme.bodyMedium?.color),
                         decoration: InputDecoration(
-                          hintText: _selectedTab == 0 ? "Search pharmacies..." : "Search medications...",
-                          hintStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-                          prefixIcon: Icon(Icons.search, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+                          hintText: _selectedTab == 0
+                              ? "Search pharmacies..."
+                              : "Search medications...",
+                          hintStyle: TextStyle(
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600),
+                          prefixIcon: Icon(Icons.search,
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear, color: Colors.grey),
+                                  icon: const Icon(Icons.clear,
+                                      color: Colors.grey),
                                   onPressed: () {
                                     _searchController.clear();
                                     provider.search("");
@@ -86,21 +100,30 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
+                          fillColor: isDark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade100,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 16),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide.none),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+                        color: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade100,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
                         icon: Icon(
-                          provider.isAscending ? Icons.sort_by_alpha : Icons.sort,
+                          provider.isAscending
+                              ? Icons.sort_by_alpha
+                              : Icons.sort,
                           color: theme.primaryColor,
                         ),
                         onPressed: () => provider.toggleSort(),
@@ -114,12 +137,23 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
               // ----------- Tab Buttons -----------
               Container(
                 color: theme.scaffoldBackgroundColor,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Row(
                   children: [
-                    Expanded(child: _buildTabButton('Pharmacies (${provider.savedPharmaciesCount})', 0, theme, provider)),
+                    Expanded(
+                        child: _buildTabButton(
+                            'Pharmacies (${provider.savedPharmaciesCount})',
+                            0,
+                            theme,
+                            provider)),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildTabButton('Medications (${provider.savedMedicationsCount})', 1, theme, provider)),
+                    Expanded(
+                        child: _buildTabButton(
+                            'Medications (${provider.savedMedicationsCount})',
+                            1,
+                            theme,
+                            provider)),
                   ],
                 ),
               ),
@@ -137,7 +171,8 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
     );
   }
 
-  Widget _buildTabButton(String title, int index, ThemeData theme, SavedItemsProvider provider) {
+  Widget _buildTabButton(
+      String title, int index, ThemeData theme, SavedItemsProvider provider) {
     final isSelected = _selectedTab == index;
     final isDark = theme.brightness == Brightness.dark;
 
@@ -155,14 +190,17 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
           color: isSelected ? theme.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: isSelected ? theme.primaryColor : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+            color: isSelected
+                ? theme.primaryColor
+                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
           ),
         ),
         child: Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+            color:
+                isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -174,7 +212,8 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
 
   Widget _buildPharmaciesList(SavedItemsProvider provider, ThemeData theme) {
     final pharmacies = provider.pharmacies;
-    if (pharmacies.isEmpty) return _emptyState("No saved pharmacies found", theme);
+    if (pharmacies.isEmpty)
+      return _emptyState("No saved pharmacies found", theme);
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -216,7 +255,8 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
 
   Widget _buildMedicationsList(SavedItemsProvider provider, ThemeData theme) {
     final medications = provider.medications;
-    if (medications.isEmpty) return _emptyState("No saved medications found", theme);
+    if (medications.isEmpty)
+      return _emptyState("No saved medications found", theme);
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -261,17 +301,24 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
     );
   }
 
-  Widget _buildDismissibleItem({required String key, required ThemeData theme, required VoidCallback onDismissed, required Widget child}) {
+  Widget _buildDismissibleItem(
+      {required String key,
+      required ThemeData theme,
+      required VoidCallback onDismissed,
+      required Widget child}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Dismissible(
         key: Key(key),
         direction: DismissDirection.endToStart,
         background: Container(
-          decoration: BoxDecoration(color: Colors.red.shade400, borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+              color: Colors.red.shade400,
+              borderRadius: BorderRadius.circular(12)),
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: const Icon(Icons.delete_outline, color: Colors.white, size: 30),
+          child:
+              const Icon(Icons.delete_outline, color: Colors.white, size: 30),
         ),
         onDismissed: (_) => onDismissed(),
         child: child,
@@ -285,9 +332,15 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bookmark_border, size: 80, color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+          Icon(Icons.bookmark_border,
+              size: 80,
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
           const SizedBox(height: 16),
-          Text(msg, style: const TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500)),
+          Text(msg,
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -301,12 +354,12 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        action: SnackBarAction(label: 'Undo', textColor: theme.primaryColor, onPressed: onUndo),
+        action: SnackBarAction(
+            label: 'Undo', textColor: theme.primaryColor, onPressed: onUndo),
         duration: const Duration(seconds: 3),
       ),
     );
   }
-
   void _showErrorSnackBar(String error, ThemeData theme) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).clearSnackBars();

@@ -4,13 +4,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GroqService {
   // 🚨 متنساش تغير المفتاح ده وتعمل لده Delete من موقع Groq لحماية حسابك
-  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? ""; 
-  static const String _apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-  
+  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? "";
+  static const String _apiUrl =
+      "https://api.groq.com/openai/v1/chat/completions";
+
   final Dio _dio = Dio();
 
   // ✅ دي الرولز الشاملة اللي هتبرمج عقل البوت
- static const String _systemRules = '''
+  static const String _systemRules = '''
 You are a professional medical assistant for the (MidiNear) app.
 
 CRITICAL RULE:
@@ -37,17 +38,14 @@ General Rules:
           },
         ),
         data: {
-          "model": "llama-3.1-8b-instant", 
+          "model": "llama-3.1-8b-instant",
           "messages": [
             {
               "role": "system",
               // ✅ هنا حقنّا الرولز في أول رسالة للموديل
               "content": _systemRules
             },
-            {
-              "role": "user",
-              "content": prompt
-            }
+            {"role": "user", "content": prompt}
           ],
           "temperature": 0.7,
         },

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class BubbleTailPainter extends CustomPainter {
   final bool isBot;
   final Color color;
-  
+
   BubbleTailPainter({required this.isBot, required this.color});
 
   @override
@@ -12,21 +12,21 @@ class BubbleTailPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..isAntiAlias = true; // لضمان حواف ناعمة للمثلث
-    
+
     final path = Path();
 
     if (isBot) {
       // البوت يسار -> الذيل يشير لليسار
-      path.moveTo(0, 0); 
-      path.lineTo(size.width, size.height * 0.4); 
-      path.lineTo(0, size.height); 
+      path.moveTo(0, 0);
+      path.lineTo(size.width, size.height * 0.4);
+      path.lineTo(0, size.height);
     } else {
       // المستخدم يمين -> الذيل يشير لليمين
-      path.moveTo(size.width, 0); 
-      path.lineTo(0, size.height * 0.4); 
-      path.lineTo(size.width, size.height); 
+      path.moveTo(size.width, 0);
+      path.lineTo(0, size.height * 0.4);
+      path.lineTo(size.width, size.height);
     }
-    
+
     path.close();
     canvas.drawPath(path, paint);
   }
@@ -35,4 +35,3 @@ class BubbleTailPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

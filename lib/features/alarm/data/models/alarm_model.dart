@@ -13,6 +13,6 @@ class AlarmModel {
     this.time = '',
     this.isEnabled = true,
     this.medicationName = '', // وضيفهم هنا كمان
-    this.dosageInfo = '',     // وهنا
+    this.dosageInfo = '', // وهنا
   });
 }

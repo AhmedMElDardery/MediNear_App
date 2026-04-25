@@ -82,14 +82,16 @@ class ChatBotMessageBubble extends StatelessWidget {
     final String time = DateFormat('hh:mm a').format(msg.timestamp);
 
     final bool isMsgArabic = _isArabic(msg.text);
-    final TextDirection bubbleDirection = 
+    final TextDirection bubbleDirection =
         isMsgArabic ? TextDirection.rtl : TextDirection.ltr;
 
     return Container(
       constraints: BoxConstraints(maxWidth: screenWidth * 0.85),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       decoration: BoxDecoration(
-        color: isBot ? (isDark ? const Color(0xFF2C2C2E) : ChatBotStyles.botBubble) : (isDark ? const Color(0xFF1A7A60) : Colors.white),
+        color: isBot
+            ? (isDark ? const Color(0xFF2C2C2E) : ChatBotStyles.botBubble)
+            : (isDark ? const Color(0xFF1A7A60) : Colors.white),
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(20),
           topRight: const Radius.circular(20),
@@ -110,7 +112,7 @@ class ChatBotMessageBubble extends StatelessWidget {
         textDirection: bubbleDirection,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start, 
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             isBot
                 // ✅ استخدمنا آلة الكتابة الذكية بتاعتنا اللي بتفهم الخط العريض
@@ -130,7 +132,7 @@ class ChatBotMessageBubble extends StatelessWidget {
                   ),
             const SizedBox(height: 5),
             Align(
-              alignment: AlignmentDirectional.bottomEnd, 
+              alignment: AlignmentDirectional.bottomEnd,
               child: Text(
                 time,
                 style: TextStyle(
@@ -157,10 +159,10 @@ class ChatBotMessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? Colors.grey[800] : Colors.white,
           shape: BoxShape.circle,
-          boxShadow: const [
-            BoxShadow(color: Color(0x26000000), blurRadius: 8)
-          ],
-          border: Border.all(color: isDark ? const Color(0xFF444444) : const Color(0xFFF0F4F4), width: 1.5),
+          boxShadow: const [BoxShadow(color: Color(0x26000000), blurRadius: 8)],
+          border: Border.all(
+              color: isDark ? const Color(0xFF444444) : const Color(0xFFF0F4F4),
+              width: 1.5),
         ),
         child: Text(msg.reaction!, style: const TextStyle(fontSize: 12)),
       ),
@@ -180,7 +182,9 @@ class ChatBotMessageBubble extends StatelessWidget {
           child: Container(
             height: 110,
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900]!.withValues(alpha: 0.85) : Colors.white.withValues(alpha: 0.85),
+              color: isDark
+                  ? Colors.grey[900]!.withValues(alpha: 0.85)
+                  : Colors.white.withValues(alpha: 0.85),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(30)),
             ),

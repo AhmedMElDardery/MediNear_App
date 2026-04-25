@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 import 'package:medinear_app/features/alarm/views/alarm_view.dart';
 import 'package:medinear_app/features/support/presentation/screen/support_screen.dart';
 import 'package:medinear_app/features/wallet/views/wallet_view.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 import '../view_models/profile_provider.dart';
 import 'widgets/profile_widgets.dart';
@@ -12,24 +15,27 @@ import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
 import 'package:medinear_app/features/about_us/presentation/screens/about_support_screen.dart';
 import 'package:medinear_app/features/orders/presentation/screens/my_orders_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProfileProvider>(context, listen: false).fetchProfile();
+      ref.watch(profileProvider).fetchProfile();
     });
   }
 
-  void _showEditDialog(String title, String currentVal, ProfileProvider provider) {
-    if (currentVal == 'No Phone' || currentVal == 'No Name' || currentVal == 'No Email') {
+  void _showEditDialog(
+      String title, String currentVal, ProfileProvider provider) {
+    if (currentVal == 'No Phone' ||
+        currentVal == 'No Name' ||
+        currentVal == 'No Email') {
       currentVal = '';
     }
     TextEditingController controller = TextEditingController(text: currentVal);
@@ -64,9 +70,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (dialogCtx) => StatefulBuilder(
         builder: (stateCtx, setDialogState) {
           return AlertDialog(
-            backgroundColor: isDark ? Theme.of(context).cardColor : Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            title: Text('Edit $title', style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+            backgroundColor:
+                isDark ? Theme.of(context).cardColor : Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            title: Text('Edit $title',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,17 +89,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: 55,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: BoxDecoration(
-                              border: Border.all(color: errorMessage != null ? Colors.red : (isDark ? Theme.of(context).dividerColor : Colors.grey.shade300), width: errorMessage != null ? 1.5 : 1),
+                              border: Border.all(
+                                  color: errorMessage != null
+                                      ? Colors.red
+                                      : (isDark
+                                          ? Theme.of(context).dividerColor
+                                          : Colors.grey.shade300),
+                                  width: errorMessage != null ? 1.5 : 1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<Map<String, dynamic>>(
-                                dropdownColor: isDark ? Theme.of(context).cardColor : Colors.white,
+                                dropdownColor: isDark
+                                    ? Theme.of(context).cardColor
+                                    : Colors.white,
                                 value: selectedCountry,
                                 items: countries
                                     .map((c) => DropdownMenuItem(
                                         value: c,
-                                        child: Text('${c['flag']} ${c['code']}', style: TextStyle(fontSize: 14, color: isDark ? Colors.white : Colors.black87))))
+                                        child: Text('${c['flag']} ${c['code']}',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black87))))
                                     .toList(),
                                 onChanged: (val) {
                                   setDialogState(() {
@@ -107,22 +131,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: TextField(
                                 controller: controller,
                                 keyboardType: TextInputType.phone,
-                                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                                style: TextStyle(
+                                    color:
+                                        isDark ? Colors.white : Colors.black87),
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(selectedCountry['maxLength'])
+                                  LengthLimitingTextInputFormatter(
+                                      selectedCountry['maxLength'])
                                 ],
-                                onChanged: (v) => setDialogState(() => errorMessage = null),
+                                onChanged: (v) =>
+                                    setDialogState(() => errorMessage = null),
                                 decoration: InputDecoration(
-                                  hintText: selectedCountry['code'] == '+20' ? "01xxxxxxxxx" : "Enter number",
-                                  hintStyle: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
+                                  hintText: selectedCountry['code'] == '+20'
+                                      ? "01xxxxxxxxx"
+                                      : "Enter number",
+                                  hintStyle: TextStyle(
+                                      color: isDark
+                                          ? Colors.grey.shade500
+                                          : Colors.grey.shade400),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: errorMessage != null ? Colors.red : (isDark ? Theme.of(context).dividerColor : Colors.grey.shade300), width: errorMessage != null ? 1.5 : 1),
+                                    borderSide: BorderSide(
+                                        color: errorMessage != null
+                                            ? Colors.red
+                                            : (isDark
+                                                ? Theme.of(context).dividerColor
+                                                : Colors.grey.shade300),
+                                        width: errorMessage != null ? 1.5 : 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: errorMessage != null ? Colors.red : AppColors.primaryLight, width: 2),
+                                    borderSide: BorderSide(
+                                        color: errorMessage != null
+                                            ? Colors.red
+                                            : AppColors.primaryLight,
+                                        width: 2),
                                   ),
                                 ),
                               ),
@@ -132,16 +175,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                     : TextField(
                         controller: controller,
-                        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                        onChanged: (v) => setDialogState(() => errorMessage = null),
+                        style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black87),
+                        onChanged: (v) =>
+                            setDialogState(() => errorMessage = null),
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: errorMessage != null ? Colors.red : (isDark ? Theme.of(context).dividerColor : Colors.grey.shade300), width: errorMessage != null ? 1.5 : 1),
+                            borderSide: BorderSide(
+                                color: errorMessage != null
+                                    ? Colors.red
+                                    : (isDark
+                                        ? Theme.of(context).dividerColor
+                                        : Colors.grey.shade300),
+                                width: errorMessage != null ? 1.5 : 1),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: errorMessage != null ? Colors.red : AppColors.primaryLight, width: 2),
+                            borderSide: BorderSide(
+                                color: errorMessage != null
+                                    ? Colors.red
+                                    : AppColors.primaryLight,
+                                width: 2),
                           ),
                         ),
                       ),
@@ -149,9 +204,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, color: Colors.red, size: 16),
+                      const Icon(Icons.error_outline_rounded,
+                          color: Colors.red, size: 16),
                       const SizedBox(width: 6),
-                      Text(errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 13, fontWeight: FontWeight.bold)),
+                      Text(errorMessage!,
+                          style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ]
@@ -160,12 +220,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(dialogCtx),
-                  style: TextButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
+                  style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  child: const Text('Cancel',
+                      style: TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryLight,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
                 ),
                 onPressed: () {
@@ -182,13 +247,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     provider.updateData(context, title, finalValue);
                   } else {
                     setDialogState(() {
-                      errorMessage = isPhoneField 
-                          ? 'Please enter your phone number!' 
+                      errorMessage = isPhoneField
+                          ? 'Please enter your phone number!'
                           : 'Please enter your name!';
                     });
                   }
                 },
-                child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text('Save',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           );
@@ -202,7 +269,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: parentContext,
       builder: (dialogCtx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           elevation: 10,
           backgroundColor: Colors.transparent,
           child: Stack(
@@ -211,12 +279,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(25, 50, 25, 25), 
+                padding: const EdgeInsets.fromLTRB(25, 50, 25, 25),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
-                    BoxShadow(color: isDark ? Colors.black26 : Colors.black12, blurRadius: 10, offset: const Offset(0, 10))
+                    BoxShadow(
+                        color: isDark ? Colors.black26 : Colors.black12,
+                        blurRadius: 10,
+                        offset: const Offset(0, 10))
                   ],
                 ),
                 child: Column(
@@ -224,13 +295,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Text(
                       'Logout',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87),
                     ),
                     const SizedBox(height: 15),
                     Text(
-                      'Are you sure you want to log out? You will need to sign in again to access your account.',
+                      'logoutConfirmMsg'.tr(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: isDark ? Colors.grey.shade400 : Colors.grey, height: 1.4),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.grey.shade400 : Colors.grey,
+                          height: 1.4),
                     ),
                     const SizedBox(height: 30),
                     Row(
@@ -238,12 +315,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                              side: BorderSide(
+                                  color: isDark
+                                      ? Colors.grey.shade700
+                                      : Colors.grey.shade300),
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () => Navigator.pop(dialogCtx),
-                            child: Text('Cancel', style: TextStyle(color: isDark ? Colors.grey.shade300 : Colors.grey.shade700, fontSize: 16, fontWeight: FontWeight.bold)),
+                            child: Text('cancel'.tr(context),
+                                style: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey.shade300
+                                        : Colors.grey.shade700,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -253,14 +340,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundColor: const Color(0xFFD32F2F),
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () async {
-                              Navigator.pop(dialogCtx); 
-                              parentContext.read<ProfileProvider>().clearProfile();
-                              await parentContext.read<AuthProvider>().logout(parentContext);
+                              Navigator.pop(dialogCtx);
+                              // Reset navigation to Home (index 0) so on next login it doesn't land on Profile
+                              ref.read(navigationProvider).changeIndex(0);
+                              await ref
+                                  .read(authProvider)
+                                  .logout(parentContext);
                             },
-                            child: const Text('Logout', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            child: Text('logout'.tr(context),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -269,33 +364,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Positioned(
-                top: -32, 
+                top: -32,
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFF5252), Color(0xFFD32F2F)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                        spreadRadius: 5,
-                        blurRadius: 0,
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF5252), Color(0xFFD32F2F)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      BoxShadow(
-                        color: const Color(0xFFD32F2F).withOpacity(0.4),
-                        blurRadius: 18,
-                        offset: const Offset(0, 8),
-                      ),
-                    ]
-                  ),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          spreadRadius: 5,
+                          blurRadius: 0,
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFFD32F2F).withValues(alpha: 0.4),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ]),
                   child: const Padding(
-                    padding: EdgeInsets.only(left: 4.0), // لضبط تمركز الأيقونة بصرياً
-                    child: Icon(Icons.logout_rounded, color: Colors.white, size: 30),
-                  ), 
+                    padding: EdgeInsets.only(
+                        left: 4.0), // لضبط تمركز الأيقونة بصرياً
+                    child: Icon(Icons.logout_rounded,
+                        color: Colors.white, size: 30),
+                  ),
                 ),
               ),
             ],
@@ -311,8 +408,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(
-      builder: (context, provider, child) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final provider = ref.watch(profileProvider);
         final user = provider.user;
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
@@ -320,7 +418,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (provider.isLoading || user == null) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(color: AppColors.primaryLight)),
+                child:
+                    CircularProgressIndicator(color: AppColors.primaryLight)),
           );
         }
 
@@ -328,9 +427,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (user.profileImage != null) {
             return FileImage(user.profileImage!);
           } else if (user.photoUrl != null && user.photoUrl!.isNotEmpty) {
-            return NetworkImage(user.photoUrl!);
+            return CachedNetworkImageProvider(user.photoUrl!);
           } else if (user.avatar != null && user.avatar!.isNotEmpty) {
-            return NetworkImage(user.avatar!);
+            return CachedNetworkImageProvider(user.avatar!);
           }
           return null;
         }
@@ -351,22 +450,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 155,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E3A8A).withOpacity(0.15) : const Color(0xFF00965E).withOpacity(0.06),
-                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(40)),
+                        color: isDark
+                            ? const Color(0xFF1E3A8A).withValues(alpha: 0.15)
+                            : const Color(0xFF00965E).withValues(alpha: 0.06),
+                        borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(40)),
                       ),
                     ),
                     Column(
                       children: [
-                        SizedBox(height: MediaQuery.of(context).padding.top + 10),
-                        Text(
-                          'Profile', 
-                          style: TextStyle(
-                            fontSize: 20, 
-                            fontWeight: FontWeight.w800, 
-                            letterSpacing: -0.5,
-                            color: isDark ? Colors.white : const Color(0xFF00965E)
-                          )
-                        ),
+                        SizedBox(
+                            height: MediaQuery.of(context).padding.top + 10),
+                        Text('Profile',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF00965E))),
                         const SizedBox(height: 15),
                         TweenAnimationBuilder<double>(
                           tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -383,16 +485,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isDark ? theme.scaffoldBackgroundColor : Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 8),
-                                  )
-                                ]
-                              ),
+                                  shape: BoxShape.circle,
+                                  color: isDark
+                                      ? theme.scaffoldBackgroundColor
+                                      : Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                          alpha: isDark ? 0.3 : 0.08),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 8),
+                                    )
+                                  ]),
                               child: Stack(
                                 children: [
                                   Container(
@@ -400,8 +504,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     height: 105,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: isDark ? theme.cardColor : AppColors.primaryLight.withOpacity(0.1),
-                                      border: Border.all(color: isDark ? theme.dividerColor.withOpacity(0.1) : Colors.grey.shade100, width: 1.5),
+                                      color: isDark
+                                          ? theme.cardColor
+                                          : AppColors.primaryLight
+                                              .withValues(alpha: 0.1),
+                                      border: Border.all(
+                                          color: isDark
+                                              ? theme.dividerColor
+                                                  .withValues(alpha: 0.1)
+                                              : Colors.grey.shade100,
+                                          width: 1.5),
                                       image: getProfileImage() != null
                                           ? DecorationImage(
                                               image: getProfileImage()!,
@@ -410,7 +522,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           : null,
                                     ),
                                     child: getProfileImage() == null
-                                        ? const Icon(Icons.person_rounded, size: 55, color: AppColors.primaryLight)
+                                        ? const Icon(Icons.person_rounded,
+                                            size: 55,
+                                            color: AppColors.primaryLight)
                                         : null,
                                   ),
                                   Positioned(
@@ -419,18 +533,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF0EA5E9),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: isDark ? theme.scaffoldBackgroundColor : Colors.white, width: 3.5),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0xFF0EA5E9).withOpacity(0.3),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3)
-                                          )
-                                        ]
-                                      ),
-                                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 14),
+                                          color: const Color(0xFF0EA5E9),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              color: isDark
+                                                  ? theme
+                                                      .scaffoldBackgroundColor
+                                                  : Colors.white,
+                                              width: 3.5),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: const Color(0xFF0EA5E9)
+                                                    .withValues(alpha: 0.3),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 3))
+                                          ]),
+                                      child: const Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
+                                          size: 14),
                                     ),
                                   ),
                                 ],
@@ -443,13 +564,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 const SizedBox(height: 15),
-                Column(
-                  children: [
-                    Text(user.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? theme.textTheme.bodyLarge?.color : const Color(0xFF1E293B), letterSpacing: -0.5)),
-                    const SizedBox(height: 4),
-                    Text(user.email, style: TextStyle(fontSize: 14, color: isDark ? Colors.grey.shade400 : Colors.grey.shade500)),
-                  ]
-                ),
+                Column(children: [
+                  Text(user.name,
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? theme.textTheme.bodyLarge?.color
+                              : const Color(0xFF1E293B),
+                          letterSpacing: -0.5)),
+                  const SizedBox(height: 4),
+                  Text(user.email,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade500)),
+                ]),
                 const SizedBox(height: 32),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -466,34 +597,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                         child: PremiumProfileGroup(
-                          title: 'Personal Information',
-                          children: [
-                            PremiumProfileTile(
-                              title: 'Full Name',
-                              subtitle: user.name,
-                              icon: Icons.person_outline_rounded,
-                              iconColor: const Color(0xFF0EA5E9),
-                              onTap: () => _showEditDialog('Name', user.name, provider),
-                              trailing: Icon(Icons.edit_rounded, size: 18, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
-                            ),
-                            PremiumProfileTile(
-                              title: 'Phone Number',
-                              subtitle: user.phone,
-                              icon: Icons.phone_in_talk_outlined,
-                              iconColor: const Color(0xFF10B981),
-                              onTap: () => _showEditDialog('Phone', user.phone, provider),
-                              trailing: Icon(Icons.edit_rounded, size: 18, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
-                            ),
-                            PremiumProfileTile(
-                              title: 'Email Address',
-                              subtitle: user.email,
-                              icon: Icons.email_outlined,
-                              iconColor: const Color(0xFF8B5CF6),
-                              trailing: Icon(Icons.lock_rounded, size: 16, color: isDark ? Colors.grey.shade600 : Colors.grey.shade400),
-                              onTap: () {},
-                            ),
-                          ]
-                        ),
+                            title: 'personalInformation'.tr(context),
+                            children: [
+                              PremiumProfileTile(
+                                title: 'profileName'.tr(context),
+                                subtitle: user.name,
+                                icon: Icons.person_outline_rounded,
+                                iconColor: const Color(0xFF0EA5E9),
+                                onTap: () => _showEditDialog(
+                                    'Name', user.name, provider),
+                                trailing: Icon(Icons.edit_rounded,
+                                    size: 18,
+                                    color: isDark
+                                        ? Colors.grey.shade500
+                                        : Colors.grey.shade400),
+                              ),
+                              PremiumProfileTile(
+                                title: 'profilePhone'.tr(context),
+                                subtitle: user.phone,
+                                icon: Icons.phone_in_talk_outlined,
+                                iconColor: const Color(0xFF10B981),
+                                onTap: () => _showEditDialog(
+                                    'Phone', user.phone, provider),
+                                trailing: Icon(Icons.edit_rounded,
+                                    size: 18,
+                                    color: isDark
+                                        ? Colors.grey.shade500
+                                        : Colors.grey.shade400),
+                              ),
+                              PremiumProfileTile(
+                                title: 'profileEmail'.tr(context),
+                                subtitle: user.email,
+                                icon: Icons.email_outlined,
+                                iconColor: const Color(0xFF8B5CF6),
+                                trailing: Icon(Icons.lock_rounded,
+                                    size: 16,
+                                    color: isDark
+                                        ? Colors.grey.shade600
+                                        : Colors.grey.shade400),
+                                onTap: () {},
+                              ),
+                            ]),
                       ),
                       TweenAnimationBuilder<double>(
                         tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -505,35 +649,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Opacity(opacity: value, child: child),
                           );
                         },
-                        child: PremiumProfileGroup(
-                          title: 'Features',
-                          children: [
-                            PremiumProfileTile(
-                              title: 'My Orders',
-                              icon: Icons.shopping_bag_outlined,
-                              iconColor: const Color(0xFFF59E0B),
-                              onTap: () => _navigateTo(const MyOrdersScreen()),
-                            ),
-                            PremiumProfileTile(
-                              title: 'Packet (Wallet)',
-                              icon: Icons.account_balance_wallet_outlined,
-                              iconColor: const Color(0xFF0EA5E9),
-                              onTap: () => _navigateTo(const WalletView()),
-                            ),
-                            PremiumProfileTile(
-                              title: 'Family Members',
-                              icon: Icons.family_restroom_rounded,
-                              iconColor: const Color(0xFFF43F5E),
-                              onTap: () {},
-                            ),
-                            PremiumProfileTile(
-                              title: 'Medicine Reminder',
-                              icon: Icons.alarm_rounded,
-                              iconColor: const Color(0xFF8B5CF6),
-                              onTap: () => _navigateTo(const AlarmView()),
-                            ),
-                          ]
-                        ),
+                        child:
+                            PremiumProfileGroup(title: 'features'.tr(context), children: [
+                          PremiumProfileTile(
+                            title: 'myOrders'.tr(context),
+                            icon: Icons.shopping_bag_outlined,
+                            iconColor: const Color(0xFFF59E0B),
+                            onTap: () => _navigateTo(const MyOrdersScreen()),
+                          ),
+                          PremiumProfileTile(
+                            title: 'wallet'.tr(context),
+                            icon: Icons.account_balance_wallet_outlined,
+                            iconColor: const Color(0xFF0EA5E9),
+                            onTap: () => _navigateTo(const WalletView()),
+                          ),
+                          PremiumProfileTile(
+                            title: 'familyMembers'.tr(context),
+                            icon: Icons.family_restroom_rounded,
+                            iconColor: const Color(0xFFF43F5E),
+                            onTap: () {},
+                          ),
+                          PremiumProfileTile(
+                            title: 'medicineReminder'.tr(context),
+                            icon: Icons.alarm_rounded,
+                            iconColor: const Color(0xFF8B5CF6),
+                            onTap: () => _navigateTo(const AlarmView()),
+                          ),
+                        ]),
                       ),
                       TweenAnimationBuilder<double>(
                         tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -546,30 +688,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                         child: PremiumProfileGroup(
-                          title: 'Support & Settings',
-                          children: [
-                            PremiumProfileTile(
-                              title: 'Help & Support',
-                              icon: Icons.headset_mic_rounded,
-                              iconColor: const Color(0xFF10B981),
-                              onTap: () => _navigateTo(const SupportScreen()),
-                            ),
-                            PremiumProfileTile(
-                              title: 'About Us',
-                              icon: Icons.info_outline_rounded,
-                              iconColor: const Color(0xFF0EA5E9),
-                              onTap: () => _navigateTo(const AboutSupportScreen()),
-                            ),
-                            PremiumProfileTile(
-                              title: 'Logout',
-                              icon: Icons.logout_rounded,
-                              iconColor: const Color(0xFFEF4444),
-                              isDestructive: true,
-                              trailing: const SizedBox(), 
-                              onTap: () => _showLogoutDialog(context, isDark),
-                            ),
-                          ]
-                        ),
+                            title: 'supportSettings'.tr(context),
+                            children: [
+                              PremiumProfileTile(
+                                title: 'language'.tr(context),
+                                subtitle: ref.watch(localeProvider).locale.languageCode == 'ar' ? 'العربية' : 'English',
+                                icon: Icons.language_rounded,
+                                iconColor: const Color(0xFFF59E0B),
+                                trailing: const Icon(Icons.sync_alt_rounded, size: 18, color: Colors.grey),
+                                onTap: () => ref.read(localeProvider.notifier).toggleLocale(),
+                              ),
+                              PremiumProfileTile(
+                                title: 'helpSupport'.tr(context),
+                                icon: Icons.headset_mic_rounded,
+                                iconColor: const Color(0xFF10B981),
+                                onTap: () => _navigateTo(const SupportScreen()),
+                              ),
+                              PremiumProfileTile(
+                                title: 'aboutUs'.tr(context),
+                                icon: Icons.info_outline_rounded,
+                                iconColor: const Color(0xFF0EA5E9),
+                                onTap: () =>
+                                    _navigateTo(const AboutSupportScreen()),
+                              ),
+                              PremiumProfileTile(
+                                title: 'logout'.tr(context),
+                                icon: Icons.logout_rounded,
+                                iconColor: const Color(0xFFEF4444),
+                                isDestructive: true,
+                                trailing: const SizedBox(),
+                                onTap: () => _showLogoutDialog(context, isDark),
+                              ),
+                            ]),
                       ),
                       const SizedBox(height: 40),
                     ],

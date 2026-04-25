@@ -12,24 +12,29 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<AdEntity>> getAds() async {
     final data = await remote.getAds();
-    return data.map((e) => AdEntity(
-      id: e["id"]?.toString() ?? '',           // ✅ int → String
-      imageUrl: e["image"]?.toString() ?? '',   // ✅ null safe
-      title: e["title"]?.toString() ?? '',
-      redirectUrl: e["link"]?.toString() ?? '',
-    )).toList();
+    return data
+        .map((e) => AdEntity(
+              id: e["id"]?.toString() ?? '', // ✅ int → String
+              imageUrl: e["image"]?.toString() ?? '', // ✅ null safe
+              title: e["title"]?.toString() ?? '',
+              redirectUrl: e["link"]?.toString() ?? '',
+            ))
+        .toList();
   }
 
   @override
-  Future<List<PharmacyEntity>> getNearbyPharmacies(double lat, double lng) async {
+  Future<List<PharmacyEntity>> getNearbyPharmacies(
+      double lat, double lng) async {
     final data = await remote.getNearbyPharmacies(lat, lng);
     return data.map((e) {
-      final img = e["logo"]?.toString() ?? 
-                  e["image"]?.toString() ?? 
-                  e["pharmacy_logo"]?.toString() ?? 
-                  e["pharmacy_image"]?.toString();
+      final img = e["logo"]?.toString() ??
+          e["image"]?.toString() ??
+          e["pharmacy_logo"]?.toString() ??
+          e["pharmacy_image"]?.toString();
       final fullImg = (img != null && img.isNotEmpty)
-          ? (img.startsWith('http') ? img : 'https://medinear-eg.com/storage/$img')
+          ? (img.startsWith('http')
+              ? img
+              : 'https://medinear-eg.com/storage/$img')
           : '';
 
       return PharmacyEntity(
@@ -47,24 +52,28 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<List<MedicineEntity>> getNearbyMedicines(double lat, double lng) async {
+  Future<List<MedicineEntity>> getNearbyMedicines(
+      double lat, double lng) async {
     final data = await remote.getNearbyMedicines(lat, lng);
     return data.map((e) {
       final img = e["image"]?.toString();
       final fullImg = (img != null && img.isNotEmpty)
-          ? (img.startsWith('http') ? img : 'https://medinear-eg.com/storage/$img')
+          ? (img.startsWith('http')
+              ? img
+              : 'https://medinear-eg.com/storage/$img')
           : '';
 
-      final pivotPrice = e["pivot"] != null ? e["pivot"]["price"]?.toString() : null;
+      final pivotPrice =
+          e["pivot"] != null ? e["pivot"]["price"]?.toString() : null;
       final officialPrice = e["official_price"]?.toString();
       final finalPriceStr = pivotPrice ?? officialPrice ?? '0';
 
       return MedicineEntity(
-        id: e["id"]?.toString() ?? '',           // ✅ int → String
+        id: e["id"]?.toString() ?? '', // ✅ int → String
         name: e["name"]?.toString() ?? 'Unknown',
         imageUrl: fullImg,
         price: num.tryParse(finalPriceStr)?.toDouble() ?? 0.0,
       );
     }).toList();
   }
-}
+}

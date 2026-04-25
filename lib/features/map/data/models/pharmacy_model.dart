@@ -19,7 +19,8 @@ class PharmacyModel extends PharmacyEntity {
 
     return PharmacyModel(
       id: json['id'].toString(),
-      name: json['pharmacy_name'] ?? 'صيدلية غير معروفة', // استخدمنا pharmacy_name من الـ API
+      name: json['pharmacy_name'] ??
+          'صيدلية غير معروفة', // استخدمنا pharmacy_name من الـ API
       lat: double.tryParse(json['lat'].toString()) ?? 0.0,
       lng: double.tryParse(json['lng'].toString()) ?? 0.0,
       distance: (json['distance'] as num?)?.toDouble() ?? 0.0,

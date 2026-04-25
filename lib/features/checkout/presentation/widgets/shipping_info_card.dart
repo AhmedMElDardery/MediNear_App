@@ -1,15 +1,16 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 
-class ShippingInfoCard extends StatefulWidget {
+class ShippingInfoCard extends ConsumerStatefulWidget {
   const ShippingInfoCard({super.key});
 
   @override
-  State<ShippingInfoCard> createState() => _ShippingInfoCardState();
+  ConsumerState<ShippingInfoCard> createState() => _ShippingInfoCardState();
 }
 
-class _ShippingInfoCardState extends State<ShippingInfoCard> {
+class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
   // 1. ليستة الدول بنفس الفكرة
   final List<Map<String, dynamic>> countries = [
     {'name': 'Egypt', 'flag': '🇪🇬', 'code': '+20', 'maxLength': 11},
@@ -43,7 +44,10 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
       children: [
         const Text(
           "Shipping Information",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryLight),
+          style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryLight),
         ),
         const SizedBox(height: 10),
         Container(
@@ -52,7 +56,10 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
             color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5))
             ],
           ),
           child: Column(
@@ -60,13 +67,14 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
               // خانة الاسم العادية
               _buildNormalTextField("Full Name", isDark),
               const Divider(height: 15, thickness: 0.5),
-              
+
               // 🚀 خانة التليفون الاحترافية (كود الدولة + الرقم)
               _buildPhoneField("Phone Number", isDark),
-              
+
               const Divider(height: 15, thickness: 0.5),
               // خانة العنوان العادية
-              _buildNormalTextField("Full Address", isDark, icon: Icons.map_outlined),
+              _buildNormalTextField("Full Address", isDark,
+                  icon: Icons.map_outlined),
             ],
           ),
         ),
@@ -81,7 +89,9 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
         // 1. اسم الخانة (Phone Number)
         SizedBox(
           width: 100,
-          child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          child: Text(label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         ),
         // 2. الجزء الخاص بالرقم وكود الدولة
         Expanded(
@@ -102,7 +112,9 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
                     items: countries.map((c) {
                       return DropdownMenuItem(
                         value: c,
-                        child: Text('${c['flag']} ${c['code']}', style: const TextStyle(fontSize: 11)), // صغرنا الخط سيكا عشان المساحة
+                        child: Text('${c['flag']} ${c['code']}',
+                            style: const TextStyle(
+                                fontSize: 11)), // صغرنا الخط سيكا عشان المساحة
                       );
                     }).toList(),
                     onChanged: (val) {
@@ -115,7 +127,7 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
                 ),
               ),
               const SizedBox(width: 6),
-              
+
               // ب. خانة إدخال الرقم
               Expanded(
                 child: Container(
@@ -129,15 +141,19 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
                     keyboardType: TextInputType.phone,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(selectedCountry['maxLength']),
+                      LengthLimitingTextInputFormatter(
+                          selectedCountry['maxLength']),
                     ],
                     textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
-                      hintText: selectedCountry['code'] == '+20' ? "1xxxxxxxxx" : "",
-                      hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
+                      hintText:
+                          selectedCountry['code'] == '+20' ? "1xxxxxxxxx" : "",
+                      hintStyle:
+                          const TextStyle(fontSize: 12, color: Colors.grey),
                       isDense: true,
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                     ),
                     style: const TextStyle(fontSize: 13),
                   ),
@@ -156,7 +172,9 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
       children: [
         SizedBox(
           width: 100,
-          child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          child: Text(label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         ),
         Expanded(
           child: Container(
@@ -170,9 +188,13 @@ class _ShippingInfoCardState extends State<ShippingInfoCard> {
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                suffixIcon: icon != null ? Icon(icon, size: 16, color: Colors.black87) : null,
-                suffixIconConstraints: const BoxConstraints(minWidth: 35, minHeight: 20),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                suffixIcon: icon != null
+                    ? Icon(icon, size: 16, color: Colors.black87)
+                    : null,
+                suffixIconConstraints:
+                    const BoxConstraints(minWidth: 35, minHeight: 20),
               ),
               style: const TextStyle(fontSize: 13),
             ),

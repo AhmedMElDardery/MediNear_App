@@ -35,7 +35,8 @@ class MapRemoteDataSource {
         final msg = e.response?.data?['message']?.toString() ?? '';
         debugPrint('Search 400 error: $msg');
 
-        if (msg.toLowerCase().contains('location') || msg.toLowerCase().contains('gps')) {
+        if (msg.toLowerCase().contains('location') ||
+            msg.toLowerCase().contains('gps')) {
           debugPrint('Retrying search WITHOUT lat/lng...');
           try {
             final retryResponse = await dio.get(
@@ -71,14 +72,16 @@ class MapRemoteDataSource {
       if (data['pharmacies'] != null) {
         var targetData = data['pharmacies'];
         if (targetData is List) return targetData;
-        if (targetData is Map && targetData['data'] != null) return List.from(targetData['data']);
+        if (targetData is Map && targetData['data'] != null)
+          return List.from(targetData['data']);
       }
-      if (data['data'] != null && data['data'] is List) return List.from(data['data']);
-      if (data['results'] != null && data['results'] is List) return List.from(data['results']);
+      if (data['data'] != null && data['data'] is List)
+        return List.from(data['data']);
+      if (data['results'] != null && data['results'] is List)
+        return List.from(data['results']);
     }
     return [];
   }
-
 
   Future<List<dynamic>> getAllPharmacies({double? lat, double? lng}) async {
     final Map<String, dynamic> queryParameters = {
@@ -98,7 +101,7 @@ class MapRemoteDataSource {
       '/pharmacy/near-pharmacies',
       queryParameters: queryParameters,
     );
-    
+
     var data = response.data['data'];
     if (data is List) return data;
     if (data is Map && data['data'] != null) return data['data'];
@@ -127,7 +130,8 @@ class MapRemoteDataSource {
   }
 
   // 🆕 إرسال موقع اليوزر للسيرفر عشان يستخدمه في البحث
-  Future<void> updateUserLocation({required double lat, required double lng}) async {
+  Future<void> updateUserLocation(
+      {required double lat, required double lng}) async {
     final formData = FormData.fromMap({
       'latitude': lat.toString(),
       'longitude': lng.toString(),

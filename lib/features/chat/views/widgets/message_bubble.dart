@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medinear_app/features/chat/data/models/message_model.dart';
 
-
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
 
@@ -87,4 +86,3 @@ class MessageBubble extends StatelessWidget {
     );
   }
 }
-

@@ -1,21 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:medinear_app/core/services/token_storage.dart';
+import 'package:medinear_app/core/router/app_router.dart';
+import 'package:medinear_app/core/routes/routes.dart';
 
 class DioClient {
   final Dio dio;
 
   DioClient()
       : dio = Dio(
-    BaseOptions(
-      baseUrl: "https://medinear-eg.com/api",
-      headers: {
-        "Accept" : "application/json",
-        "Content-Type" : "application/json",
-      },
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ),
-  ) {
+          BaseOptions(
+            baseUrl: "https://medinear-eg.com/api",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+            },
+            connectTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 30),
+          ),
+        ) {
     // 🚀 1. Interceptor لسحب التوكن وإضافته أوتوماتيك لأي ريكويست
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -29,6 +31,17 @@ class DioClient {
         }
 
         return handler.next(options);
+      },
+      onError: (DioException e, handler) async {
+        if (e.response?.statusCode == 401) {
+          // Token expired or invalid
+          final tokenStorage = TokenStorage();
+          await tokenStorage.clear();
+          
+          // Force navigate to login screen
+          appRouter.go(AppRoutes.login);
+        }
+        return handler.next(e);
       },
     ));
 

@@ -29,7 +29,8 @@ class MessageBubble extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         child: Column(
-          crossAxisAlignment: isBot ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+          crossAxisAlignment:
+              isBot ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             // فقاعة النص الأساسية
             Container(
@@ -69,7 +70,7 @@ class MessageBubble extends StatelessWidget {
                       ),
               ),
             ),
-            
+
             // الوقت بره الفقاعة ومنظم مع محاذاة الرسالة
             Padding(
               padding: const EdgeInsets.only(top: 4, left: 6, right: 6),

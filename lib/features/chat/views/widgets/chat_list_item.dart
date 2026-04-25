@@ -1,14 +1,14 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 import 'package:medinear_app/features/chat/data/models/chat_model.dart';
 
 import '../chat_details_view.dart'; // ده مكانه الجديد في نفس المجلد// ✅ إضافة استيراد ملف الألوان الجديد للوصول لدالة لون النص
 
-
-class ChatListItem extends StatefulWidget {
+class ChatListItem extends ConsumerStatefulWidget {
   final ChatModel chat;
-  final VoidCallback onDelete; 
-  final VoidCallback onArchive; 
+  final VoidCallback onDelete;
+  final VoidCallback onArchive;
 
   const ChatListItem({
     super.key,
@@ -18,10 +18,10 @@ class ChatListItem extends StatefulWidget {
   });
 
   @override
-  State<ChatListItem> createState() => _ChatListItemState();
+  ConsumerState<ChatListItem> createState() => _ChatListItemState();
 }
 
-class _ChatListItemState extends State<ChatListItem> {
+class _ChatListItemState extends ConsumerState<ChatListItem> {
   double _scale = 1.0;
 
   @override
@@ -33,7 +33,8 @@ class _ChatListItemState extends State<ChatListItem> {
       onTapDown: (_) => setState(() => _scale = 0.97),
       onTapUp: (_) => setState(() => _scale = 1.0),
       onTapCancel: () => setState(() => _scale = 1.0),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatDetailsView())),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ChatDetailsView())),
       child: AnimatedScale(
         scale: _scale,
         duration: const Duration(milliseconds: 150),
@@ -50,7 +51,8 @@ class _ChatListItemState extends State<ChatListItem> {
             boxShadow: [
               BoxShadow(
                 // ✅ تقليل الظل في الدارك مود ليكون التصميم أنظف
-                color: const Color(0xFF198B61).withValues(alpha: isDarkMode ? 0.0 : 0.05),
+                color: const Color(0xFF198B61)
+                    .withValues(alpha: isDarkMode ? 0.0 : 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
@@ -60,10 +62,10 @@ class _ChatListItemState extends State<ChatListItem> {
             padding: const EdgeInsets.all(12.0),
             child: Row(
               children: [
-                _buildAvatar(isDarkMode), 
+                _buildAvatar(isDarkMode),
                 const SizedBox(width: 15),
                 Expanded(child: _buildChatInfo(context, isDarkMode)),
-                _buildTrailingAction(context), 
+                _buildTrailingAction(context),
               ],
             ),
           ),
@@ -77,14 +79,15 @@ class _ChatListItemState extends State<ChatListItem> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: const Color(0xFF198B61).withValues(alpha: 0.2), 
+          color: const Color(0xFF198B61).withValues(alpha: 0.2),
           width: 2,
         ),
       ),
       child: CircleAvatar(
-        radius: 26, 
+        radius: 26,
         // ✅ خلفية متجاوبة لصورة الطبيب
-        backgroundColor: isDarkMode ? Colors.grey[800] : const Color(0xFFF0F5F2),
+        backgroundColor:
+            isDarkMode ? Colors.grey[800] : const Color(0xFFF0F5F2),
         backgroundImage: AssetImage(widget.chat.avatarImagePath),
       ),
     );
@@ -95,23 +98,21 @@ class _ChatListItemState extends State<ChatListItem> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ✅ لون اسم الطبيب متجاوب (أسود/أبيض) لعدم البهتان
-        Text(
-          widget.chat.doctorName, 
-          style: TextStyle(
-            color: AppColors.primaryLight,
-            fontWeight: FontWeight.bold, 
-            fontSize: 17
-          )
-        ),
+        Text(widget.chat.doctorName,
+            style: TextStyle(
+                color: AppColors.primaryLight,
+                fontWeight: FontWeight.bold,
+                fontSize: 17)),
         const SizedBox(height: 4),
         Text(
           widget.chat.isTyping ? "typing..." : widget.chat.lastMessage,
           style: TextStyle(
             // ✅ تعديل لون الرسالة ليكون مقروءاً في الوضعين
-            color: widget.chat.isTyping 
-                ? const Color(0xFF198B61) 
+            color: widget.chat.isTyping
+                ? const Color(0xFF198B61)
                 : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-            fontWeight: widget.chat.isTyping ? FontWeight.w600 : FontWeight.normal,
+            fontWeight:
+                widget.chat.isTyping ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
       ],
@@ -123,15 +124,18 @@ class _ChatListItemState extends State<ChatListItem> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(widget.chat.time, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        Text(widget.chat.time,
+            style: const TextStyle(fontSize: 11, color: Colors.grey)),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_horiz, color: Color(0xFF198B61), size: 28),
+          icon:
+              const Icon(Icons.more_horiz, color: Color(0xFF198B61), size: 28),
           // ✅ خلفية القائمة المنسدلة أصبحت متجاوبة
-          color: Theme.of(context).cardColor, 
-          elevation: 8, 
+          color: Theme.of(context).cardColor,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: const Color(0xFF198B61).withValues(alpha: 0.1)), 
+            side: BorderSide(
+                color: const Color(0xFF198B61).withValues(alpha: 0.1)),
           ),
           onSelected: (value) {
             if (value == 'delete') widget.onDelete();
@@ -143,7 +147,9 @@ class _ChatListItemState extends State<ChatListItem> {
               child: Row(
                 children: [
                   Icon(
-                    widget.chat.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined,
+                    widget.chat.isArchived
+                        ? Icons.unarchive_outlined
+                        : Icons.archive_outlined,
                     color: const Color(0xFF198B61),
                     size: 22,
                   ),
@@ -163,7 +169,8 @@ class _ChatListItemState extends State<ChatListItem> {
               value: 'delete',
               child: Row(
                 children: [
-                  const Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
+                  const Icon(Icons.delete_outline,
+                      color: Colors.redAccent, size: 22),
                   const SizedBox(width: 10),
                   const Text(
                     'Delete Chat',

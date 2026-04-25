@@ -19,7 +19,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         // ✅ استخدام اللون الأساسي من الثيم أو من ملف AppColors الجديد
-        backgroundColor: Theme.of(context).primaryColor, 
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

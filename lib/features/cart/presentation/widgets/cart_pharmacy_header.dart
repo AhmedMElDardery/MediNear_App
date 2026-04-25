@@ -24,14 +24,17 @@ class CartPharmacyHeader extends StatelessWidget {
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5)),
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor: AppColors.primaryLight.withOpacity(0.2),
+            backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
             child: const Icon(Icons.store, color: AppColors.primaryLight),
           ),
           const SizedBox(width: 15),
@@ -41,12 +44,18 @@ class CartPharmacyHeader extends StatelessWidget {
               children: [
                 Text(
                   pharmacyName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.primaryLight),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: AppColors.primaryLight),
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 14, color: AppColors.primaryLight),
-                    Text(location, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                    const Icon(Icons.location_on,
+                        size: 14, color: AppColors.primaryLight),
+                    Text(location,
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 13)),
                   ],
                 ),
               ],
@@ -60,7 +69,10 @@ class CartPharmacyHeader extends StatelessWidget {
             ),
             child: Text(
               "$productsCount Products",
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         ],

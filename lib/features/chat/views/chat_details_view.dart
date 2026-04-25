@@ -1,19 +1,18 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../view_models/chat_details_view_model.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/chat_input_field.dart';
 // ✅ إضافة ملف الألوان للوصول لدالة لون النص التفاعلي
 
-class ChatDetailsView extends StatefulWidget {
+class ChatDetailsView extends ConsumerStatefulWidget {
   const ChatDetailsView({super.key});
 
   @override
-  State<ChatDetailsView> createState() => _ChatDetailsViewState();
+  ConsumerState<ChatDetailsView> createState() => _ChatDetailsViewState();
 }
 
-class _ChatDetailsViewState extends State<ChatDetailsView> {
+class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
   final ChatDetailsViewModel _viewModel = ChatDetailsViewModel();
   final ScrollController _scrollController = ScrollController();
 
@@ -53,7 +52,7 @@ class _ChatDetailsViewState extends State<ChatDetailsView> {
                   // 🚀 لمسة احترافية: توهج خفيف حول صورة الدكتور
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF198B61).withOpacity(0.3),
+                      color: const Color(0xFF198B61).withValues(alpha: 0.3),
                       blurRadius: 8,
                       spreadRadius: 1,
                     )
@@ -92,7 +91,7 @@ class _ChatDetailsViewState extends State<ChatDetailsView> {
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF198B61)
-                      .withOpacity(0.8), // التوهج (الليزر)
+                      .withValues(alpha: 0.8), // التوهج (الليزر)
                   blurRadius: 6, // قوة التوهج
                   spreadRadius: 1, // انتشار الضوء
                   offset: const Offset(0, 2), // اتجاه الضوء لتحت
@@ -172,15 +171,15 @@ class _ChatDetailsViewState extends State<ChatDetailsView> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           // 🚀 قللنا الأعمدة عشان مساحة الأيقونة تكبر وتتنفس
-          crossAxisCount: 7, 
-          mainAxisSpacing: 35, 
+          crossAxisCount: 7,
+          mainAxisSpacing: 35,
           crossAxisSpacing: 35,
         ),
         itemCount: 150, // متناسقة مع عدد الأعمدة
         itemBuilder: (context, index) {
           final int pseudoRandomIndex = (index * 23 + 13) % iconWidgets.length;
           final widget = iconWidgets[pseudoRandomIndex];
-          
+
           // 🚀 الإزاحة يمين وشمال وفوق وتحت بشكل عشوائي عشان نكسر شكل الـ Grid المترتب
           double offsetX = ((index * 13) % 40) - 20.0;
           double offsetY = ((index * 17) % 40) - 20.0;

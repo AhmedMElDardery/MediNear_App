@@ -8,7 +8,13 @@ class OrderModel {
   final String date;
   final List<OrderItemModel> items;
 
-  OrderModel({required this.id, required this.pharmacyName, required this.location, required this.status, required this.date, required this.items});
+  OrderModel(
+      {required this.id,
+      required this.pharmacyName,
+      required this.location,
+      required this.status,
+      required this.date,
+      required this.items});
 
   int get itemsCount => items.fold(0, (sum, item) => sum + item.quantity);
   double get total => items.fold(0.0, (sum, item) => sum + item.total);
@@ -21,7 +27,9 @@ class OrderModel {
       location: json['location'] ?? '',
       status: json['status'] ?? '',
       date: json['date'] ?? '',
-      items: (json['items'] as List).map((i) => OrderItemModel.fromJson(i)).toList(),
+      items: (json['items'] as List)
+          .map((i) => OrderItemModel.fromJson(i))
+          .toList(),
     );
   }
 }

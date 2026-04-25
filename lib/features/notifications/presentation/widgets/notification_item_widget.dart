@@ -22,20 +22,20 @@ class NotificationItemWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: item.isRead 
-              ? (isDark ? Colors.grey[850] : Colors.white) 
-              : theme.primaryColor.withOpacity(0.05),
+          color: item.isRead
+              ? (isDark ? Colors.grey[850] : Colors.white)
+              : theme.primaryColor.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: item.isRead 
-                ? (isDark ? Colors.grey[800]! : Colors.grey.shade200) 
-                : theme.primaryColor.withOpacity(0.3),
+            color: item.isRead
+                ? (isDark ? Colors.grey[800]! : Colors.grey.shade200)
+                : theme.primaryColor.withValues(alpha: 0.3),
           ),
           boxShadow: item.isRead
               ? []
               : [
                   BoxShadow(
-                    color: theme.primaryColor.withOpacity(0.05),
+                    color: theme.primaryColor.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -48,7 +48,7 @@ class NotificationItemWidget extends StatelessWidget {
               height: 48,
               width: 48,
               decoration: BoxDecoration(
-                color: item.iconColor.withOpacity(0.1),
+                color: item.iconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(item.icon, color: item.iconColor, size: 24),
@@ -66,7 +66,8 @@ class NotificationItemWidget extends StatelessWidget {
                           item.title,
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: item.isRead ? FontWeight.w600 : FontWeight.w800,
+                            fontWeight:
+                                item.isRead ? FontWeight.w600 : FontWeight.w800,
                             color: theme.textTheme.bodyMedium?.color,
                           ),
                           maxLines: 1,
@@ -85,7 +86,9 @@ class NotificationItemWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      color: item.isRead ? Colors.grey[600] : theme.textTheme.bodyMedium?.color,
+                      color: item.isRead
+                          ? Colors.grey[600]
+                          : theme.textTheme.bodyMedium?.color,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

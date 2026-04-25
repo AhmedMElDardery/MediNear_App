@@ -5,10 +5,10 @@ class ChatBotRepository {
     return [
       ChatMessage(
         // ✅ الـ ID والـ Timestamp هيفضلوا زي ما هما
-        id: 'repo_start_msg', 
-        text: 'Welcome to MidiNear Smart Assistant!', 
+        id: 'repo_start_msg',
+        text: 'Welcome to MidiNear Smart Assistant!',
         isBot: true,
-        timestamp: DateTime.now(), 
+        timestamp: DateTime.now(),
       )
     ];
   }

@@ -12,7 +12,7 @@ class SocialButton extends StatelessWidget {
     required this.text,
     required this.iconPath,
     required this.onTap,
-    });
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +36,25 @@ class SocialButton extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [ 
-            Image.asset(iconPath, height: 30,),
-            const SizedBox(width: 6,),
+          children: [
+            Image.asset(
+              iconPath,
+              height: 30,
+            ),
+            const SizedBox(
+              width: 6,
+            ),
             Text(
               text,
-               textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87
-              ),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87),
             ),
-            const SizedBox(width: 10,), // To balance the space taken by the icon
+            const SizedBox(
+              width: 10,
+            ), // To balance the space taken by the icon
           ],
         ),
       ),

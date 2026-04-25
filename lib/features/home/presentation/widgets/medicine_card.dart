@@ -1,18 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/medicine_entity.dart';
 
-class MedicineCard extends StatefulWidget {
+class MedicineCard extends ConsumerStatefulWidget {
   final MedicineEntity medicine;
 
   const MedicineCard({super.key, required this.medicine});
 
   @override
-  State<MedicineCard> createState() => _MedicineCardState();
+  ConsumerState<MedicineCard> createState() => _MedicineCardState();
 }
 
-class _MedicineCardState extends State<MedicineCard>
+class _MedicineCardState extends ConsumerState<MedicineCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
@@ -56,7 +57,9 @@ class _MedicineCardState extends State<MedicineCard>
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black26 : Colors.black.withOpacity(0.07),
+                color: isDark
+                    ? Colors.black26
+                    : Colors.black.withValues(alpha: 0.07),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -76,9 +79,11 @@ class _MedicineCardState extends State<MedicineCard>
                     child: Container(
                       height: 105,
                       width: double.infinity,
-                      color: isDark ? const Color(0xFF121212) : const Color(0xFFF0FBF5),
+                      color: isDark
+                          ? const Color(0xFF121212)
+                          : const Color(0xFFF0FBF5),
                       child: widget.medicine.imageUrl.isNotEmpty
-                          ? (widget.medicine.imageUrl.startsWith('http') 
+                          ? (widget.medicine.imageUrl.startsWith('http')
                               ? CachedNetworkImage(
                                   imageUrl: widget.medicine.imageUrl,
                                   height: 105,
@@ -87,9 +92,14 @@ class _MedicineCardState extends State<MedicineCard>
                                   fadeInDuration: Duration.zero,
                                   fadeOutDuration: Duration.zero,
                                   memCacheWidth: 200,
-                                  placeholder: (context, url) => Shimmer.fromColors(
-                                    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                                    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: isDark
+                                        ? Colors.grey.shade800
+                                        : Colors.grey.shade300,
+                                    highlightColor: isDark
+                                        ? Colors.grey.shade700
+                                        : Colors.grey.shade100,
                                     child: Container(color: Colors.white),
                                   ),
                                   errorWidget: (context, url, error) =>
@@ -129,7 +139,8 @@ class _MedicineCardState extends State<MedicineCard>
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
                         color: const Color(0xFF00965E),
                         borderRadius: BorderRadius.circular(20),
@@ -189,13 +200,15 @@ class _MedicineCardState extends State<MedicineCard>
                             borderRadius: BorderRadius.circular(9),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF00965E).withOpacity(0.3),
+                                color: const Color(0xFF00965E)
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
+                          child: const Icon(Icons.add_rounded,
+                              size: 18, color: Colors.white),
                         ),
                       ],
                     ),

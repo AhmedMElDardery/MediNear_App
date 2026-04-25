@@ -22,7 +22,7 @@ class OrderItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -35,13 +35,14 @@ class OrderItemCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withOpacity(0.1),
+              color: AppColors.primaryLight.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.medication_outlined, color: AppColors.primaryLight, size: 30),
+            child: const Icon(Icons.medication_outlined,
+                color: AppColors.primaryLight, size: 30),
           ),
           const SizedBox(width: 15),
-          
+
           // 2. الاسم والكمية
           Expanded(
             child: Column(
@@ -49,13 +50,16 @@ class OrderItemCard extends StatelessWidget {
               children: [
                 Text(
                   item.name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: textColor),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: textColor),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   "Qty: ${item.quantity}",
                   style: TextStyle(
-                    color: textColor?.withOpacity(0.6),
+                    color: textColor?.withValues(alpha: 0.6),
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),

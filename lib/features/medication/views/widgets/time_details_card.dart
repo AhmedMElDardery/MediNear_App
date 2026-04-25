@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medinear_app/features/alarm/view_models/alarm_view_model.dart';
 
-
 class TimeDetailsCard extends StatelessWidget {
   final AlarmViewModel viewModel;
   const TimeDetailsCard({super.key, required this.viewModel});
@@ -19,10 +18,9 @@ class TimeDetailsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            // ضبط درجة شفافية الظل لتناسب وضع الرؤية الحالي
-            color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.05), 
-            blurRadius: 10
-          )
+              // ضبط درجة شفافية الظل لتناسب وضع الرؤية الحالي
+              color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.05),
+              blurRadius: 10)
         ],
       ),
       child: Column(
@@ -30,23 +28,26 @@ class TimeDetailsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Medication Time", 
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text("Medication Time",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               IconButton(
                 onPressed: () => _selectTime(context),
                 // ربط لون الأيقونة باللون الأساسي للمشروع
-                icon: Icon(Icons.add_circle, 
-                  color: Theme.of(context).primaryColor, size: 28),
+                icon: Icon(Icons.add_circle,
+                    color: Theme.of(context).primaryColor, size: 28),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          
+
           // استخدام asMap لاستخراج الرقم التعريفي (Index) لكل توقيت
-          ...viewModel.times.asMap().entries.map((entry) => _buildTimeRow(context, entry.value, entry.key)),
-          
+          ...viewModel.times
+              .asMap()
+              .entries
+              .map((entry) => _buildTimeRow(context, entry.value, entry.key)),
+
           const Divider(height: 30),
-          
+
           // قسم تعديل تاريخ بدء الجرعات
           InkWell(
             onTap: () => _selectDate(context),
@@ -55,19 +56,17 @@ class TimeDetailsCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.calendar_today_outlined, 
-                      size: 18, color: Theme.of(context).primaryColor),
+                    Icon(Icons.calendar_today_outlined,
+                        size: 18, color: Theme.of(context).primaryColor),
                     const SizedBox(width: 8),
-                    Text(viewModel.startDate, 
-                      style: const TextStyle(fontWeight: FontWeight.w500)),
+                    Text(viewModel.startDate,
+                        style: const TextStyle(fontWeight: FontWeight.w500)),
                   ],
                 ),
-                Text("Edit Date", 
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor, 
-                    fontWeight: FontWeight.bold
-                  )
-                ),
+                Text("Edit Date",
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -91,10 +90,12 @@ class TimeDetailsCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.access_time_filled, 
-            size: 20, color: Theme.of(context).primaryColor),
+          Icon(Icons.access_time_filled,
+              size: 20, color: Theme.of(context).primaryColor),
           const SizedBox(width: 10),
-          Text(time, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(time,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const Spacer(),
           // التفاعل مع أيقونة الصوت وتغيير حالتها بناءً على الـ Index
           GestureDetector(
@@ -135,6 +136,7 @@ class TimeDetailsCard extends StatelessWidget {
         child: child!,
       ),
     );
-    if (picked != null) viewModel.updateStartDate("${picked.year}-${picked.month}-${picked.day}");
+    if (picked != null)
+      viewModel.updateStartDate("${picked.year}-${picked.month}-${picked.day}");
   }
 }

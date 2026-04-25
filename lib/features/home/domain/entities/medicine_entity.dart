@@ -10,5 +10,4 @@ class MedicineEntity {
     required this.imageUrl,
     required this.price,
   });
-   
 }

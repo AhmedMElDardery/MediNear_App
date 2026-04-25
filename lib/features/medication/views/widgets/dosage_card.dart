@@ -3,9 +3,6 @@ import 'package:medinear_app/core/theme/app_colors.dart';
 import 'package:medinear_app/features/alarm/view_models/alarm_view_model.dart';
 // Core & Theme - استيراد الألوان باستخدام مسار الـ package الثابت
 
-
-
-
 class DosageCard extends StatelessWidget {
   final AlarmViewModel viewModel;
 
@@ -28,12 +25,10 @@ class DosageCard extends StatelessWidget {
             // ❌ تم إزالة const من هنا لأننا سنقرأ حالة الثيم
             children: [
               Text('Dosage & Instructions',
-                  style: Theme.of(context).textTheme.titleLarge
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 6),
               Text('Dose (e.g., 1 tablet)',
-                  style: Theme.of(context).textTheme.titleLarge
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
               const Text('Take with water after breakfast',
                   style: TextStyle(fontSize: 13, color: Colors.grey)),
@@ -45,15 +40,10 @@ class DosageCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               // ✅ إطار متجاوب (أسود في الفاتح، وأبيض في الدارك)
-              border: Border.all(
-                color: AppColors.border, 
-                width: 1.5
-              ),
+              border: Border.all(color: AppColors.border, width: 1.5),
             ),
-            child: Text(
-              '${viewModel.doseCount}',
-              style: Theme.of(context).textTheme.bodyMedium
-            ),
+            child: Text('${viewModel.doseCount}',
+                style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

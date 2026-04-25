@@ -3,25 +3,25 @@ import 'package:medinear_app/features/medication/data/models/medication_model.da
 import 'package:medinear_app/features/medication/views/widgets/medication_card.dart';
 import 'package:medinear_app/features/wallet/view_models/wallet_view_model.dart';
 import 'package:medinear_app/features/wallet/views/widgets/custom_button.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 
 // 🚨 السطر اللي كان ناقص ومسبب كل المشاكل:
-class WalletView extends StatelessWidget {
+class WalletView extends ConsumerWidget {
   const WalletView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // جلب الـ ViewModel
-    final viewModel = Provider.of<WalletViewModel>(context);
+    final viewModel = ref.watch(walletViewModelProvider);
 
     return Scaffold(
       // ✅ جعل الخلفية ديناميكية تتبع الثيم (Light/Dark)
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      
+
       appBar: AppBar(
         elevation: 0,
-        title: const Text('Wallet'), 
+        title: const Text('Wallet'),
         centerTitle: true,
       ),
       body: Container(
@@ -30,8 +30,8 @@ class WalletView extends StatelessWidget {
           children: [
             // زر الإضافة
             CustomButton(
-              label: 'Add New', 
-              icon: Icons.add, 
+              label: 'Add New',
+              icon: Icons.add,
               onPressed: () {
                 viewModel.addMedication(
                   MedicationModel(
@@ -44,7 +44,7 @@ class WalletView extends StatelessWidget {
               },
             ),
             const SizedBox(height: 20),
-            
+
             // الفلاتر المتفاعلة (ChoiceChips)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -63,21 +63,21 @@ class WalletView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // القائمة الديناميكية
             Expanded(
-              child: viewModel.medications.isEmpty 
-                ? const Center(child: Text("No medications added yet.")) 
-                : ListView.builder(
-                    itemCount: viewModel.medications.length,
-                    itemBuilder: (context, index) {
-                      final med = viewModel.medications[index];
-                      return MedicationCard(
-                        medication: med,
-                        onDelete: () => viewModel.deleteMedication(med.id),
-                      );
-                    },
-                  ),
+              child: viewModel.medications.isEmpty
+                  ? const Center(child: Text("No medications added yet."))
+                  : ListView.builder(
+                      itemCount: viewModel.medications.length,
+                      itemBuilder: (context, index) {
+                        final med = viewModel.medications[index];
+                        return MedicationCard(
+                          medication: med,
+                          onDelete: () => viewModel.deleteMedication(med.id),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

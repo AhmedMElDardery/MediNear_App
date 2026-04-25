@@ -20,7 +20,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final String? accessToken = googleAuth.accessToken;
 
       if (accessToken == null) throw Exception('فشل في الحصول على بيانات جوجل');
@@ -39,7 +40,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           response.data['data']['token'],
         );
       } else {
-        throw Exception(response.data['message'] ?? 'فشل تسجيل الدخول من السيرفر.');
+        throw Exception(
+            response.data['message'] ?? 'فشل تسجيل الدخول من السيرفر.');
       }
     } catch (e) {
       await _googleSignIn.signOut();
@@ -69,7 +71,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             response.data['data']['token'],
           );
         } else {
-          throw Exception(response.data['message'] ?? 'فشل تسجيل الدخول من السيرفر.');
+          throw Exception(
+              response.data['message'] ?? 'فشل تسجيل الدخول من السيرفر.');
         }
       } else if (result.status == LoginStatus.cancelled) {
         return null;
@@ -89,7 +92,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (await _googleSignIn.isSignedIn()) {
         await _googleSignIn.disconnect(); // بيمسح الأكونت من الذاكرة
         await _googleSignIn.signOut();
-        if (kDebugMode) print("🧹 [Remote] Google Account Disconnected & Signed Out");
+        if (kDebugMode)
+          debugPrint("🧹 [Remote] Google Account Disconnected & Signed Out");
       }
       await FacebookAuth.instance.logOut();
       if (kDebugMode) print("🧹 [Remote] Facebook Signed Out");

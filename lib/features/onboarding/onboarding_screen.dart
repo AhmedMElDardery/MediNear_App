@@ -3,22 +3,23 @@
 // import 'package:medinear_app/core/components/primary_button.dart';
 // import 'package:medinear_app/core/theme/app_colors.dart';
 // import 'package:medinear_app/features/onboarding/onboarding_provider.dart';
-// import 'package:provider/provider.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 // import 'package:medinear_app/features/onboarding/onboarding_page.dart';
 
-// class OnboardingScreen extends StatefulWidget {
+// class OnboardingScreen extends ConsumerStatefulWidget {
 //   const OnboardingScreen({super.key});
 
 //   @override
-//   State<OnboardingScreen> createState() => _OnboardingScreenState();
+//   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 // }
 
-// class _OnboardingScreenState extends State<OnboardingScreen> {
+// class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 //   final PageController _controller =PageController();
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final Provider = context.watch<OnboardingProvider>();
+//     final Provider = ref.watch(onboardingProvider);
 
 //     return Scaffold(
 //       backgroundColor: AppColors.backgroundLight,
@@ -58,13 +59,13 @@
 //             child: PrimaryButton(
 //               text: Provider.currentIndex == 2
 //               ? "Start Using MediNear"
-//               : "Next", 
+//               : "Next",
 //               onPressed: (){
 //                 if (Provider.currentIndex == 2) {
 //                   Provider.finishOnboarding(context);
 //                 } else {
 //                   _controller.nextPage(
-//                     duration: const Duration(milliseconds: 400), 
+//                     duration: const Duration(milliseconds: 400),
 //                     curve: Curves.easeInOut
 //                     );
 //                 }
@@ -73,7 +74,7 @@
 //           ),
 //           const SizedBox(height: 10,),
 //           TextButton(
-//             onPressed: () => Provider.finishOnboarding(context), 
+//             onPressed: () => Provider.finishOnboarding(context),
 //             child: const Text("Skip"),
 //             ),
 //             const SizedBox(height: 20,)
@@ -89,53 +90,47 @@ import 'package:flutter/material.dart';
 import 'package:medinear_app/core/components/animated_dots.dart';
 import 'package:medinear_app/features/onboarding/onboarding_page.dart';
 import 'package:medinear_app/features/onboarding/onboarding_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 
-
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
-
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _controller = PageController();
 
   @override
   Widget build(BuildContext context) {
-
-    final provider = context.watch<OnboardingProvider>();
+    final provider = ref.watch(onboardingProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
-
             Expanded(
               child: PageView(
                 physics: const BouncingScrollPhysics(),
                 controller: _controller,
                 onPageChanged: provider.changePage,
                 children: const [
-
                   OnboardingPage(
                     image: "assets/images/onboarding_1.jpg",
                     title: "Welcome to Medinear",
                     desc:
                         "Your trusted health partner for easy and fast medication delivery.",
                   ),
-
                   OnboardingPage(
                     image: "assets/images/onboarding_2.jpg",
                     title: "Manage Your Health",
                     desc:
                         "Keep track of all your medications with smart reminders and easy-access health records.",
                   ),
-
                   OnboardingPage(
                     image: "assets/images/onboarding_3.jpg",
                     title: "Care for your family",
@@ -145,14 +140,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
-
-             AnimatedDots(
+            AnimatedDots(
               currentIndex: provider.currentIndex,
               count: 3,
             ),
-
             const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
@@ -177,13 +169,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   onPressed: () {
-
                     if (provider.currentIndex == 2) {
-
                       provider.finishOnboarding(context);
-
                     } else {
-
                       _controller.nextPage(
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeInOut,
@@ -193,14 +181,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
             TextButton(
               onPressed: () => provider.finishOnboarding(context),
-              child: const Text("Skip", style: TextStyle(color: Colors.white),),
+              child: const Text(
+                "Skip",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),

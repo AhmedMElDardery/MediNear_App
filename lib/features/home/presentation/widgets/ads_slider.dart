@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -5,16 +6,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/ad_entity.dart';
 
-class AdsSlider extends StatefulWidget {
+class AdsSlider extends ConsumerStatefulWidget {
   final List<AdEntity> ads;
 
   const AdsSlider({super.key, required this.ads});
 
   @override
-  State<AdsSlider> createState() => _AdsSliderState();
+  ConsumerState<AdsSlider> createState() => _AdsSliderState();
 }
 
-class _AdsSliderState extends State<AdsSlider> {
+class _AdsSliderState extends ConsumerState<AdsSlider> {
   final PageController _controller = PageController();
   int _currentPage = 0;
   Timer? _autoPlayTimer;
@@ -31,7 +32,9 @@ class _AdsSliderState extends State<AdsSlider> {
   void _startAutoPlay() {
     _autoPlayTimer?.cancel();
     _autoPlayTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!_userInteracting && _controller.hasClients && widget.ads.isNotEmpty) {
+      if (!_userInteracting &&
+          _controller.hasClients &&
+          widget.ads.isNotEmpty) {
         final next = (_currentPage + 1) % widget.ads.length;
         _controller.animateToPage(
           next,
@@ -100,103 +103,119 @@ class _AdsSliderState extends State<AdsSlider> {
                 final ad = widget.ads[index];
                 return GestureDetector(
                   onTap: () => _openLink(ad.redirectUrl),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: index == _currentPage ? 0 : 6,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: ad.imageUrl,
-                          fit: BoxFit.cover,
-                          fadeInDuration: Duration.zero,
-                          fadeOutDuration: Duration.zero,
-                          memCacheWidth: 800,
-                          placeholder: (context, url) => Shimmer.fromColors(
-                            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                            highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-                            child: Container(color: Colors.white),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Color(0xFF00965E), Color(0xFF00C47A)],
-                              ),
-                            ),
-                            child: const Icon(Icons.local_pharmacy_rounded, size: 60, color: Colors.white),
-                          ),
-                        ),
-                        // Gradient overlay
-                        if (ad.title != null && ad.title!.isNotEmpty)
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(14, 30, 14, 14),
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [Color(0xCC000000), Colors.transparent],
-                                ),
-                              ),
-                              child: Text(
-                                ad.title!,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        // Tap indicator
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.touch_app_rounded, size: 12, color: Colors.white),
-                                SizedBox(width: 3),
-                                Text("Tap", style: TextStyle(fontSize: 11, color: Colors.white)),
-                              ],
-                            ),
-                          ),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: index == _currentPage ? 0 : 6,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: ad.imageUrl,
+                            fit: BoxFit.cover,
+                            fadeInDuration: Duration.zero,
+                            fadeOutDuration: Duration.zero,
+                            memCacheWidth: 800,
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
+                              highlightColor: isDark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade100,
+                              child: Container(color: Colors.white),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xFF00965E),
+                                    Color(0xFF00C47A)
+                                  ],
+                                ),
+                              ),
+                              child: const Icon(Icons.local_pharmacy_rounded,
+                                  size: 60, color: Colors.white),
+                            ),
+                          ),
+                          // Gradient overlay
+                          if (ad.title != null && ad.title!.isNotEmpty)
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(14, 30, 14, 14),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Color(0xCC000000),
+                                      Colors.transparent
+                                    ],
+                                  ),
+                                ),
+                                child: Text(
+                                  ad.title!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // Tap indicator
+                          Positioned(
+                            top: 12,
+                            right: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.35),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.touch_app_rounded,
+                                      size: 12, color: Colors.white),
+                                  SizedBox(width: 3),
+                                  Text("Tap",
+                                      style: TextStyle(
+                                          fontSize: 11, color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
-      ),
 
         // Dots Indicator
         if (widget.ads.length > 1) ...[
@@ -211,7 +230,9 @@ class _AdsSliderState extends State<AdsSlider> {
                 width: isActive ? 20 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: isActive ? const Color(0xFF00965E) : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                  color: isActive
+                      ? const Color(0xFF00965E)
+                      : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(3),
                 ),
               );
