@@ -20,10 +20,10 @@ import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 
 class AppRoutes {
   static const splash = '/';
-  static const onboarding = '/onbaording';
+  static const onboarding = '/onboarding';
   static const login = '/login';
   static const home = '/home';
-  static const notification ='/notification';
+  static const notification = '/notification';
   static const map = '/map';
   static const saveditems = '/saved_items';
   static const pharmacy = '/pharmacy';
@@ -40,31 +40,26 @@ class AppRoutes {
   static const wallet = '/wallet';
   static const support = '/support';
 
-
-
-
-  static final  routes = {
+  static final routes = {
     splash: (_) => const SplashScreen(),
     onboarding: (_) => const OnboardingScreen(),
     login: (_) => const LoginScreen(),
     home: (_) => const MainLayoutScreen(),
-    notification : (_) => const NotificationsScreen(),
-    map : (_) => const MapScreen(medicine: ""),
-    saveditems : (_) => const SavedItemsScreen(),
-    mycart : (_) => const MyCartScreen(pharmacyName: "Al Noor",),
-    cart : (_) => const CartPharmaciesScreen(),
-    about : (_) => const AboutSupportScreen(),
-    myorder : (_) => const MyOrdersScreen(),
-    profile : (_) => const MainLayoutScreen(), 
-    chats : (_) => const ChatsView(),
-    chatdetails : (_) => const ChatDetailsView(),
-    chatbot : (_) => const ChatBotView(),
-    alarm : (_) => const AlarmView(),
-    wallet : (_) => const WalletView(),
-    support : (_) => const SupportScreen(),
-
-    
-
+    notification: (_) => const NotificationsScreen(),
+    map: (_) => const MapScreen(medicine: ""),
+    saveditems: (_) => const SavedItemsScreen(),
+    mycart: (_) => const MyCartScreen(
+          pharmacyName: "Al Noor",
+        ),
+    cart: (_) => const CartPharmaciesScreen(),
+    about: (_) => const AboutSupportScreen(),
+    myorder: (_) => const MyOrdersScreen(),
+    profile: (_) => const MainLayoutScreen(),
+    chats: (_) => const ChatsView(),
+    chatdetails: (_) => const ChatDetailsView(),
+    chatbot: (_) => const ChatBotView(),
+    alarm: (_) => const AlarmView(),
+    wallet: (_) => const WalletView(),
+    support: (_) => const SupportScreen(),
   };
-
 }

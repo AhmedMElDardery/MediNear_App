@@ -4,7 +4,7 @@ class CartItemModel {
   final double price;
   int quantity;
   final bool isAvailable;
-  
+
   // 🚀 الإضافات الجديدة
   final String pharmacyName;
   final String pharmacyLocation;

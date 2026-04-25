@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 class ApiErrorHandler {
   static String getMessage(dynamic error) {
     if (error is DioException) {
-
       // 🚀 لغينا قراءة رسائل السيرفر العربي، وهنعتمد على الإنجليزي بتاعنا بس
       /*
       if (error.response != null && error.response?.data != null) {
@@ -32,7 +31,6 @@ class ApiErrorHandler {
             case 401:
               return "Unauthorized. Incorrect email or password.";
             case 403:
-
               return "Forbidden. Your account has been temporarily suspended.";
             case 404:
               return "Not found. The requested data does not exist.";

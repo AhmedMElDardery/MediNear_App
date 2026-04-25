@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medinear_app/features/alarm/data/models/alarm_model.dart';
 
-
 class MedicationHeaderCard extends StatelessWidget {
   final AlarmModel model;
 
@@ -27,10 +26,13 @@ class MedicationHeaderCard extends StatelessWidget {
         children: [
           const Icon(Icons.medication, color: Color(0xFF198B61), size: 32),
           const SizedBox(width: 16),
-          Expanded( // أضفنا Expanded عشان لو النص طويل ميكسرش الـ Row
+          Expanded(
+            // أضفنا Expanded عشان لو النص طويل ميكسرش الـ Row
             child: Text(
               // نستخدم شرط بسيط للتأكد إن النص مش فاضي
-              model.medicationName.isEmpty ? 'دواء جديد' : '${model.medicationName} ${model.dosageInfo}',
+              model.medicationName.isEmpty
+                  ? 'دواء جديد'
+                  : '${model.medicationName} ${model.dosageInfo}',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

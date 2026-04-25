@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:medinear_app/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:medinear_app/core/services/token_storage.dart';
 
@@ -22,11 +23,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final response = await dio.get("/pharmacy/ads");
 
       // 🧪 DEBUG: نشوف الـ response كامل
-      print("======= ADS RESPONSE =======");
-      print("Status Code: ${response.statusCode}");
-      print("Data: ${response.data}");
-      print("Data type: ${response.data.runtimeType}");
-      print("============================");
+      debugPrint("======= ADS RESPONSE =======");
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Data: ${response.data}");
+      debugPrint("Data type: ${response.data.runtimeType}");
+      debugPrint("============================");
 
       final data = response.data;
 
@@ -37,11 +38,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       } else if (data is List) {
         return List<Map<String, dynamic>>.from(data);
       } else {
-        print("Unexpected ads structure: $data");
+        debugPrint("Unexpected ads structure: $data");
         return [];
       }
     } catch (e) {
-      print("Ads Error: $e");
+      debugPrint("Ads Error: $e");
       throw Exception("Ads Error: $e");
     }
   }
@@ -51,7 +52,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       double lat, double lng) async {
     try {
       final token = await tokenStorage.getToken();
-      print("Token for Pharmacies: $token");
+      debugPrint("Token for Pharmacies: $token");
 
       final response = await dio.get(
         "/pharmacy/near-pharmacies",
@@ -75,9 +76,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       );
 
       // 🧪 DEBUG
-      print("======= PHARMACIES RESPONSE =======");
-      print("Data: ${response.data}");
-      print("===================================");
+      debugPrint("======= PHARMACIES RESPONSE =======");
+      debugPrint("Data: ${response.data}");
+      debugPrint("===================================");
 
       final data = response.data;
 
@@ -124,9 +125,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       );
 
       // 🧪 DEBUG
-      print("======= MEDICINES RESPONSE =======");
-      print("Data: ${response.data}");
-      print("==================================");
+      debugPrint("======= MEDICINES RESPONSE =======");
+      debugPrint("Data: ${response.data}");
+      debugPrint("==================================");
 
       final data = response.data;
 

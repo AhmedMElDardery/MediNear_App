@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -14,13 +15,12 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasImage =
-        user?.imageUrl != null && user!.imageUrl!.isNotEmpty;
+    final hasImage = user?.imageUrl != null && user!.imageUrl!.isNotEmpty;
 
     if (hasImage) {
       return CircleAvatar(
         radius: radius,
-        backgroundImage: NetworkImage(user!.imageUrl!),
+        backgroundImage: CachedNetworkImageProvider(user!.imageUrl!),
       );
     }
 

@@ -21,7 +21,8 @@ class PharmacyProvider extends ChangeNotifier {
   bool get isPharmacySaved => _isPharmacySaved; // 🚀 Getter عشان الـ UI يقراه
 
   // 1. جلب البيانات من الـ API
-  Future<void> fetchPharmacyData(String pharmacyId, {bool isSavedLocally = false}) async {
+  Future<void> fetchPharmacyData(String pharmacyId,
+      {bool isSavedLocally = false}) async {
     bool isSilent = _currentPharmacyId == pharmacyId && _medicines.isNotEmpty;
     _currentPharmacyId = pharmacyId;
     if (!isSilent) {
@@ -30,10 +31,10 @@ class PharmacyProvider extends ChangeNotifier {
     }
     try {
       final data = await _dataSource.getPharmacyDetails(pharmacyId);
-      
+
       // 🚀 بنقرا حالة الحفظ اللي جاية من الـ API، ولو مش موجودة بنعتمد على اللوكال
       _isPharmacySaved = (data['is_saved'] == true) || isSavedLocally;
-      
+
       _medicines = data['medicines'] as List<PharmacyMedicineModel>;
       _doctors = data['doctors'] as List<PharmacyDoctorModel>;
       _services = data['services'] as List<PharmacyServiceModel>;
@@ -55,7 +56,7 @@ class PharmacyProvider extends ChangeNotifier {
 
     // بنكلم السيرفر في الخلفية
     bool success = await _dataSource.toggleSavePharmacy(_currentPharmacyId);
-    
+
     if (!success) {
       // لو السيرفر رفض أو حصل إيرور، بنرجع الزرار زي ما كان
       _isPharmacySaved = !_isPharmacySaved;
@@ -69,33 +70,48 @@ class PharmacyProvider extends ChangeNotifier {
     _searchQuery = query;
     notifyListeners();
   }
+
   List<PharmacyMedicineModel> get filteredMedicines {
     if (_searchQuery.isEmpty) return _medicines;
-    return _medicines.where((m) => m.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    return _medicines
+        .where((m) => m.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
+
   List<PharmacyDoctorModel> get filteredDoctors {
     if (_searchQuery.isEmpty) return _doctors;
-    return _doctors.where((d) => d.name.toLowerCase().contains(_searchQuery.toLowerCase()) || d.specialty.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    return _doctors
+        .where((d) =>
+            d.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            d.specialty.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
+
   List<PharmacyServiceModel> get filteredServices {
     if (_searchQuery.isEmpty) return _services;
-    return _services.where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    return _services
+        .where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
+
   void toggleMedicineSaved(int id) {
     final item = _medicines.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;
     notifyListeners();
   }
+
   void toggleMedicineNotify(int id) {
     final item = _medicines.firstWhere((e) => e.id == id);
     item.notifyAvailable = !item.notifyAvailable;
     notifyListeners();
   }
+
   void toggleDoctorSaved(int id) {
     final item = _doctors.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;
     notifyListeners();
   }
+
   void toggleServiceSaved(int id) {
     final item = _services.firstWhere((e) => e.id == id);
     item.isSaved = !item.isSaved;

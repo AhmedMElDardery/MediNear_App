@@ -18,7 +18,7 @@ class NotificationModel extends NotificationEntity {
       title: json['title'] ?? '',
       body: json['body'] ?? '',
       time: json['time'] ?? '',
-      icon: Icons.notifications, 
+      icon: Icons.notifications,
       iconColor: Colors.blue,
       isRead: json['isRead'] ?? false,
     );

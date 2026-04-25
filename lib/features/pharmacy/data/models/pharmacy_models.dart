@@ -11,21 +11,28 @@ class PharmacyMedicineModel {
   bool isSaved;
 
   PharmacyMedicineModel({
-    required this.id, required this.name, required this.oldPrice, required this.price,
-    required this.discount, required this.rating, required this.inStock,
-    required this.image, this.notifyAvailable = false, this.isSaved = false,
+    required this.id,
+    required this.name,
+    required this.oldPrice,
+    required this.price,
+    required this.discount,
+    required this.rating,
+    required this.inStock,
+    required this.image,
+    this.notifyAvailable = false,
+    this.isSaved = false,
   });
 
   factory PharmacyMedicineModel.fromJson(Map<String, dynamic> json) {
     return PharmacyMedicineModel(
-      id: json['id'] ?? json['medicine_id'] ?? 0, 
-      name: json['name'] ?? '', 
+      id: json['id'] ?? json['medicine_id'] ?? 0,
+      name: json['name'] ?? '',
       oldPrice: (json['oldPrice'] ?? 0).toDouble(),
-      price: (json['price'] ?? 0).toDouble(), 
+      price: (json['price'] ?? 0).toDouble(),
       discount: json['discount'] ?? 0,
-      rating: (json['rating'] ?? 0).toDouble(), 
+      rating: (json['rating'] ?? 0).toDouble(),
       inStock: json['inStock'] ?? (json['status'] == 'available') ?? true,
-      image: json['image'] ?? '', 
+      image: json['image'] ?? '',
       notifyAvailable: json['notifyAvailable'] ?? false,
       isSaved: json['isSaved'] ?? json['is_saved'] ?? false,
     );
@@ -41,14 +48,22 @@ class PharmacyDoctorModel {
   bool isSaved;
 
   PharmacyDoctorModel({
-    required this.id, required this.name, required this.specialty,
-    required this.rating, this.image, this.isSaved = false,
+    required this.id,
+    required this.name,
+    required this.specialty,
+    required this.rating,
+    this.image,
+    this.isSaved = false,
   });
 
   factory PharmacyDoctorModel.fromJson(Map<String, dynamic> json) {
     return PharmacyDoctorModel(
-      id: json['id'] ?? 0, name: json['name'] ?? '', specialty: json['specialty'] ?? '',
-      rating: (json['rating'] ?? 0).toDouble(), image: json['image'], isSaved: json['isSaved'] ?? false,
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      specialty: json['specialty'] ?? '',
+      rating: (json['rating'] ?? 0).toDouble(),
+      image: json['image'],
+      isSaved: json['isSaved'] ?? false,
     );
   }
 }
@@ -62,14 +77,22 @@ class PharmacyServiceModel {
   bool isSaved;
 
   PharmacyServiceModel({
-    required this.id, required this.name, required this.price,
-    required this.duration, required this.image, this.isSaved = false,
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.duration,
+    required this.image,
+    this.isSaved = false,
   });
 
   factory PharmacyServiceModel.fromJson(Map<String, dynamic> json) {
     return PharmacyServiceModel(
-      id: json['id'] ?? 0, name: json['name'] ?? '', price: (json['price'] ?? 0).toDouble(),
-      duration: json['duration'] ?? '', image: json['image'] ?? '', isSaved: json['isSaved'] ?? false,
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      duration: json['duration'] ?? '',
+      image: json['image'] ?? '',
+      isSaved: json['isSaved'] ?? false,
     );
   }
 }

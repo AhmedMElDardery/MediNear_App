@@ -4,10 +4,9 @@ class AdEntity {
   final String? title;
   final String? redirectUrl;
 
-  const AdEntity({
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.redirectUrl
-  });
+  const AdEntity(
+      {required this.id,
+      required this.imageUrl,
+      required this.title,
+      required this.redirectUrl});
 }

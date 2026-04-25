@@ -18,7 +18,8 @@ class MapProvider extends ChangeNotifier {
   List<PharmacyEntity> pharmacies = [];
   String? selectedPharmacyId;
 
-  bool isMedicineSearch = true; // true = بحث عن دواء | false = بحث عن اسم صيدلية
+  bool isMedicineSearch =
+      true; // true = بحث عن دواء | false = بحث عن اسم صيدلية
   bool showSuggestions = false;
   List<RecentSearchEntity> recentSearches = [];
   List<MedicineEntity> medicineSuggestions = [];
@@ -27,37 +28,45 @@ class MapProvider extends ChangeNotifier {
   // 🚀 بنحفظ آخر كلمة بحث عشان لو اليوزر بدل النوع (دواء/صيدلية) نبحث بيها فوراً
   String lastQuery = "";
 
-  final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> mapController =
+      Completer<GoogleMapController>();
 
   // 1. تهيئة الموقع (GPS + التصاريح)
   Future<void> initLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    LocationPermission permission;
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled()
+          .timeout(const Duration(seconds: 3));
+      LocationPermission permission;
 
-    if (!serviceEnabled) {
-      debugPrint('⚠️ GPS service disabled - using Cairo fallback');
-      userLocation = const LatLng(30.0444, 31.2357);
-    } else {
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.deniedForever || permission == LocationPermission.denied) {
-        debugPrint('⚠️ Location permission denied - using Cairo fallback');
+      if (!serviceEnabled) {
+        debugPrint('⚠️ GPS service disabled - using Cairo fallback');
         userLocation = const LatLng(30.0444, 31.2357);
       } else {
-        try {
-          Position position = await Geolocator.getCurrentPosition(
-            locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-          );
-          userLocation = LatLng(position.latitude, position.longitude);
-          debugPrint('✅ GPS obtained: ${position.latitude}, ${position.longitude}');
-        } catch (e) {
-          debugPrint('⚠️ GPS error ($e) - using Cairo fallback');
+        permission = await Geolocator.checkPermission()
+            .timeout(const Duration(seconds: 3));
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission()
+              .timeout(const Duration(seconds: 10));
+        }
+
+        if (permission == LocationPermission.deniedForever ||
+            permission == LocationPermission.denied) {
+          debugPrint('⚠️ Location permission denied - using Cairo fallback');
           userLocation = const LatLng(30.0444, 31.2357);
+        } else {
+          Position position = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.high,
+                timeLimit: Duration(seconds: 5)),
+          ).timeout(const Duration(seconds: 6));
+          userLocation = LatLng(position.latitude, position.longitude);
+          debugPrint(
+              '✅ GPS obtained: ${position.latitude}, ${position.longitude}');
         }
       }
+    } catch (e) {
+      debugPrint('⚠️ GPS error ($e) - using Cairo fallback');
+      userLocation = const LatLng(30.0444, 31.2357);
     }
 
     notifyListeners(); // نعلم الـ UI بالموقع عشان الخريطة تظهر
@@ -68,7 +77,8 @@ class MapProvider extends ChangeNotifier {
   // 🆕 إرسال موقع اليوزر للسيرفر عشان يتذكره ويقدر يبحث بيه
   Future<void> _sendLocationToServer() async {
     if (userLocation == null) return;
-    debugPrint('📤 Sending location to server: lat=${userLocation!.latitude}, lng=${userLocation!.longitude}');
+    debugPrint(
+        '📤 Sending location to server: lat=${userLocation!.latitude}, lng=${userLocation!.longitude}');
     try {
       await repository.updateUserLocation(
         lat: userLocation!.latitude,
@@ -79,7 +89,6 @@ class MapProvider extends ChangeNotifier {
       debugPrint('⚠️ Failed to send location to server: $e');
     }
   }
-
 
   // 2. جلب كل الصيدليات (الحالة الافتراضية عند فتح الشاشة)
   Future<void> loadInitialPharmacies() async {
@@ -123,7 +132,8 @@ class MapProvider extends ChangeNotifier {
     showSuggestions = show;
     if (show) {
       // لو بحث أدوية وما في اقتراحات، نحملها
-      if (isMedicineSearch && (recentSearches.isEmpty || medicineSuggestions.isEmpty)) {
+      if (isMedicineSearch &&
+          (recentSearches.isEmpty || medicineSuggestions.isEmpty)) {
         loadSearchData();
       }
       // لو بحث صيدليات وما في اقتراحات، نحملها من الصيدليات الموجودة
@@ -236,20 +246,24 @@ class MapProvider extends ChangeNotifier {
   }
 
   // مخرجات الخريطة (Markers & Circles)
-  Set<Marker> get markers => pharmacies.map((p) => Marker(
-    markerId: MarkerId(p.id),
-    position: LatLng(p.lat, p.lng),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-        p.id == selectedPharmacyId ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed
-    ),
-    infoWindow: InfoWindow(title: p.name, snippet: p.address),
-    onTap: () => selectPharmacy(p.id),
-  )).toSet();
+  Set<Marker> get markers => pharmacies
+      .map((p) => Marker(
+            markerId: MarkerId(p.id),
+            position: LatLng(p.lat, p.lng),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                p.id == selectedPharmacyId
+                    ? BitmapDescriptor.hueGreen
+                    : BitmapDescriptor.hueRed),
+            infoWindow: InfoWindow(title: p.name, snippet: p.address),
+            onTap: () => selectPharmacy(p.id),
+          ))
+      .toSet();
 
   Set<Circle> get circles {
     if (selectedPharmacyId == null || pharmacies.isEmpty) return {};
     try {
-      final p = pharmacies.firstWhere((element) => element.id == selectedPharmacyId);
+      final p =
+          pharmacies.firstWhere((element) => element.id == selectedPharmacyId);
       return {
         Circle(
           circleId: CircleId(p.id),

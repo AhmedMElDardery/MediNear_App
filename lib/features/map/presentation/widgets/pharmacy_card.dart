@@ -45,21 +45,24 @@ class PharmacyCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? brandGreen.withValues(alpha: isDark ? 0.2 : 0.04) 
+          color: isSelected
+              ? brandGreen.withValues(alpha: isDark ? 0.2 : 0.04)
               : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? brandGreen : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+            color: isSelected
+                ? brandGreen
+                : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
             width: isSelected ? 1.5 : 1,
           ),
           boxShadow: [
             if (!isSelected)
               BoxShadow(
-                  color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.05),
+                  color: isDark
+                      ? Colors.black26
+                      : Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
-                  offset: const Offset(0, 4)
-              ),
+                  offset: const Offset(0, 4)),
           ],
         ),
         child: Stack(
@@ -70,48 +73,78 @@ class PharmacyCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 60, height: 60,
-                      decoration: BoxDecoration(color: isDark ? Colors.grey[800] : Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-                      child: Icon(Icons.storefront, color: isDark ? Colors.grey[400] : Colors.grey[400], size: 30),
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          color: isDark ? Colors.grey[800] : Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.storefront,
+                          color: isDark ? Colors.grey[400] : Colors.grey[400],
+                          size: 30),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
+                          Text(item.name,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color:
+                                      isDark ? Colors.white : Colors.black87)),
                           const SizedBox(height: 4),
-                          Text("${item.address} • ${item.distance.toStringAsFixed(1)} km",
-                            style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[500], fontSize: 13),
+                          Text(
+                            "${item.address} • ${item.distance.toStringAsFixed(1)} km",
+                            style: TextStyle(
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : Colors.grey[500],
+                                fontSize: 13),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(Icons.star, size: 14, color: accentYellow),
+                              const Icon(Icons.star,
+                                  size: 14, color: accentYellow),
                               const SizedBox(width: 4),
-                              const Text("4.8", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              const Text("4.8",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12)),
                               if (!isMapMode) ...[
                                 const SizedBox(width: 10),
                                 // 🚀 حالة التوفر بناءً على الداتا الحقيقية
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                      color: item.hasMedicine 
-                                          ? (isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green[50]) 
-                                          : (isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red[50]),
-                                      borderRadius: BorderRadius.circular(4)
-                                  ),
+                                      color: item.hasMedicine
+                                          ? (isDark
+                                              ? Colors.green
+                                                  .withValues(alpha: 0.2)
+                                              : Colors.green[50])
+                                          : (isDark
+                                              ? Colors.red
+                                                  .withValues(alpha: 0.2)
+                                              : Colors.red[50]),
+                                      borderRadius: BorderRadius.circular(4)),
                                   child: Text(
-                                    item.hasMedicine ? "In Stock" : "Out of Stock",
+                                    item.hasMedicine
+                                        ? "In Stock"
+                                        : "Out of Stock",
                                     style: TextStyle(
-                                        color: item.hasMedicine 
-                                            ? (isDark ? Colors.green[400] : Colors.green[700]) 
-                                            : (isDark ? Colors.red[400] : Colors.red[700]),
+                                        color: item.hasMedicine
+                                            ? (isDark
+                                                ? Colors.green[400]
+                                                : Colors.green[700])
+                                            : (isDark
+                                                ? Colors.red[400]
+                                                : Colors.red[700]),
                                         fontSize: 10,
-                                        fontWeight: FontWeight.bold
-                                    ),
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ]
@@ -130,50 +163,56 @@ class PharmacyCard extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: () {
                           // 🚀 بيفتح خرائط جوجل ويرسم الطريق لموقع الصيدلية
-                          _launchURL('https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}');
+                          _launchURL(
+                              'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}');
                         },
                         icon: const Icon(Icons.directions, size: 16),
                         label: const Text("Route"),
                         style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.black87,
-                            side: BorderSide(color: Colors.grey.shade300)
-                        ),
+                            side: BorderSide(color: Colors.grey.shade300)),
                       ),
                     ),
                     const SizedBox(width: 10),
                     // --- الزرار الثاني (ديناميكي) ---
                     Expanded(
-                      child: isMapMode 
-                        ? ElevatedButton.icon(
-                            onPressed: onGoTap ?? onTap,
-                            icon: const Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.white),
-                            label: const Text("Go", style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: brandGreen,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      child: isMapMode
+                          ? ElevatedButton.icon(
+                              onPressed: onGoTap ?? onTap,
+                              icon: const Icon(Icons.arrow_forward_rounded,
+                                  size: 16, color: Colors.white),
+                              label: const Text("Go",
+                                  style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: brandGreen,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                              ),
+                            )
+                          : ElevatedButton.icon(
+                              onPressed: item.hasMedicine
+                                  ? () => _launchURL(
+                                      'tel:123456789') // 🚀 حط هنا رقم الصيدلية لو موجود في الـ Entity
+                                  : onNotify,
+                              icon: Icon(
+                                  item.hasMedicine
+                                      ? Icons.call
+                                      : Icons.notifications_active,
+                                  size: 16,
+                                  color: Colors.white),
+                              label: Text(
+                                  item.hasMedicine ? "Call" : "Notify Me",
+                                  style: const TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: item.hasMedicine
+                                    ? brandGreen
+                                    : Colors.redAccent,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                              ),
                             ),
-                          )
-                        : ElevatedButton.icon(
-                            onPressed: item.hasMedicine
-                                ? () => _launchURL('tel:123456789') // 🚀 حط هنا رقم الصيدلية لو موجود في الـ Entity
-                                : onNotify,
-                            icon: Icon(
-                                item.hasMedicine ? Icons.call : Icons.notifications_active,
-                                size: 16,
-                                color: Colors.white
-                            ),
-                            label: Text(
-                                item.hasMedicine ? "Call" : "Notify Me",
-                                style: const TextStyle(color: Colors.white)
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: item.hasMedicine ? brandGreen : Colors.redAccent,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                            ),
-                          ),
                     ),
                   ],
                 )
@@ -193,7 +232,9 @@ class PharmacyCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.1),
+                          color: isDark
+                              ? Colors.black26
+                              : Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

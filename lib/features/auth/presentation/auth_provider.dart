@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:medinear_app/core/provider/navigation_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/routes/routes.dart';
 import 'package:medinear_app/core/services/user_storage.dart';
 import 'package:medinear_app/features/auth/domain/entities/user_entity.dart';
@@ -81,9 +80,7 @@ class AuthProvider extends ChangeNotifier {
       await repository.logout();
 
       if (context.mounted) {
-        Provider.of<NavigationProvider>(context, listen: false).changeIndex(0);
-        Navigator.pushNamedAndRemoveUntil(
-            context, AppRoutes.login, (route) => false);
+        context.go(AppRoutes.login);
       }
     } catch (e) {
       errorMessage = "حدث خطأ أثناء تسجيل الخروج";

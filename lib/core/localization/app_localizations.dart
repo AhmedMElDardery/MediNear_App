@@ -1,33 +1,30 @@
-
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-
-
 class AppLocalizations {
   final Locale locale;
   late Map<String, String> _localizedStrings;
-   AppLocalizations(this.locale);
+  AppLocalizations(this.locale);
 
-   static AppLocalizations? of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(
-      context, AppLocalizations
-      )!;
-    }
-    Future<bool> load() async {
-       final jsonString = await rootBundle
-          .loadString('lib/core/localization/${locale.languageCode}.json');
-      final Map<String, dynamic> jsonMap = json.decode(jsonString);
-      _localizedStrings = jsonMap.map((key, value) {
-        return MapEntry(key, value.toString());
-      });
-      return true;
-    }
-    String translate(String key) {
-      return _localizedStrings[key] ?? key;
-    }
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  Future<bool> load() async {
+    final jsonString = await rootBundle
+        .loadString('lib/core/localization/${locale.languageCode}.json');
+    final Map<String, dynamic> jsonMap = json.decode(jsonString);
+    _localizedStrings = jsonMap.map((key, value) {
+      return MapEntry(key, value.toString());
+    });
+    return true;
+  }
+
+  String translate(String key) {
+    return _localizedStrings[key] ?? key;
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -35,7 +32,7 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'es'].contains(locale.languageCode);
+    return ['en', 'ar'].contains(locale.languageCode);
   }
 
   @override
@@ -46,5 +43,12 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   }
 
   @override
-  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) => false;
+  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) =>
+      false;
+}
+
+extension StringLocalizationExtension on String {
+  String tr(BuildContext context) {
+    return AppLocalizations.of(context)?.translate(this) ?? this;
+  }
 }

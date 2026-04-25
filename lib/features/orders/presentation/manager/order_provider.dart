@@ -4,7 +4,7 @@ import '../../data/datasources/order_remote_data_source.dart';
 
 class OrderProvider extends ChangeNotifier {
   final OrderRemoteDataSource _dataSource = OrderRemoteDataSource();
-  
+
   List<OrderModel> _orders = [];
   bool _isLoading = false;
 
@@ -12,18 +12,17 @@ class OrderProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchOrders() async {
-   
     if (_orders.isNotEmpty) return;
 
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       _orders = await _dataSource.getOrders();
     } catch (e) {
       debugPrint("Order Error: $e");
     }
-    
+
     _isLoading = false;
     notifyListeners();
   }

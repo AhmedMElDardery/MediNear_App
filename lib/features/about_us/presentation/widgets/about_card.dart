@@ -15,9 +15,10 @@ class AboutCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : Colors.black.withOpacity(0.08), 
-            blurRadius: 20, 
-            offset: const Offset(0, 8), 
+            color:
+                isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -26,7 +27,8 @@ class AboutCard extends StatelessWidget {
         children: [
           Row(
             children: const [
-              Icon(Icons.account_circle, color: AppColors.primaryLight, size: 36), //
+              Icon(Icons.account_circle,
+                  color: AppColors.primaryLight, size: 36), //
               SizedBox(width: 12),
               Text(
                 "MediNear",
@@ -41,14 +43,20 @@ class AboutCard extends StatelessWidget {
           const SizedBox(height: 18),
           RichText(
             text: TextSpan(
-              style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey, fontSize: 14, height: 1.5),
+              style: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  fontSize: 14,
+                  height: 1.5),
               children: [
                 TextSpan(
                   text: "PharmaCare+",
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
                 TextSpan(
-                  text: " is your trusted digital pharmacy, making access easy with a wide range of services and fast delivery.",
+                  text:
+                      " is your trusted digital pharmacy, making access easy with a wide range of services and fast delivery.",
                 ),
               ],
             ),

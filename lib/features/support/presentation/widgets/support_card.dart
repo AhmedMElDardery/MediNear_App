@@ -1,25 +1,28 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:medinear_app/features/support/data/models/support_item_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:medinear_app/features/support/data/models/support_item_model.dart';
 
-class SupportCard extends StatefulWidget {
+class SupportCard extends ConsumerStatefulWidget {
   final SupportItemModel item;
   final int index;
 
   const SupportCard({super.key, required this.item, this.index = 0});
 
   @override
-  State<SupportCard> createState() => _SupportCardState();
+  ConsumerState<SupportCard> createState() => _SupportCardState();
 }
 
-class _SupportCardState extends State<SupportCard> with SingleTickerProviderStateMixin {
+class _SupportCardState extends ConsumerState<SupportCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 150));
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -35,7 +38,7 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
-    
+
     bool isEmail = widget.item.title == "Email Us";
     bool isCall = widget.item.title == "Call Us";
     bool isWhatsapp = widget.item.title == "WhatsApp";
@@ -51,11 +54,15 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
 
     Widget iconWidget;
     if (isWhatsapp) {
-      iconWidget = FaIcon(FontAwesomeIcons.whatsapp, size: 22, color: baseColor);
+      iconWidget =
+          FaIcon(FontAwesomeIcons.whatsapp, size: 22, color: baseColor);
     } else {
       IconData iconData = widget.item.icon;
-      if (isEmail) iconData = Icons.mail_rounded;
-      else if (isCall) iconData = Icons.phone_rounded;
+      if (isEmail) {
+        iconData = Icons.mail_rounded;
+      } else if (isCall) {
+        iconData = Icons.phone_rounded;
+      }
       iconWidget = Icon(iconData, size: 22, color: baseColor);
     }
 
@@ -87,15 +94,17 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
             decoration: BoxDecoration(
               color: isDark ? theme.cardColor : Colors.white,
               borderRadius: BorderRadius.circular(24),
-              border: isDark ? Border.all(color: theme.dividerColor.withOpacity(0.1)) : null,
+              border: isDark
+                  ? Border.all(color: theme.dividerColor.withValues(alpha: 0.1))
+                  : null,
               boxShadow: [
                 BoxShadow(
-                  color: baseColor.withOpacity(isDark ? 0.05 : 0.08),
+                  color: baseColor.withValues(alpha: isDark ? 0.05 : 0.08),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.1 : 0.04),
+                  color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -108,8 +117,9 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
                   height: 56,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: baseColor.withOpacity(0.12),
-                    border: Border.all(color: baseColor.withOpacity(0.2), width: 1),
+                    color: baseColor.withValues(alpha: 0.12),
+                    border: Border.all(
+                        color: baseColor.withValues(alpha: 0.2), width: 1),
                   ),
                   child: Center(child: iconWidget),
                 ),
@@ -121,14 +131,21 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
                     children: [
                       Text(widget.item.title,
                           style: TextStyle(
-                              fontSize: 17, 
-                              fontWeight: FontWeight.w700, 
-                              color: isDark ? theme.textTheme.bodyLarge?.color ?? Colors.white : const Color(0xFF0F172A), 
-                              letterSpacing: -0.3)
-                      ),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? theme.textTheme.bodyLarge?.color ??
+                                      Colors.white
+                                  : const Color(0xFF0F172A),
+                              letterSpacing: -0.3)),
                       const SizedBox(height: 4),
                       Text(widget.item.subtitle,
-                          style: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade600, fontSize: 13, height: 1.2)),
+                          style: TextStyle(
+                              color: isDark
+                                  ? Colors.grey.shade500
+                                  : Colors.grey.shade600,
+                              fontSize: 13,
+                              height: 1.2)),
                     ],
                   ),
                 ),
@@ -138,7 +155,7 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: baseColor.withOpacity(0.3),
+                        color: baseColor.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -155,7 +172,11 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                       ),
-                      child: Text(widget.item.buttonText, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+                      child: Text(widget.item.buttonText,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white)),
                     ),
                   ),
                 ),
@@ -166,4 +187,4 @@ class _SupportCardState extends State<SupportCard> with SingleTickerProviderStat
       ),
     );
   }
-}
+}

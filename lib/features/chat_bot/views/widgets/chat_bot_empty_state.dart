@@ -9,9 +9,11 @@ class ChatBotEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return LayoutBuilder( // ✅ بيساعدنا نعرف المساحة المتاحة بدقة
+    return LayoutBuilder(
+      // ✅ بيساعدنا نعرف المساحة المتاحة بدقة
       builder: (context, constraints) {
-        return SingleChildScrollView( // ✅ الحل السحري لمنع الـ Overflow وتسهيل حركة الكيبورد
+        return SingleChildScrollView(
+          // ✅ الحل السحري لمنع الـ Overflow وتسهيل حركة الكيبورد
           physics: const BouncingScrollPhysics(),
           child: Container(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
@@ -20,10 +22,10 @@ class ChatBotEmptyState extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start, // يبدأ من فوق بانتظام
               children: [
                 const SizedBox(height: 40),
-                
+
                 // Bot Icon with Gradient
                 const _BotIcon(),
-                
+
                 const SizedBox(height: 24),
 
                 // Welcome Text
@@ -42,9 +44,9 @@ class ChatBotEmptyState extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 Text(
                   "Choose a suggestion or type your question",
                   textDirection: TextDirection.ltr,
@@ -59,8 +61,9 @@ class ChatBotEmptyState extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // Suggestions List
-                ...vm.suggestions.map((s) => _SuggestionCard(text: s, isDark: isDark, onTap: () => vm.sendMessage(s))),
-                
+                ...vm.suggestions.map((s) => _SuggestionCard(
+                    text: s, isDark: isDark, onTap: () => vm.sendMessage(s))),
+
                 // ✅ شيلنا الـ Spacer وحطينا SizedBox ثابت عشان ميعملش Overflow مع الكيبورد
                 const SizedBox(height: 20),
               ],
@@ -77,7 +80,8 @@ class _SuggestionCard extends StatelessWidget {
   final bool isDark;
   final VoidCallback onTap;
 
-  const _SuggestionCard({required this.text, required this.isDark, required this.onTap});
+  const _SuggestionCard(
+      {required this.text, required this.isDark, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +93,14 @@ class _SuggestionCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E1E) : Colors.white.withValues(alpha: 0.9),
+            color: isDark
+                ? const Color(0xFF1E1E1E)
+                : Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDark ? Colors.white24 : ChatBotStyles.g1.withValues(alpha: 0.1),
+              color: isDark
+                  ? Colors.white24
+                  : ChatBotStyles.g1.withValues(alpha: 0.1),
               width: 1.2,
             ),
             boxShadow: const [
@@ -105,7 +113,8 @@ class _SuggestionCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.chat_bubble_outline_rounded, size: 18, color: ChatBotStyles.g1),
+              const Icon(Icons.chat_bubble_outline_rounded,
+                  size: 18, color: ChatBotStyles.g1),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -118,7 +127,8 @@ class _SuggestionCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: ChatBotStyles.g1),
+              const Icon(Icons.arrow_forward_ios_rounded,
+                  size: 13, color: ChatBotStyles.g1),
             ],
           ),
         ),

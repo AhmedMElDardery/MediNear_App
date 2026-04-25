@@ -20,19 +20,59 @@ class PharmacyRemoteDataSource {
 
       // 🛑 الداتا الوهمية بتاعتك (سايبها كـ Fallback عشان لو السيرفر مرجعش أدوية الشاشة متضربش)
       final dummyMedicines = [
-        {'id': 1, 'name': 'valtaren Emulgel', 'oldPrice': 300.0, 'price': 250.0, 'discount': 20, 'rating': 4.5, 'inStock': true, 'notifyAvailable': false, 'isSaved': false, 'image': 'assets/images/medicine_2.jpg'},
-        {'id': 2, 'name': 'Hypooeh', 'oldPrice': 320.0, 'price': 220.0, 'discount': 30, 'rating': 4.8, 'inStock': false, 'notifyAvailable': true, 'isSaved': false, 'image': 'assets/images/medicine_6.jpg'},
+        {
+          'id': 1,
+          'name': 'valtaren Emulgel',
+          'oldPrice': 300.0,
+          'price': 250.0,
+          'discount': 20,
+          'rating': 4.5,
+          'inStock': true,
+          'notifyAvailable': false,
+          'isSaved': false,
+          'image': 'assets/images/medicine_2.jpg'
+        },
+        {
+          'id': 2,
+          'name': 'Hypooeh',
+          'oldPrice': 320.0,
+          'price': 220.0,
+          'discount': 30,
+          'rating': 4.8,
+          'inStock': false,
+          'notifyAvailable': true,
+          'isSaved': false,
+          'image': 'assets/images/medicine_6.jpg'
+        },
       ];
       final dummyDoctors = [
-        {'id': 1, 'name': 'Dr. Amany Mohamed', 'specialty': 'Cardiologist', 'rating': 4.8, 'isSaved': false, 'image': 'assets/images/dr1.jpg'},
+        {
+          'id': 1,
+          'name': 'Dr. Amany Mohamed',
+          'specialty': 'Cardiologist',
+          'rating': 4.8,
+          'isSaved': false,
+          'image': 'assets/images/dr1.jpg'
+        },
       ];
       final dummyServices = [
-        {'id': 1, 'name': 'Blood Pressure Check', 'price': 50.0, 'duration': '15 min', 'isSaved': false, 'image': 'assets/images/blood.jpg'},
+        {
+          'id': 1,
+          'name': 'Blood Pressure Check',
+          'price': 50.0,
+          'duration': '15 min',
+          'isSaved': false,
+          'image': 'assets/images/blood.jpg'
+        },
       ];
 
       final pharmacyInfo = apiData['pharmacy_info'] ?? {};
-      final isSavedRaw = pharmacyInfo['is_saved'] ?? apiData['is_saved'] ?? apiData['isSaved'];
-      final bool isSaved = isSavedRaw == true || isSavedRaw == 1 || isSavedRaw.toString() == '1' || isSavedRaw.toString().toLowerCase() == 'true';
+      final isSavedRaw =
+          pharmacyInfo['is_saved'] ?? apiData['is_saved'] ?? apiData['isSaved'];
+      final bool isSaved = isSavedRaw == true ||
+          isSavedRaw == 1 ||
+          isSavedRaw.toString() == '1' ||
+          isSavedRaw.toString().toLowerCase() == 'true';
 
       List<dynamic> parsedMedicines = [];
       if (apiData['inventory'] != null && apiData['inventory'] is List) {
@@ -49,9 +89,25 @@ class PharmacyRemoteDataSource {
         // 🚀 بناخد حالة الحفظ من السيرفر
         'is_saved': isSaved,
         // لو السيرفر رجع أدوية بناخدها، لو لأ بناخد الوهمية
-        'medicines': parsedMedicines.isNotEmpty ? parsedMedicines.map((e) => PharmacyMedicineModel.fromJson(e)).toList() : dummyMedicines.map((e) => PharmacyMedicineModel.fromJson(e)).toList(),
-        'doctors': apiData['doctors'] != null ? (apiData['doctors'] as List).map((e) => PharmacyDoctorModel.fromJson(e)).toList() : dummyDoctors.map((e) => PharmacyDoctorModel.fromJson(e)).toList(),
-        'services': apiData['services'] != null ? (apiData['services'] as List).map((e) => PharmacyServiceModel.fromJson(e)).toList() : dummyServices.map((e) => PharmacyServiceModel.fromJson(e)).toList(),
+        'medicines': parsedMedicines.isNotEmpty
+            ? parsedMedicines
+                .map((e) => PharmacyMedicineModel.fromJson(e))
+                .toList()
+            : dummyMedicines
+                .map((e) => PharmacyMedicineModel.fromJson(e))
+                .toList(),
+        'doctors': apiData['doctors'] != null
+            ? (apiData['doctors'] as List)
+                .map((e) => PharmacyDoctorModel.fromJson(e))
+                .toList()
+            : dummyDoctors.map((e) => PharmacyDoctorModel.fromJson(e)).toList(),
+        'services': apiData['services'] != null
+            ? (apiData['services'] as List)
+                .map((e) => PharmacyServiceModel.fromJson(e))
+                .toList()
+            : dummyServices
+                .map((e) => PharmacyServiceModel.fromJson(e))
+                .toList(),
       };
     } catch (e) {
       throw Exception("Failed to fetch pharmacy details: $e");
@@ -69,7 +125,8 @@ class PharmacyRemoteDataSource {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         // بنقرأ الـ success من الـ API، ولو مش موجودة بنعتمد على إن الـ Status Code 200
-        final isSuccess = response.data['success'] ?? response.data['status'] ?? true;
+        final isSuccess =
+            response.data['success'] ?? response.data['status'] ?? true;
         return isSuccess == true;
       }
       return false;

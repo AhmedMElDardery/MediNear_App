@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // مسارات نسبية
 import '../../data/datasources/checkout_remote_data_source.dart';
-import '../../../cart/data/models/cart_item_model.dart'; 
+import '../../../cart/data/models/cart_item_model.dart';
 
 class CheckoutProvider extends ChangeNotifier {
   final CheckoutRemoteDataSource _dataSource = CheckoutRemoteDataSource();
@@ -33,9 +33,12 @@ class CheckoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> confirmOrder(double totalAmount, List<CartItemModel> cartItems) async {
-    if (nameController.text.isEmpty || phoneController.text.isEmpty || addressController.text.isEmpty) {
-      return false; 
+  Future<bool> confirmOrder(
+      double totalAmount, List<CartItemModel> cartItems) async {
+    if (nameController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        addressController.text.isEmpty) {
+      return false;
     }
 
     _isLoading = true;

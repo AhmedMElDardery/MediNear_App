@@ -3,7 +3,8 @@ class OrderItemModel {
   final int quantity;
   final double price;
 
-  OrderItemModel({required this.name, required this.quantity, required this.price});
+  OrderItemModel(
+      {required this.name, required this.quantity, required this.price});
 
   double get total => price * quantity;
 

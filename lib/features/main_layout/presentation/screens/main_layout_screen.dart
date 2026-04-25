@@ -8,29 +8,28 @@ import 'package:medinear_app/features/map/presentation/screens/map_screen.dart';
 import 'package:medinear_app/features/profile/views/profile_screen.dart';
 import 'package:medinear_app/features/saved_items/presentation/screens/saved_items_screen.dart';
 
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 
-
-class MainLayoutScreen extends StatelessWidget {
+class MainLayoutScreen extends ConsumerWidget {
   const MainLayoutScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final nav = context.watch<NavigationProvider>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nav = ref.watch(navigationProvider);
 
     final pages = [
       const HomeScreen(),
-
       const CartPharmaciesScreen(),
       const SavedItemsScreen(),
       const MapScreen(medicine: ""),
       const ProfileScreen(),
-      
     ];
 
     return Scaffold(
       extendBody: true,
-      resizeToAvoidBottomInset: false, // يمنع البار السفلي والزر العائم من الارتفاع أعلى الكيبورد
+      resizeToAvoidBottomInset:
+          false, // يمنع البار السفلي والزر العائم من الارتفاع أعلى الكيبورد
       body: IndexedStack(
         index: nav.currentIndex,
         children: pages,

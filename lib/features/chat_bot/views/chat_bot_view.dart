@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 import '../provider/chat_bot_provider.dart';
 import 'widgets/chat_bot_styles.dart';
 import 'widgets/chat_bot_header.dart';
@@ -10,13 +11,13 @@ import 'widgets/chat_bot_bottom_panel.dart';
 // ============================================================
 // Main Chat View - Clean Version (No Background Animation)
 // ============================================================
-class ChatBotView extends StatefulWidget {
+class ChatBotView extends ConsumerStatefulWidget {
   const ChatBotView({super.key});
   @override
-  State<ChatBotView> createState() => _ChatBotViewState();
+  ConsumerState<ChatBotView> createState() => _ChatBotViewState();
 }
 
-class _ChatBotViewState extends State<ChatBotView> {
+class _ChatBotViewState extends ConsumerState<ChatBotView> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -42,16 +43,20 @@ class _ChatBotViewState extends State<ChatBotView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : ChatBotStyles.bgBase,
+      backgroundColor: isDark
+          ? Theme.of(context).scaffoldBackgroundColor
+          : ChatBotStyles.bgBase,
       body: Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(
           children: [
             // Layout Layer
-            Consumer<ChatBotProvider>(
-              builder: (context, vm, child) {
+            Consumer(
+              builder: (context, ref, child) {
+                final vm = ref.watch(chatBotProvider);
                 final isEmpty = vm.messages.isEmpty;
-                WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => _scrollToBottom());
 
                 return Column(
                   children: [
@@ -71,8 +76,8 @@ class _ChatBotViewState extends State<ChatBotView> {
                                   MediaQuery.of(context).size.height * 0.23,
                                 ),
                                 itemCount: vm.messages.length,
-                                itemBuilder: (_, i) =>
-                                    ChatBotMessageBubble(msg: vm.messages[i], vm: vm),
+                                itemBuilder: (_, i) => ChatBotMessageBubble(
+                                    msg: vm.messages[i], vm: vm),
                               ),
                             ),
                     ),
@@ -86,8 +91,9 @@ class _ChatBotViewState extends State<ChatBotView> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Consumer<ChatBotProvider>(
-                builder: (context, vm, child) {
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final vm = ref.watch(chatBotProvider);
                   return ChatBotBottomPanel(vm: vm, controller: _controller);
                 },
               ),

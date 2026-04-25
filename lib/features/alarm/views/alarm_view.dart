@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 
@@ -10,24 +11,22 @@ import '../../medication/views/widgets/time_details_card.dart';
 // تعريف واجهات التحكم في الحالة (ViewModels) - استيراد الـ ViewModel الخاص بالمنبه من مكانه الجديد
 import '../view_models/alarm_view_model.dart';
 
-
-
-class AlarmView extends StatefulWidget {
+class AlarmView extends ConsumerStatefulWidget {
   const AlarmView({super.key});
 
   @override
-  State<AlarmView> createState() => _AlarmViewState();
+  ConsumerState<AlarmView> createState() => _AlarmViewState();
 }
 
-class _AlarmViewState extends State<AlarmView> {
+class _AlarmViewState extends ConsumerState<AlarmView> {
   final AlarmViewModel _viewModel = AlarmViewModel();
 
   @override
   Widget build(BuildContext context) {
     // تحديد لون الخلفية بناءً على وضع الثيم (فاتح/غامق)
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor = isDarkMode 
-        ? Theme.of(context).scaffoldBackgroundColor 
+    final Color bgColor = isDarkMode
+        ? Theme.of(context).scaffoldBackgroundColor
         : AppColors.backgroundMint; // لون النعناع الأصلي للفاتح
 
     return Scaffold(
@@ -37,15 +36,15 @@ class _AlarmViewState extends State<AlarmView> {
         backgroundColor: bgColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.getPrimaryTextColor(context)),
+          icon: Icon(Icons.arrow_back,
+              color: AppColors.getPrimaryTextColor(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Alarm',
           style: TextStyle(
-            color: AppColors.getPrimaryTextColor(context), 
-            fontWeight: FontWeight.bold
-          ),
+              color: AppColors.getPrimaryTextColor(context),
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -78,7 +77,8 @@ class _AlarmViewState extends State<AlarmView> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryGreen, // أخضر ميدنير
+                          backgroundColor:
+                              AppColors.primaryGreen, // أخضر ميدنير
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -89,7 +89,10 @@ class _AlarmViewState extends State<AlarmView> {
                         },
                         child: const Text(
                           'Save Reminder',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -97,7 +100,8 @@ class _AlarmViewState extends State<AlarmView> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.iconRed, // أحمر صريح للإلغاء
+                          backgroundColor:
+                              AppColors.iconRed, // أحمر صريح للإلغاء
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -108,7 +112,10 @@ class _AlarmViewState extends State<AlarmView> {
                         },
                         child: const Text(
                           'Cancel',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

@@ -7,11 +7,11 @@ class AppSuccessMessages {
 
   // 🚀 دالة لو حابب تقرأ رسالة نجاح جاية من السيرفر نفسه (لو الباك إند باعت رسالة مخصصة)
   static String getCustomMessage(dynamic responseData, String defaultMessage) {
-    if (responseData != null && responseData is Map<String, dynamic> && responseData.containsKey('message')) {
+    if (responseData != null &&
+        responseData is Map<String, dynamic> &&
+        responseData.containsKey('message')) {
       return responseData['message'];
     }
     return defaultMessage;
   }
 }
-
-

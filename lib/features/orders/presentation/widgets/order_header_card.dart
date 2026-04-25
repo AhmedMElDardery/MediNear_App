@@ -36,7 +36,10 @@ class OrderHeaderCard extends StatelessWidget {
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5))
         ],
       ),
       child: Column(
@@ -45,19 +48,27 @@ class OrderHeaderCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AppColors.primaryLight.withOpacity(0.2),
-                child: const Icon(Icons.local_pharmacy, color: AppColors.primaryLight, size: 30),
+                backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
+                child: const Icon(Icons.local_pharmacy,
+                    color: AppColors.primaryLight, size: 30),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(order.pharmacyName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
+                    Text(order.pharmacyName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: textColor)),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                        Text(order.location, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        const Icon(Icons.location_on,
+                            size: 14, color: Colors.grey),
+                        Text(order.location,
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12)),
                       ],
                     ),
                   ],
@@ -65,14 +76,18 @@ class OrderHeaderCard extends StatelessWidget {
               ),
               // مربع الحالة باللون الديناميكي
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: statusColor, //  اللون متغير هنا
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   order.status,
-                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -81,8 +96,11 @@ class OrderHeaderCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Items: ${order.itemsCount}", style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-              Text("Order Date: ${order.date}", style: TextStyle(fontSize: 12, color: textColor)),
+              Text("Items: ${order.itemsCount}",
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+              Text("Order Date: ${order.date}",
+                  style: TextStyle(fontSize: 12, color: textColor)),
             ],
           ),
         ],

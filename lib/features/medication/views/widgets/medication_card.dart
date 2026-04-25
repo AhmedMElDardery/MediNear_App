@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medinear_app/features/medication/data/models/medication_model.dart';
 // ✅ المسار صحيح ومطابق للهيكلة الجديدة
 
-
 class MedicationCard extends StatelessWidget {
   final MedicationModel medication;
   final VoidCallback onDelete;
@@ -46,19 +45,20 @@ class MedicationCard extends StatelessWidget {
                     color: isDarkMode ? Colors.grey[800] : Colors.grey[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.medication, 
-                    color: isDarkMode ? Colors.white70 : Colors.grey),
+                  child: Icon(Icons.medication,
+                      color: isDarkMode ? Colors.white70 : Colors.grey),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     // ✅ استخدام withValues بدلاً من withOpacity
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    color:
+                        Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.access_time, 
-                    size: 18, color: Theme.of(context).primaryColor),
+                  child: Icon(Icons.access_time,
+                      size: 18, color: Theme.of(context).primaryColor),
                 ),
               ],
             ),
@@ -69,15 +69,15 @@ class MedicationCard extends StatelessWidget {
                 children: [
                   Text(
                     medication.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     medication.description,
                     style: TextStyle(
-                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600], 
-                      fontSize: 12
-                    ),
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                        fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -86,20 +86,20 @@ class MedicationCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       _buildActionIcon(
-                        Icons.info_outline, 
-                        Theme.of(context).primaryColor, 
-                        // ✅ تحديث هنا أيضاً
-                        Theme.of(context).primaryColor.withValues(alpha: 0.1)
-                      ),
+                          Icons.info_outline,
+                          Theme.of(context).primaryColor,
+                          // ✅ تحديث هنا أيضاً
+                          Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.1)),
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: onDelete,
                         child: _buildActionIcon(
-                          Icons.delete_outline, 
-                          Colors.redAccent, 
-                          // ✅ تحديث هنا أيضاً
-                          Colors.redAccent.withValues(alpha: 0.1)
-                        ),
+                            Icons.delete_outline,
+                            Colors.redAccent,
+                            // ✅ تحديث هنا أيضاً
+                            Colors.redAccent.withValues(alpha: 0.1)),
                       ),
                     ],
                   ),

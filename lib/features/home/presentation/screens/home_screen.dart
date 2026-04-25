@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medinear_app/core/routes/routes.dart';
@@ -10,16 +11,18 @@ import 'package:medinear_app/features/home/presentation/widgets/pharmacy_card.da
 import 'package:medinear_app/features/home/presentation/widgets/search_bar.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 import 'package:medinear_app/features/profile/view_models/profile_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeViewState();
+  ConsumerState<HomeScreen> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeViewState extends ConsumerState<HomeScreen>
+    with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
 
@@ -33,8 +36,8 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
     _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
 
     Future.microtask(() {
-      context.read<HomeProvider>().loadHome();
-      context.read<ProfileProvider>().fetchProfile();
+      ref.read(homeProvider).loadHome();
+      ref.read(profileProvider).fetchProfile();
     });
   }
 
@@ -53,9 +56,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<HomeProvider>();
-    final auth = context.watch<AuthProvider>();
-    final profile = context.watch<ProfileProvider>();
+    final provider = ref.watch(homeProvider);
+    final auth = ref.watch(authProvider);
+    final profile = ref.watch(profileProvider);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -107,7 +110,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 12),
           // 🤖 AI Chatbot Button
           _AIChatFab(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.chats),
+            onTap: () => context.push(AppRoutes.chats),
           ),
         ],
       ),
@@ -158,7 +161,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                 child: SearchBarWidget(
                   onSearch: (value) {
-                    context.read<HomeProvider>().search(value);
+                    ref.read(homeProvider).search(value);
                   },
                 ),
               ),
@@ -179,7 +182,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                 title: "Near Pharmacies",
                 icon: Icons.local_pharmacy_rounded,
                 count: provider.pharmacies.length,
-                onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
+                onSeeAll: () => context.push(AppRoutes.map),
               ),
 
               const SizedBox(height: 12),
@@ -228,7 +231,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                 title: "Near Medicines",
                 icon: Icons.medication_rounded,
                 count: provider.medicines.length,
-                onSeeAll: () => Navigator.pushNamed(context, AppRoutes.map),
+                onSeeAll: () => context.push(AppRoutes.map),
               ),
 
               const SizedBox(height: 12),
@@ -282,12 +285,12 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF00965E).withOpacity(0.3),
+                color: const Color(0xFF00965E).withValues(alpha: 0.3),
                 width: 2.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00965E).withOpacity(0.12),
+                  color: const Color(0xFF00965E).withValues(alpha: 0.12),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -324,7 +327,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                   _getGreeting(),
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF888888),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : const Color(0xFF888888),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -336,7 +341,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color(0xFF1A1A1A),
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -353,7 +360,10 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF888888),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : const Color(0xFF888888),
                             fontSize: 11,
                             fontWeight: FontWeight.w400,
                           ),
@@ -379,21 +389,31 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             icon: Icons.local_pharmacy_rounded,
             label: "${provider.pharmacies.length} Pharmacies",
             color: const Color(0xFF00965E),
-            bgColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF00965E).withOpacity(0.15) : const Color(0xFFE8F5EE),
+            bgColor: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF00965E).withValues(alpha: 0.15)
+                : const Color(0xFFE8F5EE),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.medication_rounded,
             label: "${provider.medicines.length} Medicines",
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.blue.shade300 : const Color(0xFF1565C0),
-            bgColor: Theme.of(context).brightness == Brightness.dark ? Colors.blue.withOpacity(0.15) : const Color(0xFFE3F0FF),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.blue.shade300
+                : const Color(0xFF1565C0),
+            bgColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.blue.withValues(alpha: 0.15)
+                : const Color(0xFFE3F0FF),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.near_me_rounded,
             label: "Nearby",
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.orange.shade300 : const Color(0xFFE65100),
-            bgColor: Theme.of(context).brightness == Brightness.dark ? Colors.orange.withOpacity(0.15) : const Color(0xFFFFF3E0),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.orange.shade300
+                : const Color(0xFFE65100),
+            bgColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.orange.withValues(alpha: 0.15)
+                : const Color(0xFFFFF3E0),
           ),
         ],
       ),
@@ -414,7 +434,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFF00965E).withOpacity(0.1),
+              color: const Color(0xFF00965E).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 17, color: const Color(0xFF00965E)),
@@ -426,7 +446,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : const Color(0xFF1A1A1A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -436,10 +458,10 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF00965E).withOpacity(0.08),
+                color: const Color(0xFF00965E).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF00965E).withOpacity(0.2),
+                  color: const Color(0xFF00965E).withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -477,14 +499,20 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               color: const Color(0xFFF0F0F0),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(icon, size: 30, color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade600 : Colors.grey.shade400),
+            child: Icon(icon,
+                size: 30,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade600
+                    : Colors.grey.shade400),
           ),
           const SizedBox(height: 10),
           Text(
             message,
             style: TextStyle(
               fontSize: 13,
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade500,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey.shade400
+                  : Colors.grey.shade500,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -505,15 +533,17 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white, 
-              boxShadow: isDark ? [] : [
-                BoxShadow(
-                  color: const Color(0xFF00965E).withOpacity(0.15),
-                  blurRadius: 25,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              color: Colors.white,
+              boxShadow: isDark
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: const Color(0xFF00965E).withValues(alpha: 0.15),
+                        blurRadius: 25,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
             ),
             child: Padding(
               padding: const EdgeInsets.all(5.0),
@@ -539,7 +569,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             "Finding pharmacies near you...",
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade200 : const Color(0xFF555555),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey.shade200
+                  : const Color(0xFF555555),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -548,7 +580,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
             "Getting your location 📍",
             style: TextStyle(
               fontSize: 13,
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade500,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey.shade400
+                  : Colors.grey.shade500,
             ),
           ),
         ],
@@ -579,7 +613,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : const Color(0xFF1A1A1A),
                 letterSpacing: -0.5,
               ),
             ),
@@ -590,7 +626,9 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : const Color(0xFF777777),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade400
+                    : const Color(0xFF777777),
                 height: 1.5,
               ),
             ),
@@ -615,7 +653,7 @@ class _HomeViewState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  shadowColor: const Color(0xFF00965E).withOpacity(0.4),
+                  shadowColor: const Color(0xFF00965E).withValues(alpha: 0.4),
                 ),
               ),
             ),
@@ -647,7 +685,7 @@ class _StatChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.15), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -676,15 +714,15 @@ class _StatChip extends StatelessWidget {
 // ─────────────────────────────────────────
 // 🤖 AI Chatbot FAB
 // ─────────────────────────────────────────
-class _AIChatFab extends StatefulWidget {
+class _AIChatFab extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   const _AIChatFab({required this.onTap});
 
   @override
-  State<_AIChatFab> createState() => _AIChatFabState();
+  ConsumerState<_AIChatFab> createState() => _AIChatFabState();
 }
 
-class _AIChatFabState extends State<_AIChatFab>
+class _AIChatFabState extends ConsumerState<_AIChatFab>
     with SingleTickerProviderStateMixin {
   late AnimationController _pulse;
   late Animation<double> _glowAnim;
@@ -715,7 +753,7 @@ class _AIChatFabState extends State<_AIChatFab>
       onTapUp: (_) => setState(() => _pressed = false),
       onTapCancel: () => setState(() => _pressed = false),
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.chatbot);
+        context.push(AppRoutes.chatbot);
       },
       child: AnimatedScale(
         scale: _pressed ? 0.92 : 1.0,
@@ -734,13 +772,13 @@ class _AIChatFabState extends State<_AIChatFab>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00965E).withOpacity(0.5),
+                  color: const Color(0xFF00965E).withValues(alpha: 0.5),
                   blurRadius: _glowAnim.value,
                   spreadRadius: 1,
                 ),
               ],
             ),
-            child:  Icon(
+            child: Icon(
               Icons.smart_toy_rounded,
               color: Colors.white,
               size: 26,
@@ -755,15 +793,15 @@ class _AIChatFabState extends State<_AIChatFab>
 // ─────────────────────────────────────────
 // 📷 Camera FAB
 // ─────────────────────────────────────────
-class _CameraFab extends StatefulWidget {
+class _CameraFab extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   const _CameraFab({required this.onTap});
 
   @override
-  State<_CameraFab> createState() => _CameraFabState();
+  ConsumerState<_CameraFab> createState() => _CameraFabState();
 }
 
-class _CameraFabState extends State<_CameraFab> {
+class _CameraFabState extends ConsumerState<_CameraFab> {
   bool _pressed = false;
 
   @override
@@ -780,10 +818,14 @@ class _CameraFabState extends State<_CameraFab> {
           height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade800
+                : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.black26 : const Color(0xFF00965E).withOpacity(0.2),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black26
+                    : const Color(0xFF00965E).withValues(alpha: 0.2),
                 blurRadius: 12,
                 spreadRadius: 1,
                 offset: const Offset(0, 3),

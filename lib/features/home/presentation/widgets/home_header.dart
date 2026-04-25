@@ -1,15 +1,16 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/routes/routes.dart';
-import 'package:medinear_app/core/theme/theme_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.themeMode == ThemeMode.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(themeProvider);
+    final isDark = provider.themeMode == ThemeMode.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -57,7 +58,7 @@ class HomeHeader extends StatelessWidget {
           // 🌙 Theme Toggle
           _IconBtn(
             icon: isDark ? Icons.wb_sunny_outlined : Icons.dark_mode_outlined,
-            onTap: themeProvider.toggleTheme,
+            onTap: provider.toggleTheme,
             isDark: isDark,
           ),
 
@@ -66,7 +67,7 @@ class HomeHeader extends StatelessWidget {
           // 💬 Chat
           _IconBtn(
             icon: Icons.chat_bubble_outline_rounded,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.chats),
+            onTap: () => context.push(AppRoutes.chats),
             isDark: isDark,
           ),
 
@@ -78,7 +79,7 @@ class HomeHeader extends StatelessWidget {
             children: [
               _IconBtn(
                 icon: Icons.notifications_none_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.notification),
+                onTap: () => context.push(AppRoutes.notification),
                 isDark: isDark,
               ),
               Positioned(
@@ -101,7 +102,7 @@ class HomeHeader extends StatelessWidget {
   }
 }
 
-class _IconBtn extends StatelessWidget {
+class _IconBtn extends ConsumerWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool isDark;
@@ -113,7 +114,7 @@ class _IconBtn extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,7 +24,9 @@ class HomeProvider extends ChangeNotifier {
     if (searchQuery.isEmpty) return pharmacies;
     final q = searchQuery.toLowerCase();
     return pharmacies
-        .where((p) => p.name.toLowerCase().contains(q) || p.address.toLowerCase().contains(q))
+        .where((p) =>
+            p.name.toLowerCase().contains(q) ||
+            p.address.toLowerCase().contains(q))
         .toList();
   }
 
@@ -55,7 +58,8 @@ class HomeProvider extends ChangeNotifier {
 
     try {
       // ⚡️ ابدأ جلب الإعلانات فوراً بالتوازي وماتستناش اللوكيشن!
-      Future<void> fetchAds = repository.getAds()
+      Future<void> fetchAds = repository
+          .getAds()
           .then((value) => ads = value)
           .catchError((_) => ads = []);
 
@@ -64,7 +68,8 @@ class HomeProvider extends ChangeNotifier {
 
       // 🆕 ابعت اللوكيشن للباك إند (شغله في الخلفية عشان ميعطلش الشاشة)
       if (currentLocation != null) {
-        _sendLocationToServer(currentLocation!.latitude, currentLocation!.longitude);
+        _sendLocationToServer(
+            currentLocation!.latitude, currentLocation!.longitude);
       }
 
       // 2️⃣ حوّل الإحداثيات لاسم مكان مقروء بدون ما نأخر باقي الصفحة
@@ -86,16 +91,20 @@ class HomeProvider extends ChangeNotifier {
       if (currentLocation != null) {
         // ندى السيرفر فرصة صغيرة يحفظ اللوكيشن قبل ما نقلب الداتا
         await Future.delayed(const Duration(milliseconds: 300));
-        
-        fetchPharmacies = repository.getNearbyPharmacies(
-          currentLocation!.latitude,
-          currentLocation!.longitude,
-        ).then((value) => pharmacies = value);
 
-        fetchMedicines = repository.getNearbyMedicines(
-          currentLocation!.latitude,
-          currentLocation!.longitude,
-        ).then((value) => medicines = value);
+        fetchPharmacies = repository
+            .getNearbyPharmacies(
+              currentLocation!.latitude,
+              currentLocation!.longitude,
+            )
+            .then((value) => pharmacies = value);
+
+        fetchMedicines = repository
+            .getNearbyMedicines(
+              currentLocation!.latitude,
+              currentLocation!.longitude,
+            )
+            .then((value) => medicines = value);
       }
 
       // استنى الإعلانات والصيدليات والأدوية تخلص
@@ -105,7 +114,9 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
     } on DioException catch (e) {
       isLoading = false;
-      final errorMsg = e.response?.data?['message'] ?? e.response?.data?.toString() ?? e.message;
+      final errorMsg = e.response?.data?['message'] ??
+          e.response?.data?.toString() ??
+          e.message;
       errorMessage = "Server Error: $errorMsg";
       notifyListeners();
     } catch (e) {
@@ -138,8 +149,13 @@ class HomeProvider extends ChangeNotifier {
         final address = response.data['address'];
         if (address != null) {
           // نجيب أقرب تفصيل مهم: الحي ثم المدينة ثم الدولة
-          final suburb = address['suburb'] ?? address['neighbourhood'] ?? address['quarter'];
-          final city = address['city'] ?? address['town'] ?? address['village'] ?? address['county'];
+          final suburb = address['suburb'] ??
+              address['neighbourhood'] ??
+              address['quarter'];
+          final city = address['city'] ??
+              address['town'] ??
+              address['village'] ??
+              address['county'];
           final country = address['country'];
 
           if (suburb != null && city != null) {
@@ -152,7 +168,12 @@ class HomeProvider extends ChangeNotifier {
         }
 
         // fallback: الاسم الكامل
-        return response.data['display_name']?.toString().split(',').take(2).join(',').trim();
+        return response.data['display_name']
+            ?.toString()
+            .split(',')
+            .take(2)
+            .join(',')
+            .trim();
       }
     } catch (_) {
       // لو فشل الـ reverse geocoding نرجع null بهدوء
@@ -160,12 +181,12 @@ class HomeProvider extends ChangeNotifier {
     return null;
   }
 
-  // 🆕 ابعت اللوكيشن للسيرفر عشان يتحفظ في بروفايل اليوزر 
+  // 🆕 ابعت اللوكيشن للسيرفر عشان يتحفظ في بروفايل اليوزر
   Future<void> _sendLocationToServer(double lat, double lng) async {
     try {
       final tokenStorage = TokenStorage();
       final token = await tokenStorage.getToken();
-      
+
       final dio = Dio(BaseOptions(
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
@@ -188,9 +209,9 @@ class HomeProvider extends ChangeNotifier {
           },
         ),
       );
-      print("✅ HomeProvider: Location Update Response: ${response.data}");
+      debugPrint("✅ HomeProvider: Location Update Response: ${response.data}");
     } catch (e) {
-      print("⚠️ HomeProvider: Failed to send location: $e");
+      debugPrint("⚠️ HomeProvider: Failed to send location: $e");
     }
   }
 }

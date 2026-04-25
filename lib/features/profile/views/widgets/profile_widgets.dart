@@ -37,10 +37,13 @@ class PremiumProfileGroup extends StatelessWidget {
           decoration: BoxDecoration(
             color: isDark ? theme.cardColor : Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: isDark ? theme.dividerColor.withOpacity(0.1) : Colors.grey.shade100),
+            border: Border.all(
+                color: isDark
+                    ? theme.dividerColor.withValues(alpha: 0.1)
+                    : Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.05 : 0.02),
+                color: Colors.black.withValues(alpha: isDark ? 0.05 : 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )
@@ -55,7 +58,9 @@ class PremiumProfileGroup extends StatelessWidget {
                     height: 1,
                     thickness: 1,
                     indent: 64,
-                    color: isDark ? theme.dividerColor.withOpacity(0.1) : Colors.grey.shade100,
+                    color: isDark
+                        ? theme.dividerColor.withValues(alpha: 0.1)
+                        : Colors.grey.shade100,
                   ),
               ],
             ],
@@ -104,9 +109,14 @@ class PremiumProfileTile extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: isDestructive ? Colors.red.withOpacity(0.1) : iconColor.withOpacity(0.12),
+                  color: isDestructive
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : iconColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: isDestructive ? Colors.red.withOpacity(0.1) : iconColor.withOpacity(0.1)),
+                  border: Border.all(
+                      color: isDestructive
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : iconColor.withValues(alpha: 0.1)),
                 ),
                 child: Icon(
                   icon,
@@ -125,9 +135,12 @@ class PremiumProfileTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isDestructive 
-                          ? const Color(0xFFEF4444) 
-                          : (isDark ? theme.textTheme.bodyLarge?.color ?? Colors.white : const Color(0xFF1E293B)),
+                        color: isDestructive
+                            ? const Color(0xFFEF4444)
+                            : (isDark
+                                ? theme.textTheme.bodyLarge?.color ??
+                                    Colors.white
+                                : const Color(0xFF1E293B)),
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -137,20 +150,23 @@ class PremiumProfileTile extends StatelessWidget {
                         subtitle!,
                         style: TextStyle(
                           fontSize: 13,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade500,
                         ),
-                        maxLines: 1, 
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],
                 ),
               ),
-              trailing ?? Icon(
-                Icons.chevron_right_rounded,
-                color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
-                size: 22,
-              ),
+              trailing ??
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                    size: 22,
+                  ),
             ],
           ),
         ),

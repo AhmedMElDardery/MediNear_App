@@ -10,7 +10,7 @@ class CustomTextField extends StatelessWidget {
     required this.hint,
     required this.controller,
     this.keyboardType = TextInputType.text,
-    });
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,10 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ) 
-      ),
+          hintText: hint,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          )),
     );
   }
 }

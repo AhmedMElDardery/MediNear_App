@@ -22,10 +22,10 @@ class WalletRepositoryImpl implements WalletRepository {
     try {
       // 1. محاولة جلب البيانات المحدثة من الخادم
       final remoteData = await remoteDataSource.fetchWalletData();
-      
+
       // 2. تحديث التخزين المحلي بالبيانات الجديدة
       await localDataSource.cacheWalletData(remoteData);
-      
+
       return remoteData;
     } catch (e) {
       // 3. التعامل مع الأخطاء (مثل انقطاع الاتصال) والرجوع للبيانات المحلية إن وجدت

@@ -41,7 +41,9 @@ class ChatBotBottomPanel extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E).withAlpha(200) : ChatBotStyles.panelBg.withAlpha(180),
+              color: isDark
+                  ? const Color(0xFF1E1E1E).withAlpha(200)
+                  : ChatBotStyles.panelBg.withAlpha(180),
               // ✅ إضافة const للحواف
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),

@@ -1,17 +1,18 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-class SearchBarWidget extends StatefulWidget {
+class SearchBarWidget extends ConsumerStatefulWidget {
   final Function(String) onSearch;
 
   const SearchBarWidget({super.key, required this.onSearch});
 
   @override
-  State<SearchBarWidget> createState() => _SearchBarWidgetState();
+  ConsumerState<SearchBarWidget> createState() => _SearchBarWidgetState();
 }
 
-class _SearchBarWidgetState extends State<SearchBarWidget>
+class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -146,8 +147,10 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
         boxShadow: [
           BoxShadow(
             color: (_isFocused || _isListening)
-                ? const Color(0xFF00965E).withOpacity(0.18)
-                : (isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05)),
+                ? const Color(0xFF00965E).withValues(alpha: 0.18)
+                : (isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.black.withValues(alpha: 0.05)),
             blurRadius: _isFocused || _isListening ? 18 : 8,
             offset: const Offset(0, 4),
           ),
@@ -165,11 +168,12 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
           color: isDark ? Colors.white : Colors.black,
         ),
         decoration: InputDecoration(
-          hintText: _isListening ? "Listening..." : "Search for medicine or pharmacy...",
+          hintText: _isListening
+              ? "Listening..."
+              : "Search for medicine or pharmacy...",
           hintStyle: TextStyle(
-            color: _isListening
-                ? const Color(0xFF00965E)
-                : Colors.grey.shade500,
+            color:
+                _isListening ? const Color(0xFF00965E) : Colors.grey.shade500,
             fontSize: 14,
             fontWeight: _isListening ? FontWeight.w600 : FontWeight.w400,
           ),
@@ -202,8 +206,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4),
-                    child: Icon(Icons.close_rounded,
-                        size: 18, color: Colors.grey),
+                    child:
+                        Icon(Icons.close_rounded, size: 18, color: Colors.grey),
                   ),
                 ),
 
@@ -214,9 +218,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _isListening
-                        ? Colors.red
-                        : const Color(0xFF00965E),
+                    color: _isListening ? Colors.red : const Color(0xFF00965E),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: _isListening
@@ -237,9 +239,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
 
           filled: true,
           fillColor: _isListening
-              ? (isDark ? const Color(0xFF00965E).withOpacity(0.15) : const Color(0xFFE8F5EE))
-              : (_isFocused 
-                  ? (isDark ? Colors.grey.shade800 : Colors.white) 
+              ? (isDark
+                  ? const Color(0xFF00965E).withValues(alpha: 0.15)
+                  : const Color(0xFFE8F5EE))
+              : (_isFocused
+                  ? (isDark ? Colors.grey.shade800 : Colors.white)
                   : (isDark ? Colors.grey.shade900 : const Color(0xFFF5F7FA))),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -250,14 +254,13 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200, 
+              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
               width: 1.5,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-                color: Color(0xFF00965E), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF00965E), width: 1.5),
           ),
         ),
       ),

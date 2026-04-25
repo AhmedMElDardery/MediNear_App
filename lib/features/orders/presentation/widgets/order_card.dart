@@ -44,7 +44,7 @@ class OrderCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 5),
             )
@@ -57,8 +57,10 @@ class OrderCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: AppColors.primaryLight.withOpacity(0.1),
-                  child: const Icon(Icons.local_pharmacy, color: AppColors.primaryLight),
+                  backgroundColor:
+                      AppColors.primaryLight.withValues(alpha: 0.1),
+                  child: const Icon(Icons.local_pharmacy,
+                      color: AppColors.primaryLight),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -67,31 +69,39 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Text(
                         order.pharmacyName,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: textColor),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         order.location,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
                 // بادج الحالة الملون
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     order.status,
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-            
+
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Divider(thickness: 0.5),
@@ -101,14 +111,19 @@ class OrderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Items: ${order.itemsCount}", style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                Text("Items: ${order.itemsCount}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: textColor)),
                 Text(
                   "${order.total} EGP",
-                  style: const TextStyle(color: AppColors.primaryLight, fontWeight: FontWeight.bold, fontSize: 15),
+                  style: const TextStyle(
+                      color: AppColors.primaryLight,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 10),
 
             // 3. الصف الثالث: التاريخ + زرار View Details (اللي رجعناه) 👇
@@ -121,7 +136,8 @@ class OrderCard extends StatelessWidget {
                 ),
                 // زرار التفاصيل (شكل بس، والضغطة بتمسكها الكارت كله)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.primaryLight),
                     borderRadius: BorderRadius.circular(20),
@@ -130,10 +146,14 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Text(
                         "View Details",
-                        style: TextStyle(color: AppColors.primaryLight, fontSize: 11, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: AppColors.primaryLight,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold),
                       ),
                       SizedBox(width: 5),
-                      Icon(Icons.arrow_forward_ios, size: 10, color: AppColors.primaryLight),
+                      Icon(Icons.arrow_forward_ios,
+                          size: 10, color: AppColors.primaryLight),
                     ],
                   ),
                 ),

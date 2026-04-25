@@ -2,20 +2,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
 import '../manager/pharmacy_provider.dart';
 import '../widgets/pharmacy_cards.dart';
 import '../../../../features/saved_items/presentation/manager/saved_items_provider.dart';
+import '../../../../core/widgets/app_shimmer.dart';
 
-class PharmacyScreen extends StatefulWidget {
-  final String pharmacyId;    // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
+class PharmacyScreen extends ConsumerStatefulWidget {
+  final String pharmacyId; // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
   final String pharmacyName;
   final String doctorName;
   final String? pharmacyImage;
 
   const PharmacyScreen({
     super.key,
-    required this.pharmacyId,   // 🚀 خليناه مطلوب
+    required this.pharmacyId, // 🚀 خليناه مطلوب
     required this.pharmacyName,
     this.doctorName = 'Al-Noor Pharmacy',
     this.pharmacyImage,
@@ -23,10 +25,10 @@ class PharmacyScreen extends StatefulWidget {
 //...
 
   @override
-  State<PharmacyScreen> createState() => _PharmacyScreenState();
+  ConsumerState<PharmacyScreen> createState() => _PharmacyScreenState();
 }
 
-class _PharmacyScreenState extends State<PharmacyScreen>
+class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
@@ -44,11 +46,12 @@ class _PharmacyScreenState extends State<PharmacyScreen>
     _tabController = TabController(length: 3, vsync: this);
     _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isLocallySaved = Provider.of<SavedItemsProvider>(context, listen: false)
-          .isPharmacySaved(widget.pharmacyId);
+      final isLocallySaved =
+          ref.watch(savedItemsProvider).isPharmacySaved(widget.pharmacyId);
       // 🚀 هنا بنقول للبروفايدر: "روح هات بيانات الصيدلية بالـ ID بتاعها"
-      Provider.of<PharmacyProvider>(context, listen: false)
-          .fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved); 
+      ref
+          .watch(pharmacyProvider)
+          .fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved);
     });
   }
 
@@ -85,8 +88,9 @@ class _PharmacyScreenState extends State<PharmacyScreen>
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
-        body: Consumer<PharmacyProvider>(
-          builder: (context, provider, _) {
+        body: Consumer(
+          builder: (context, ref, _) {
+            final provider = ref.watch(pharmacyProvider);
             return Column(
               children: [
                 // ── Premium Header ──────────────────────
@@ -95,8 +99,14 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                 // ── Body ────────────────────────────────
                 Expanded(
                   child: provider.isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(color: _green))
+                      ? ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: 5,
+                          itemBuilder: (context, index) => const Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: AppShimmer(width: double.infinity, height: 120),
+                          ),
+                        )
                       : Column(
                           children: [
                             // Flash Sale Banner
@@ -118,7 +128,8 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                     isEmpty: provider.filteredMedicines.isEmpty,
                                     emptyMsg: 'No medicines found',
                                     emptyIcon: Icons.medication_outlined,
-                                    itemCount: provider.filteredMedicines.length,
+                                    itemCount:
+                                        provider.filteredMedicines.length,
                                     itemBuilder: (i) => PharmacyMedicineCard(
                                       medicine: provider.filteredMedicines[i],
                                       onToggleSave: () =>
@@ -145,10 +156,8 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                     isDark: isDark,
                                     isEmpty: provider.filteredServices.isEmpty,
                                     emptyMsg: 'No services found',
-                                    emptyIcon:
-                                        Icons.medical_services_outlined,
-                                    itemCount:
-                                        provider.filteredServices.length,
+                                    emptyIcon: Icons.medical_services_outlined,
+                                    itemCount: provider.filteredServices.length,
                                     itemBuilder: (i) => PharmacyServiceCard(
                                       service: provider.filteredServices[i],
                                     ),
@@ -192,34 +201,37 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                     onTap: () => Navigator.pop(context),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                      child: const Icon(Icons.arrow_back,
+                          color: Colors.white, size: 28),
                     ),
                   ),
                   const Spacer(),
                   // 🚀 زرار الـ Save الجديد والمربوط بالـ API
-                  Consumer<PharmacyProvider>(
-                    builder: (context, provider, child) {
-                      return GestureDetector(
-                        onTap: () async {
-                          // 🚀 لما بتدوس، بينادي دالة الحفظ في البروفايدر
-                          await provider.togglePharmacySave();
-                          if (context.mounted) {
-                            // 🚀 بنقول لصفحة المحفوظات تحدث بياناتها في الخلفية من غير ما تظهر لودينج
-                            Provider.of<SavedItemsProvider>(context, listen: false).fetchSavedItems(silent: true);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
+                  Consumer(builder: (context, ref, child) {
+                    final provider = ref.watch(pharmacyProvider);
+                    return GestureDetector(
+                      onTap: () async {
+                        // 🚀 لما بتدوس، بينادي دالة الحفظ في البروفايدر
+                        await provider.togglePharmacySave();
+                        if (context.mounted) {
+                          // 🚀 بنقول لصفحة المحفوظات تحدث بياناتها في الخلفية من غير ما تظهر لودينج
+                          ref
+                              .watch(savedItemsProvider)
+                              .fetchSavedItems(silent: true);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
                             // شكل الأيقونة بيتغير: مقفولة لو محفوظة، ومفتوحة لو لأ
-                            provider.isPharmacySaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                            color: Colors.white, 
-                            size: 28
-                          ),
-                        ),
-                      );
-                    }
-                  ),
+                            provider.isPharmacySaved
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: Colors.white,
+                            size: 28),
+                      ),
+                    );
+                  }),
                 ],
               ),
               const SizedBox(height: 16),
@@ -236,25 +248,31 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
+                          color: Colors.black.withValues(alpha: 0.12),
                           blurRadius: 14,
                         ),
                       ],
                     ),
                     child: ClipOval(
-                      child: widget.pharmacyImage != null && widget.pharmacyImage!.isNotEmpty
+                      child: widget.pharmacyImage != null &&
+                              widget.pharmacyImage!.isNotEmpty
                           ? CachedNetworkImage(
                               imageUrl: widget.pharmacyImage!,
                               fit: BoxFit.cover,
                               fadeInDuration: Duration.zero,
                               fadeOutDuration: Duration.zero,
                               memCacheWidth: 160,
-                              placeholder: (context, url) =>
-                                  const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
+                              placeholder: (context, url) => const Icon(
+                                  Icons.local_pharmacy_rounded,
+                                  size: 42,
+                                  color: _green),
+                              errorWidget: (context, url, error) => const Icon(
+                                  Icons.local_pharmacy_rounded,
+                                  size: 42,
+                                  color: _green),
                             )
-                          : const Icon(Icons.local_pharmacy_rounded, size: 42, color: _green),
+                          : const Icon(Icons.local_pharmacy_rounded,
+                              size: 42, color: _green),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -281,7 +299,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 3),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.22),
+                                color: Colors.white.withValues(alpha: 0.22),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: const Row(
@@ -328,7 +346,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF5722).withOpacity(0.4),
+            color: const Color(0xFFFF5722).withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -375,7 +393,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Text(
@@ -405,8 +423,6 @@ class _PharmacyScreenState extends State<PharmacyScreen>
     );
   }
 
-
-
   // ──────────────────────────────────────────────────────────
   // SEARCH BAR
   // ──────────────────────────────────────────────────────────
@@ -419,12 +435,14 @@ class _PharmacyScreenState extends State<PharmacyScreen>
           provider.search(val);
           setState(() {});
         },
-        style: TextStyle(fontSize: 14, color: isDark ? Colors.white : Colors.black),
+        style: TextStyle(
+            fontSize: 14, color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: 'Search medicines, doctors...',
-          hintStyle: TextStyle(color: isDark ? Colors.grey.shade500 : Colors.grey.shade400, fontSize: 14),
-          prefixIcon:
-              const Icon(Icons.search_rounded, color: _green, size: 22),
+          hintStyle: TextStyle(
+              color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+              fontSize: 14),
+          prefixIcon: const Icon(Icons.search_rounded, color: _green, size: 22),
           suffixIcon: _searchController.text.isNotEmpty
               ? GestureDetector(
                   onTap: () {
@@ -446,7 +464,8 @@ class _PharmacyScreenState extends State<PharmacyScreen>
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+            borderSide: BorderSide(
+                color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -463,18 +482,20 @@ class _PharmacyScreenState extends State<PharmacyScreen>
   Widget _buildTabBar(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200)),
+        border: Border(
+            bottom: BorderSide(
+                color: isDark ? Colors.grey.shade800 : Colors.grey.shade200)),
       ),
       child: TabBar(
         controller: _tabController,
         labelColor: _green,
-        unselectedLabelColor: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+        unselectedLabelColor:
+            isDark ? Colors.grey.shade400 : Colors.grey.shade500,
         indicatorColor: _green,
         indicatorWeight: 3,
-        labelStyle: const TextStyle(
-            fontWeight: FontWeight.w700, fontSize: 13),
-        unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w500, fontSize: 13),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+        unselectedLabelStyle:
+            const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
         tabs: const [
           Tab(
             icon: Icon(Icons.medication_rounded, size: 17),
@@ -527,7 +548,10 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                     color: isDark ? Colors.white : const Color(0xFF444444))),
             const SizedBox(height: 4),
             Text('Try adjusting your search',
-                style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400)),
+                style: TextStyle(
+                    fontSize: 13,
+                    color:
+                        isDark ? Colors.grey.shade500 : Colors.grey.shade400)),
           ],
         ),
       );
@@ -552,8 +576,7 @@ class _PharmacyScreenState extends State<PharmacyScreen>
         ),
         backgroundColor: _green,
         behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       ),

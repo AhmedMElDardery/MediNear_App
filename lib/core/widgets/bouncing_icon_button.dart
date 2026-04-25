@@ -1,6 +1,7 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-class BouncingIconButton extends StatefulWidget {
+class BouncingIconButton extends ConsumerStatefulWidget {
   final Widget child;
   final VoidCallback onTap;
   final bool isHomeButton;
@@ -13,12 +14,11 @@ class BouncingIconButton extends StatefulWidget {
   });
 
   @override
-  State<BouncingIconButton> createState() => _BouncingIconButtonState();
+  ConsumerState<BouncingIconButton> createState() => _BouncingIconButtonState();
 }
 
-class _BouncingIconButtonState extends State<BouncingIconButton>
+class _BouncingIconButtonState extends ConsumerState<BouncingIconButton>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 

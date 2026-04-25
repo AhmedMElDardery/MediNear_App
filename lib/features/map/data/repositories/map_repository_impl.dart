@@ -33,7 +33,8 @@ class MapRepositoryImpl implements MapRepository {
   }
 
   @override
-  Future<List<PharmacyEntity>> getAllPharmacies({double? lat, double? lng}) async {
+  Future<List<PharmacyEntity>> getAllPharmacies(
+      {double? lat, double? lng}) async {
     final data = await remote.getAllPharmacies(lat: lat, lng: lng);
     return data.map<PharmacyEntity>((e) => PharmacyModel.fromJson(e)).toList();
   }
@@ -52,7 +53,9 @@ class MapRepositoryImpl implements MapRepository {
   @override
   Future<List<RecentSearchEntity>> getRecentSearches() async {
     final data = await remote.getRecentSearches();
-    return data.map<RecentSearchEntity>((e) => RecentSearchModel.fromJson(e)).toList();
+    return data
+        .map<RecentSearchEntity>((e) => RecentSearchModel.fromJson(e))
+        .toList();
   }
 
   @override

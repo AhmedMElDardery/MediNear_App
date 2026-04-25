@@ -4,9 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GeminiService {
   // ✅ حط المفتاح بتاعك هنا
-  static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? ""; 
-  static const String _apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
-  
+  static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? "";
+  static const String _apiUrl =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+
   final Dio _dio = Dio();
 
   // ✅ الرولز الشاملة بتاعتنا
@@ -33,16 +34,14 @@ General Rules:
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'x-goog-api-key': _apiKey, 
+            'x-goog-api-key': _apiKey,
           },
         ),
         data: {
           // ✅ حقن الرولز في عقل Gemini
           "systemInstruction": {
             "parts": [
-              {
-                "text": _systemRules
-              }
+              {"text": _systemRules}
             ]
           },
           "contents": [
@@ -62,11 +61,12 @@ General Rules:
       }
     } on DioException catch (e) {
       if (e.response != null) {
-         debugPrint("❌ Gemini Server Error: ${e.response?.data}");
-         String errorMessage = e.response?.data['error']['message'] ?? 'خطأ غير معروف';
-         return "رفض من السيرفر: $errorMessage";
+        debugPrint("❌ Gemini Server Error: ${e.response?.data}");
+        String errorMessage =
+            e.response?.data['error']['message'] ?? 'خطأ غير معروف';
+        return "رفض من السيرفر: $errorMessage";
       } else {
-         return "تأكد من اتصال الإنترنت: ${e.message}";
+        return "تأكد من اتصال الإنترنت: ${e.message}";
       }
     } catch (e) {
       return "خطأ غير متوقع: $e";

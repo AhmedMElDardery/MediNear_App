@@ -1,19 +1,20 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/pharmacy_entity.dart';
 
-class PharmacyCard extends StatefulWidget {
+class PharmacyCard extends ConsumerStatefulWidget {
   final PharmacyEntity pharmacy;
   final VoidCallback? onTap;
 
   const PharmacyCard({super.key, required this.pharmacy, this.onTap});
 
   @override
-  State<PharmacyCard> createState() => _PharmacyCardState();
+  ConsumerState<PharmacyCard> createState() => _PharmacyCardState();
 }
 
-class _PharmacyCardState extends State<PharmacyCard>
+class _PharmacyCardState extends ConsumerState<PharmacyCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
@@ -82,7 +83,8 @@ class _PharmacyCardState extends State<PharmacyCard>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isOpen = _isOpen();
-    final hasPhone = widget.pharmacy.phone != null && widget.pharmacy.phone!.isNotEmpty;
+    final hasPhone =
+        widget.pharmacy.phone != null && widget.pharmacy.phone!.isNotEmpty;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -190,7 +192,9 @@ class _PharmacyCardState extends State<PharmacyCard>
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 10.5,
-                                color: isDark ? Colors.grey.shade400 : const Color(0xFF888888),
+                                color: isDark
+                                    ? Colors.grey.shade400
+                                    : const Color(0xFF888888),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

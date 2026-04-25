@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medinear_app/core/utils/launcher_helper.dart';
 import 'package:medinear_app/features/support/data/models/support_item_model.dart';
 
-
-
 class SupportProvider extends ChangeNotifier {
   List<SupportItemModel> items = [];
 

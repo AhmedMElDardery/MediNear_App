@@ -4,7 +4,7 @@ import '../../data/models/cart_item_model.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItemModel item;
-  final VoidCallback onAdd;    // دالة لما يدوس +
+  final VoidCallback onAdd; // دالة لما يدوس +
   final VoidCallback onRemove; // دالة لما يدوس -
   final VoidCallback onDelete; // دالة لما يدوس حذف
 
@@ -33,7 +33,10 @@ class CartItemCard extends StatelessWidget {
             color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5)),
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5)),
             ],
           ),
           child: Row(
@@ -42,19 +45,26 @@ class CartItemCard extends StatelessWidget {
               // الدائرة الخضراء (الصورة)
               CircleAvatar(
                 radius: 30,
-                backgroundColor: AppColors.primaryLight.withOpacity(0.2),
+                backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
               ),
               const SizedBox(width: 15),
-              
+
               // التفاصيل والعداد
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: textColor)),
-                    Text("${item.price.toInt()} EGP", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
+                    Text(item.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: textColor)),
+                    Text("${item.price.toInt()} EGP",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: textColor)),
                     const SizedBox(height: 10),
-                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -69,26 +79,37 @@ class CartItemCard extends StatelessWidget {
                               InkWell(
                                 onTap: onRemove,
                                 child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  child: Icon(Icons.remove, color: Colors.white, size: 18),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  child: Icon(Icons.remove,
+                                      color: Colors.white, size: 18),
                                 ),
                               ),
-                              Text("x${item.quantity}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                              Text("x${item.quantity}",
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13)),
                               InkWell(
                                 onTap: onAdd,
                                 child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  child: Icon(Icons.add, color: Colors.white, size: 18),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  child: Icon(Icons.add,
+                                      color: Colors.white, size: 18),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        
+
                         // الإجمالي لكل صنف
                         Text(
                           "Total : ${item.totalPrice.toInt()} EGP",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: textColor),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: textColor),
                         ),
                       ],
                     ),
@@ -110,7 +131,11 @@ class CartItemCard extends StatelessWidget {
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text("Available", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: const Text("Available",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold)),
             ),
           ),
 
@@ -126,7 +151,8 @@ class CartItemCard extends StatelessWidget {
                 color: Colors.red, // لون أحمر صريح زي الصورة
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(Icons.delete_outline, color: Colors.white, size: 16),
+              child: const Icon(Icons.delete_outline,
+                  color: Colors.white, size: 16),
             ),
           ),
         ),

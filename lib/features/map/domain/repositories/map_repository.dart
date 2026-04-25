@@ -14,5 +14,6 @@ abstract class MapRepository {
   Future<void> notifyMe(String pharmacyId);
   Future<List<MedicineEntity>> getMedicines();
   Future<List<RecentSearchEntity>> getRecentSearches();
-  Future<void> updateUserLocation({required double lat, required double lng}); // 🆕
+  Future<void> updateUserLocation(
+      {required double lat, required double lng}); // 🆕
 }

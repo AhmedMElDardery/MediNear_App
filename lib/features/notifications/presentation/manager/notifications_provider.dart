@@ -6,12 +6,12 @@ class NotificationsProvider extends ChangeNotifier {
   final GetNotificationsUseCase getNotificationsUseCase;
 
   List<NotificationEntity> _notifications = [];
-  String _currentFilter = 'All'; 
+  String _currentFilter = 'All';
   bool _isLoading = false;
-  int _itemsToShow = 6; 
+  int _itemsToShow = 6;
 
   NotificationsProvider({required this.getNotificationsUseCase}) {
-    fetchData(); 
+    fetchData();
   }
 
   bool get isLoading => _isLoading;
@@ -28,8 +28,8 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   bool get hasMoreItems {
-    int totalFiltered = _currentFilter == 'Unread' 
-        ? _notifications.where((n) => !n.isRead).length 
+    int totalFiltered = _currentFilter == 'Unread'
+        ? _notifications.where((n) => !n.isRead).length
         : _notifications.length;
     return _itemsToShow < totalFiltered;
   }
@@ -89,7 +89,7 @@ class NotificationsProvider extends ChangeNotifier {
 
   void restoreItem(NotificationEntity item) {
     _notifications.add(item);
-    _notifications.sort((a, b) => int.parse(a.id).compareTo(int.parse(b.id))); 
+    _notifications.sort((a, b) => int.parse(a.id).compareTo(int.parse(b.id)));
     notifyListeners();
   }
 }

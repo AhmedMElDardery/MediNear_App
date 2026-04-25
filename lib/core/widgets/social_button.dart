@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class SocialButton extends StatelessWidget {
   final String text;
   final String iconPath;
