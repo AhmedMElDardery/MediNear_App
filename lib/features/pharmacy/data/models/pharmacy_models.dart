@@ -9,6 +9,7 @@ class PharmacyMedicineModel {
   final String image;
   bool notifyAvailable;
   bool isSaved;
+  bool inCart;
 
   PharmacyMedicineModel({
     required this.id,
@@ -21,6 +22,7 @@ class PharmacyMedicineModel {
     required this.image,
     this.notifyAvailable = false,
     this.isSaved = false,
+    this.inCart = false,
   });
 
   factory PharmacyMedicineModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class PharmacyMedicineModel {
       image: json['image'] ?? '',
       notifyAvailable: json['notifyAvailable'] ?? false,
       isSaved: json['isSaved'] ?? json['is_saved'] ?? false,
+      inCart: json['inCart'] ?? json['in_cart'] ?? false,
     );
   }
 }

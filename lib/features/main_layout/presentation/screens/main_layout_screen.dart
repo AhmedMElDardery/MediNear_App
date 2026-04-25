@@ -35,8 +35,22 @@ class MainLayoutScreen extends ConsumerWidget {
         children: pages,
       ),
       floatingActionButton: const HomeFloatingButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: const FixedCenterDockedFabLocation(),
       bottomNavigationBar: const CustomBottomNavBar(),
     );
+  }
+}
+
+class FixedCenterDockedFabLocation extends FloatingActionButtonLocation {
+  const FixedCenterDockedFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2.0;
+    
+    // Standard dock Y calculation without subtracting SnackBar height
+    final double fabY = scaffoldGeometry.contentBottom - (scaffoldGeometry.floatingActionButtonSize.height / 2.0);
+    
+    return Offset(fabX, fabY);
   }
 }

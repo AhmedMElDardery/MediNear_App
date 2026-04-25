@@ -23,7 +23,7 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.watch(cartProvider).loadCartData();
+      ref.read(cartProvider).loadCartPharmacies();
     });
   }
 
@@ -52,7 +52,7 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
       body: Consumer(
         builder: (context, ref, child) {
           final provider = ref.watch(cartProvider);
-          if (provider.isLoading) {
+          if (provider.isLoadingPharmacies) {
             return ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               itemCount: 5,
@@ -63,7 +63,7 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
             );
           }
 
-          if (provider.cartItems.isEmpty) {
+          if (provider.cartPharmacies.isEmpty) {
             return const CustomEmptyState(
               title: "Your Cart is Empty!",
               subtitle: "Looks like you haven't added any items to your cart yet.",
@@ -71,10 +71,8 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
             );
           }
 
-          final allPharmacies = provider.uniquePharmacies;
-
-          final filteredPharmacies = allPharmacies.where((name) {
-            return name.toLowerCase().contains(_searchText.toLowerCase());
+          final filteredPharmacies = provider.cartPharmacies.where((p) {
+            return p.pharmacyName.toLowerCase().contains(_searchText.toLowerCase());
           }).toList();
 
           return Column(
@@ -131,11 +129,7 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                             horizontal: 20, vertical: 10),
                         itemCount: filteredPharmacies.length,
                         itemBuilder: (context, index) {
-                          final pharmacyName = filteredPharmacies[index];
-                          final items =
-                              provider.getItemsByPharmacy(pharmacyName);
-                          final firstItem = items.first;
-                          final itemsCount = items.length;
+                          final pharmacy = filteredPharmacies[index];
 
                           return GestureDetector(
                             onTap: () {
@@ -143,7 +137,10 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      MyCartScreen(pharmacyName: pharmacyName),
+                                      MyCartScreen(
+                                        pharmacyId: pharmacy.id, 
+                                        pharmacyName: pharmacy.pharmacyName
+                                      ),
                                 ),
                               );
                             },
@@ -167,9 +164,12 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                                     radius: 28,
                                     backgroundColor: AppColors.primaryLight
                                         .withValues(alpha: 0.2),
-                                    child: const Icon(Icons.store,
-                                        color: AppColors.primaryLight,
-                                        size: 28),
+                                    backgroundImage: pharmacy.image != null
+                                        ? NetworkImage(pharmacy.image!)
+                                        : null,
+                                    child: pharmacy.image == null 
+                                      ? const Icon(Icons.store, color: AppColors.primaryLight, size: 28)
+                                      : null,
                                   ),
                                   const SizedBox(width: 15),
                                   Expanded(
@@ -177,37 +177,30 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(pharmacyName,
+                                        Text(pharmacy.pharmacyName,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
                                                 color: textColor)),
                                         const SizedBox(height: 4),
                                         Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             const Icon(Icons.location_on,
                                                 size: 14, color: Colors.grey),
-                                            Text(firstItem.pharmacyLocation,
-                                                style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 12)),
+                                            const SizedBox(width: 2),
+                                            Expanded(
+                                              child: Text("${pharmacy.city} - ${pharmacy.address}",
+                                                  style: const TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12)),
+                                            ),
                                           ],
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                        color: const Color(0xFF2E7D32),
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Text("$itemsCount Products",
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold)),
-                                  ),
+                                  const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
                                 ],
                               ),
                             ),

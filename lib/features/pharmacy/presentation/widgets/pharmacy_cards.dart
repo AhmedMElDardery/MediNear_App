@@ -109,8 +109,10 @@ class PharmacyMedicineCard extends StatelessWidget {
                     const Spacer(),
                     if (medicine.inStock)
                       IconButton(
-                          icon: Icon(Icons.shopping_cart,
-                              color: theme.primaryColor),
+                          icon: Icon(
+                            medicine.inCart ? Icons.shopping_cart : Icons.shopping_cart_outlined,
+                            color: theme.primaryColor,
+                          ),
                           onPressed: onAddToCart)
                     else
                       ElevatedButton(

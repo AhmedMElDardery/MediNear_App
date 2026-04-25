@@ -25,8 +25,8 @@ class HomeFloatingButton extends ConsumerWidget {
         isHomeButton: true,
         onTap: () => nav.changeIndex(0),
         child: Container(
-          width: 64,
-          height: 64,
+          width: 66,
+          height: 66,
           decoration: BoxDecoration(
             color: isSelected
                 ? null
@@ -51,7 +51,7 @@ class HomeFloatingButton extends ConsumerWidget {
           child: const Icon(
             Icons.home_rounded,
             color: Colors.white,
-            size: 35,
+            size: 36,
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/pharmacy_models.dart';
 import '../../data/datasources/pharmacy_remote_data_source.dart';
+import 'package:medinear_app/features/cart/data/datasources/cart_remote_data_source.dart';
 
 class PharmacyProvider extends ChangeNotifier {
   final PharmacyRemoteDataSource _dataSource = PharmacyRemoteDataSource();
@@ -38,6 +39,25 @@ class PharmacyProvider extends ChangeNotifier {
       _medicines = data['medicines'] as List<PharmacyMedicineModel>;
       _doctors = data['doctors'] as List<PharmacyDoctorModel>;
       _services = data['services'] as List<PharmacyServiceModel>;
+
+      // Sync with cart items from API to preserve UI state
+      try {
+        final cartDataSource = CartRemoteDataSource();
+        final pId = int.tryParse(pharmacyId);
+        if (pId != null) {
+          final cartData = await cartDataSource.getPharmacyCartItems(pId);
+          if (cartData != null && cartData.items.isNotEmpty) {
+            for (var cartItem in cartData.items) {
+              final medIndex = _medicines.indexWhere((m) => m.id == cartItem.medicine.id);
+              if (medIndex != -1) {
+                _medicines[medIndex].inCart = true;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint("Failed to sync cart items in pharmacy view: $e");
+      }
     } catch (e) {
       debugPrint("Error: $e");
     }
@@ -108,6 +128,31 @@ class PharmacyProvider extends ChangeNotifier {
       item.isSaved = !item.isSaved;
       notifyListeners();
       debugPrint("API Error: Failed to toggle save medicine");
+    }
+  }
+
+  Future<void> toggleMedicineInCart(int id) async {
+    final index = _medicines.indexWhere((e) => e.id == id);
+    if (index == -1) return;
+    
+    final item = _medicines[index];
+    item.inCart = !item.inCart;
+    notifyListeners();
+
+    // نكلم الـ Cart API عشان نضيف أو نحذف
+    final cartDataSource = CartRemoteDataSource();
+    int pharmacyId = int.tryParse(_currentPharmacyId) ?? 0;
+    
+    bool success = await cartDataSource.toggleCartItem(
+      medicineId: id,
+      pharmacyId: pharmacyId,
+      quantity: item.inCart ? 1 : null,
+    );
+    
+    if (!success) {
+      item.inCart = !item.inCart;
+      notifyListeners();
+      debugPrint("API Error: Failed to toggle medicine in cart");
     }
   }
 

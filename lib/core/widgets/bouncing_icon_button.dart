@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BouncingIconButton extends ConsumerStatefulWidget {
   final Widget child;
@@ -50,12 +51,13 @@ class _BouncingIconButtonState extends ConsumerState<BouncingIconButton>
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTapDown: (_) => _controller.forward(),
+      onTapDown: (_) {
+        HapticFeedback.lightImpact();
+        _controller.forward();
+        widget.onTap();
+      },
       onTapUp: (_) {
         _controller.reverse();
-        Future.delayed(const Duration(milliseconds: 150), () {
-          widget.onTap();
-        });
       },
       onTapCancel: () => _controller.reverse(),
       child: ScaleTransition(

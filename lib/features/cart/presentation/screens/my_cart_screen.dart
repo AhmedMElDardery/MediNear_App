@@ -2,18 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
+import 'package:medinear_app/core/widgets/app_shimmer.dart';
 import 'package:medinear_app/features/cart/presentation/manager/cart_provider.dart';
 import 'package:medinear_app/features/cart/presentation/widgets/cart_pharmacy_header.dart';
 import 'package:medinear_app/features/cart/presentation/widgets/cart_item_card.dart';
 import 'package:medinear_app/features/checkout/presentation/screens/checkout_screen.dart';
 
-class MyCartScreen extends ConsumerWidget {
+class MyCartScreen extends ConsumerStatefulWidget {
+  final int pharmacyId;
   final String pharmacyName;
 
-  const MyCartScreen({super.key, required this.pharmacyName});
+  const MyCartScreen({
+    super.key, 
+    required this.pharmacyId, 
+    required this.pharmacyName
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyCartScreen> createState() => _MyCartScreenState();
+}
+
+class _MyCartScreenState extends ConsumerState<MyCartScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(cartProvider).loadPharmacyItems(widget.pharmacyId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
@@ -21,20 +40,11 @@ class MyCartScreen extends ConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         final provider = ref.watch(cartProvider);
-        final pharmacyItems = provider.getItemsByPharmacy(pharmacyName);
-        final pharmacyTotal = provider.getPharmacyTotal(pharmacyName);
-
-        // لو الصيدلية فضيت، ارجع للشاشة اللي فاتت
-        if (pharmacyItems.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          });
-        }
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            title: Text(pharmacyName,
+            title: Text(widget.pharmacyName,
                 style:
                     TextStyle(color: textColor, fontWeight: FontWeight.bold)),
             centerTitle: true,
@@ -44,36 +54,58 @@ class MyCartScreen extends ConsumerWidget {
           ),
           body: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                if (pharmacyItems.isNotEmpty)
-                  CartPharmacyHeader(
-                    pharmacyName: pharmacyName,
-                    location: pharmacyItems.first.pharmacyLocation,
-                    productsCount: pharmacyItems.length,
-                  ),
-                const SizedBox(height: 15),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: pharmacyItems.length,
-                    itemBuilder: (context, index) {
-                      final item = pharmacyItems[index];
-                      return CartItemCard(
-                        item: item,
-                        onAdd: () => provider.incrementQuantity(item),
-                        onRemove: () => provider.decrementQuantity(item),
-                        onDelete: () => provider.deleteItem(item),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 15),
-                SafeArea(
-                  child: _buildBottomSummary(context, pharmacyTotal,
-                      pharmacyItems, cardColor, textColor),
-                )
-              ],
-            ),
+            child: provider.isLoadingPharmacyItems
+                ? ListView.builder(
+                    itemCount: 3,
+                    itemBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.only(bottom: 15),
+                      child: AppShimmer(width: double.infinity, height: 120, borderRadius: 16),
+                    ),
+                  )
+                : (provider.currentPharmacyDetails == null || provider.currentPharmacyDetails!.items.isEmpty)
+                    ? Center(child: Text("Cart is empty for this pharmacy.", style: TextStyle(color: textColor)))
+                    : Column(
+                        children: [
+                          CartPharmacyHeader(
+                            pharmacyName: widget.pharmacyName,
+                            location: "",
+                            productsCount: provider.currentPharmacyDetails!.totalItems,
+                          ),
+                          const SizedBox(height: 15),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: provider.currentPharmacyDetails!.items.length,
+                              itemBuilder: (itemContext, index) {
+                                final item = provider.currentPharmacyDetails!.items[index];
+                                return CartItemCard(
+                                  item: item,
+                                  onAdd: () => provider.incrementQuantity(item),
+                                  onRemove: () => provider.decrementQuantity(item),
+                                  onDelete: () async {
+                                    await provider.deleteItem(item);
+                                    if (provider.currentPharmacyDetails == null || 
+                                        provider.currentPharmacyDetails!.items.isEmpty) {
+                                      if (context.mounted) {
+                                        Navigator.pop(context);
+                                        provider.loadCartPharmacies();
+                                      }
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          SafeArea(
+                            child: _buildBottomSummary(
+                                context, 
+                                provider.currentPharmacyDetails!.totalPrice,
+                                provider.currentPharmacyDetails!.items, 
+                                cardColor, 
+                                textColor),
+                          )
+                        ],
+                      ),
           ),
         );
       },
@@ -104,7 +136,7 @@ class MyCartScreen extends ConsumerWidget {
                       color: AppColors.primaryLight,
                       fontWeight: FontWeight.bold,
                       fontSize: 18)),
-              Text("${total.toInt()} EGP",
+              Text("${total.toStringAsFixed(2)} EGP",
                   style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.bold,
@@ -126,10 +158,8 @@ class MyCartScreen extends ConsumerWidget {
                   MaterialPageRoute(
                       builder: (context) => CheckoutScreen(
                             subtotal: total,
-                            pharmacyItems: List.from(
-                                items), //  بنبعت منتجات الصيدلية دي بس
-                            pharmacyName:
-                                pharmacyName, //  وبنبعت الاسم عشان نمسحهم
+                            pharmacyItems: List.from(items), 
+                            pharmacyName: widget.pharmacyName,
                           )),
                 );
               },

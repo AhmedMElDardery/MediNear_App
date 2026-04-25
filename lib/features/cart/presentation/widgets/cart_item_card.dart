@@ -4,9 +4,9 @@ import '../../data/models/cart_item_model.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItemModel item;
-  final VoidCallback onAdd; // دالة لما يدوس +
-  final VoidCallback onRemove; // دالة لما يدوس -
-  final VoidCallback onDelete; // دالة لما يدوس حذف
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+  final VoidCallback onDelete;
 
   const CartItemCard({
     super.key,
@@ -25,9 +25,8 @@ class CartItemCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // الكارت الأساسي
         Container(
-          margin: const EdgeInsets.only(top: 12), // عشان البادج اللي بارز فوق
+          margin: const EdgeInsets.only(top: 12), 
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: cardColor,
@@ -42,33 +41,35 @@ class CartItemCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // الدائرة الخضراء (الصورة)
               CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
+                backgroundImage: item.medicine.image != null 
+                    ? NetworkImage(item.medicine.image!) 
+                    : null,
+                child: item.medicine.image == null 
+                    ? const Icon(Icons.medication, color: AppColors.primaryLight) 
+                    : null,
               ),
               const SizedBox(width: 15),
-
-              // التفاصيل والعداد
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: textColor)),
-                    Text("${item.price.toInt()} EGP",
+                    Text(item.medicine.name,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
+                            color: textColor)),
+                    Text("${item.unitPrice.toStringAsFixed(2)} EGP",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                             color: textColor)),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // زرار الـ + و -
                         Container(
                           decoration: BoxDecoration(
                             color: AppColors.primaryLight,
@@ -102,13 +103,11 @@ class CartItemCard extends StatelessWidget {
                             ],
                           ),
                         ),
-
-                        // الإجمالي لكل صنف
                         Text(
-                          "Total : ${item.totalPrice.toInt()} EGP",
+                          "Total: ${(item.unitPrice * item.quantity).toStringAsFixed(2)} EGP",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                              fontSize: 14,
                               color: textColor),
                         ),
                       ],
@@ -119,27 +118,6 @@ class CartItemCard extends StatelessWidget {
             ],
           ),
         ),
-
-        // بادج Available (أخضر فوق على الشمال)
-        if (item.isAvailable)
-          Positioned(
-            top: 2,
-            left: 15,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text("Available",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold)),
-            ),
-          ),
-
-        // زرار الحذف (أحمر فوق على اليمين)
         Positioned(
           top: 25,
           right: 15,
@@ -148,7 +126,7 @@ class CartItemCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.red, // لون أحمر صريح زي الصورة
+                color: Colors.red,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Icon(Icons.delete_outline,

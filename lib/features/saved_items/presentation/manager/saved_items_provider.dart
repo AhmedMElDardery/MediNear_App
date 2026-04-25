@@ -127,7 +127,8 @@ class SavedItemsProvider extends ChangeNotifier {
   // باقي دوال الأدوية (بدون تغيير)
   // ----------------------------------------------------
   Future<String?> removeMedication(SavedMedicationModel item) async {
-    final index = _allMedications.indexWhere((element) => element.id == item.id);
+    final index = _allMedications.indexWhere((element) => 
+        element.id == item.id && element.pharmacyId == item.pharmacyId);
     if (index != -1) {
       _allMedications[index].isSaved = false;
       _applyFilters();
@@ -145,7 +146,8 @@ class SavedItemsProvider extends ChangeNotifier {
   }
 
   Future<String?> undoRemoveMedication(SavedMedicationModel item) async {
-    final index = _allMedications.indexWhere((element) => element.id == item.id);
+    final index = _allMedications.indexWhere((element) => 
+        element.id == item.id && element.pharmacyId == item.pharmacyId);
     if (index != -1) {
       _allMedications[index].isSaved = true;
       _applyFilters();

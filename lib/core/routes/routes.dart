@@ -49,6 +49,7 @@ class AppRoutes {
     map: (_) => const MapScreen(medicine: ""),
     saveditems: (_) => const SavedItemsScreen(),
     mycart: (_) => const MyCartScreen(
+          pharmacyId: 0,
           pharmacyName: "Al Noor",
         ),
     cart: (_) => const CartPharmaciesScreen(),

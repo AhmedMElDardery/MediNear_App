@@ -145,8 +145,18 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                                       onToggleNotify: () =>
                                           provider.toggleMedicineNotify(
                                               provider.filteredMedicines[i].id),
-                                      onAddToCart: () => _showAddedToCart(
-                                          provider.filteredMedicines[i].name),
+                                      onAddToCart: () async {
+                                        await provider.toggleMedicineInCart(
+                                            provider.filteredMedicines[i].id);
+                                        if (context.mounted) {
+                                          ref.read(cartProvider).loadCartPharmacies();
+                                          if (provider.filteredMedicines[i].inCart) {
+                                            _showAddedToCart(provider.filteredMedicines[i].name);
+                                          } else {
+                                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          }
+                                        }
+                                      },
                                     ),
                                   ),
                                   _buildList(

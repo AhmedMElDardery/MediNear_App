@@ -56,10 +56,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const SavedItemsScreen(),
     ),
     GoRoute(
-      path: '${AppRoutes.mycart}/:pharmacyName',
+      path: '${AppRoutes.mycart}/:pharmacyId/:pharmacyName',
       builder: (context, state) {
+        final pharmacyId = int.tryParse(state.pathParameters['pharmacyId'] ?? '0') ?? 0;
         final pharmacyName = state.pathParameters['pharmacyName'] ?? "Unknown";
-        return MyCartScreen(pharmacyName: pharmacyName);
+        return MyCartScreen(pharmacyId: pharmacyId, pharmacyName: pharmacyName);
       },
     ),
     GoRoute(

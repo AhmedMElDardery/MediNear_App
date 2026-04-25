@@ -23,19 +23,18 @@ class CustomBottomNavBar extends ConsumerWidget {
       shadowColor: isDark ? Colors.black : Colors.black45,
       padding: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(context, Icons.bookmark_border_rounded, "Saved", 2,
-              isDark, selectedIndex, nav),
-          _buildNavItem(context, Icons.shopping_cart_outlined, "Cart", 1,
-              isDark, selectedIndex, nav),
-          const SizedBox(width: 50),
-          _buildNavItem(context, Icons.map_outlined, "Map", 3, isDark,
-              selectedIndex, nav),
-          _buildNavItem(context, Icons.person_outline_rounded, "Profile", 4,
-              isDark, selectedIndex, nav),
-        ],
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {}, // Absorb taps
+        child: Row(
+          children: [
+            Expanded(child: _buildNavItem(context, Icons.bookmark_border_rounded, "Saved", 2, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.shopping_cart_outlined, "Cart", 1, isDark, selectedIndex, nav)),
+            const SizedBox(width: 70), // Leave space for the center FAB
+            Expanded(child: _buildNavItem(context, Icons.map_outlined, "Map", 3, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.person_outline_rounded, "Profile", 4, isDark, selectedIndex, nav)),
+          ],
+        ),
       ),
     );
   }
@@ -57,16 +56,28 @@ class CustomBottomNavBar extends ConsumerWidget {
       onTap: () => nav.changeIndex(index),
       child: Container(
         color: Colors.transparent,
-        width: 65,
+        height: 75,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? mainGreen
-                  : (isDark ? Colors.grey[500] : Colors.grey[400]),
-              size: 26,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              padding: EdgeInsets.symmetric(
+                horizontal: isSelected ? 16.0 : 8.0,
+                vertical: isSelected ? 6.0 : 6.0,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected ? mainGreen.withValues(alpha: 0.15) : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected
+                    ? mainGreen
+                    : (isDark ? Colors.grey[500] : Colors.grey[400]),
+                size: 24,
+              ),
             ),
             const SizedBox(height: 4),
             Text(

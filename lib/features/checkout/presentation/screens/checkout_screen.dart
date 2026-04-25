@@ -68,7 +68,7 @@ class CheckoutScreen extends ConsumerWidget {
                             subtotal, pharmacyItems);
 
                         if (success) {
-                          cart.clearCartForPharmacy(pharmacyName);
+                          cart.loadCartPharmacies();
 
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
