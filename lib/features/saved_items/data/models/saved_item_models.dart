@@ -33,6 +33,9 @@ class SavedMedicationModel {
   final String price;
   final String image;
   final bool isAvailable;
+  final String? pharmacyId; // 🚀 أضفنا pharmacyId عشان هنحتاجه واحنا بنلغي الحفظ
+  final String? pharmacyName;
+  final String? pharmacyImage;
   bool isSaved;
 
   SavedMedicationModel({
@@ -41,6 +44,9 @@ class SavedMedicationModel {
     required this.price,
     required this.image,
     required this.isAvailable,
+    this.pharmacyId,
+    this.pharmacyName,
+    this.pharmacyImage,
     this.isSaved = true,
   });
 
@@ -51,6 +57,9 @@ class SavedMedicationModel {
       price: json['price'] ?? '0 EGP',
       image: json['image'] ?? '',
       isAvailable: json['available'] ?? false,
+      pharmacyId: json['pharmacy_id']?.toString(), // بناخد pharmacy_id لو موجود
+      pharmacyName: json['pharmacy_name'],
+      pharmacyImage: json['pharmacy_image'],
       isSaved: json['isSaved'] ?? true,
     );
   }

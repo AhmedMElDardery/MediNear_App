@@ -122,20 +122,39 @@ class SavedItemsProvider extends ChangeNotifier {
   // ----------------------------------------------------
   // باقي دوال الأدوية (بدون تغيير)
   // ----------------------------------------------------
-  void removeMedication(SavedMedicationModel item) {
+  Future<String?> removeMedication(SavedMedicationModel item) async {
     final index = _allMedications.indexWhere((element) => element.id == item.id);
     if (index != -1) {
       _allMedications[index].isSaved = false;
       _applyFilters();
+
+      // 🚀 إرسال الطلب للسيرفر
+      var response = await _dataSource.toggleSaveMedicine(item.id.toString(), item.pharmacyId ?? '0');
+      if (response != true) {
+        _allMedications[index].isSaved = true;
+        _applyFilters();
+        debugPrint("API Error: $response");
+        return response.toString(); // Return the exact error string
+      }
     }
+    return null; // Success
   }
 
-  void undoRemoveMedication(SavedMedicationModel item) {
+  Future<String?> undoRemoveMedication(SavedMedicationModel item) async {
     final index = _allMedications.indexWhere((element) => element.id == item.id);
     if (index != -1) {
       _allMedications[index].isSaved = true;
       _applyFilters();
+
+      // 🚀 إرسال الطلب للسيرفر
+      var response = await _dataSource.toggleSaveMedicine(item.id.toString(), item.pharmacyId ?? '0');
+      if (response != true) {
+        _allMedications[index].isSaved = false;
+        _applyFilters();
+        return response.toString();
+      }
     }
+    return null;
   }
 
   bool isPharmacySaved(String id) {

@@ -73,11 +73,19 @@ class SavedPharmacyCard extends StatelessWidget {
       decoration: BoxDecoration(color: theme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          image,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor),
-        ),
+        child: image.startsWith('http')
+            ? Image.network(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(Icons.local_pharmacy, color: theme.primaryColor),
+              )
+            : (image.isNotEmpty && image.startsWith('assets') 
+                ? Image.asset(
+                    image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(Icons.local_pharmacy, color: theme.primaryColor),
+                  )
+                : Icon(Icons.local_pharmacy, color: theme.primaryColor)),
       ),
     );
   }
@@ -114,6 +122,38 @@ class SavedMedicationCard extends StatelessWidget {
                   medication.price,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: theme.textTheme.bodyMedium?.color),
                 ),
+                if (medication.pharmacyName != null && medication.pharmacyName!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (medication.pharmacyImage != null && medication.pharmacyImage!.isNotEmpty)
+                          ClipOval(
+                            child: medication.pharmacyImage!.startsWith('http')
+                                ? Image.network(medication.pharmacyImage!, width: 14, height: 14, fit: BoxFit.cover, errorBuilder: (_,__,___)=>Icon(Icons.local_pharmacy, size: 14, color: theme.primaryColor))
+                                : Image.asset(medication.pharmacyImage!, width: 14, height: 14, fit: BoxFit.cover, errorBuilder: (_,__,___)=>Icon(Icons.local_pharmacy, size: 14, color: theme.primaryColor)),
+                          )
+                        else
+                          Icon(Icons.local_pharmacy, size: 14, color: theme.primaryColor),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            medication.pharmacyName!,
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: theme.primaryColor),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -144,11 +184,19 @@ class SavedMedicationCard extends StatelessWidget {
       decoration: BoxDecoration(color: theme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          image,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor),
-        ),
+        child: image.startsWith('http')
+            ? Image.network(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor),
+              )
+            : (image.isNotEmpty && image.startsWith('assets') 
+                ? Image.asset(
+                    image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(Icons.medication, color: theme.primaryColor),
+                  )
+                : Icon(Icons.medication, color: theme.primaryColor)),
       ),
     );
   }

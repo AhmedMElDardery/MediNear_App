@@ -77,4 +77,23 @@ class PharmacyRemoteDataSource {
       return false; // لو حصل مشكلة يرجع False
     }
   }
+
+  // 3. 🚀 دالة حفظ الدواء
+  Future<bool> toggleSaveMedicine(String medicineId, String pharmacyId) async {
+    try {
+      final token = await tokenStorage.getToken();
+      final response = await dio.post(
+        '/pharmacy/save/medicine',
+        data: {'medicine_id': medicineId, 'pharmacy_id': pharmacyId},
+        options: Options(headers: {"Authorization": "Bearer $token"}),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final isSuccess = response.data['success'] ?? response.data['status'] ?? true;
+        return isSuccess == true;
+      }
+      return false;
+    } catch (e) {
+      return false; 
+    }
+  }
 }

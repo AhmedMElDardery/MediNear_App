@@ -46,9 +46,14 @@ class _PharmacyScreenState extends State<PharmacyScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final isLocallySaved = Provider.of<SavedItemsProvider>(context, listen: false)
           .isPharmacySaved(widget.pharmacyId);
+          
+      final pharmacyProvider = Provider.of<PharmacyProvider>(context, listen: false);
+      
+      // 🚀 تصفير البحث القديم عشان لو اليوزر كان بيبحث وخرج، ميفضلش متعلق
+      pharmacyProvider.search('');
+      
       // 🚀 هنا بنقول للبروفايدر: "روح هات بيانات الصيدلية بالـ ID بتاعها"
-      Provider.of<PharmacyProvider>(context, listen: false)
-          .fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved); 
+      pharmacyProvider.fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved); 
     });
   }
 
@@ -121,9 +126,14 @@ class _PharmacyScreenState extends State<PharmacyScreen>
                                     itemCount: provider.filteredMedicines.length,
                                     itemBuilder: (i) => PharmacyMedicineCard(
                                       medicine: provider.filteredMedicines[i],
-                                      onToggleSave: () =>
-                                          provider.toggleMedicineSaved(
-                                              provider.filteredMedicines[i].id),
+                                      onToggleSave: () async {
+                                        await provider.toggleMedicineSaved(
+                                            provider.filteredMedicines[i].id);
+                                        if (context.mounted) {
+                                          Provider.of<SavedItemsProvider>(context, listen: false)
+                                              .fetchSavedItems(silent: true);
+                                        }
+                                      },
                                       onToggleNotify: () =>
                                           provider.toggleMedicineNotify(
                                               provider.filteredMedicines[i].id),

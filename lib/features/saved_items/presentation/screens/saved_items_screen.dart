@@ -19,7 +19,10 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<SavedItemsProvider>(context, listen: false).fetchSavedItems();
+      final provider = Provider.of<SavedItemsProvider>(context, listen: false);
+      // 🚀 تصفير البحث القديم عشان ميظهرش داتا غلط لو اليوزر خرج ورجع
+      provider.search('');
+      provider.fetchSavedItems();
     });
   }
 
@@ -176,14 +179,14 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: pharmacies.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (itemContext, index) {
         final pharmacy = pharmacies[index];
         return _buildDismissibleItem(
           key: pharmacy.id,
           theme: theme,
           onDismissed: () {
             provider.removePharmacy(pharmacy);
-            _showUndoSnackBar(context, '${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+            _showUndoSnackBar('${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
           },
           child: GestureDetector(
             onTap: () {
@@ -202,7 +205,7 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
               theme: theme,
               onRemove: () {
                 provider.removePharmacy(pharmacy);
-                _showUndoSnackBar(context, '${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+                _showUndoSnackBar('${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
               },
             ),
           ),
@@ -218,21 +221,39 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: medications.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (itemContext, index) {
         final medication = medications[index];
         return _buildDismissibleItem(
           key: medication.id,
           theme: theme,
-          onDismissed: () {
-            provider.removeMedication(medication);
-            _showUndoSnackBar(context, '${medication.name} removed from saved items.', theme, () => provider.undoRemoveMedication(medication));
+          onDismissed: () async {
+            final error = await provider.removeMedication(medication);
+            if (!mounted) return;
+            if (error != null) {
+              _showErrorSnackBar(error, theme);
+            } else {
+              _showUndoSnackBar('${medication.name} removed from saved items.', theme, () async {
+                final undoError = await provider.undoRemoveMedication(medication);
+                if (!mounted) return;
+                if (undoError != null) _showErrorSnackBar(undoError, theme);
+              });
+            }
           },
           child: SavedMedicationCard(
             medication: medication,
             theme: theme,
-            onRemove: () {
-              provider.removeMedication(medication);
-              _showUndoSnackBar(context, '${medication.name} removed from saved items.', theme, () => provider.undoRemoveMedication(medication));
+            onRemove: () async {
+              final error = await provider.removeMedication(medication);
+              if (!mounted) return;
+              if (error != null) {
+                _showErrorSnackBar(error, theme);
+              } else {
+                _showUndoSnackBar('${medication.name} removed from saved items.', theme, () async {
+                  final undoError = await provider.undoRemoveMedication(medication);
+                  if (!mounted) return;
+                  if (undoError != null) _showErrorSnackBar(undoError, theme);
+                });
+              }
             },
           ),
         );
@@ -272,7 +293,8 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
     );
   }
 
-  void _showUndoSnackBar(BuildContext context, String message, ThemeData theme, VoidCallback onUndo) {
+  void _showUndoSnackBar(String message, ThemeData theme, VoidCallback onUndo) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -281,6 +303,20 @@ class _SavedItemsScreenState extends State<SavedItemsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         action: SnackBarAction(label: 'Undo', textColor: theme.primaryColor, onPressed: onUndo),
         duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String error, ThemeData theme) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 5),
       ),
     );
   }

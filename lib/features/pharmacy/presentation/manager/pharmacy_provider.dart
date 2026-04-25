@@ -81,10 +81,22 @@ class PharmacyProvider extends ChangeNotifier {
     if (_searchQuery.isEmpty) return _services;
     return _services.where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
   }
-  void toggleMedicineSaved(int id) {
-    final item = _medicines.firstWhere((e) => e.id == id);
+  Future<void> toggleMedicineSaved(int id) async {
+    final index = _medicines.indexWhere((e) => e.id == id);
+    if (index == -1) return;
+    
+    final item = _medicines[index];
     item.isSaved = !item.isSaved;
     notifyListeners();
+
+    // 🚀 تحديث السيرفر
+    bool success = await _dataSource.toggleSaveMedicine(id.toString(), _currentPharmacyId);
+    if (!success) {
+      // لو فشل نرجع الحالة زي ما كانت
+      item.isSaved = !item.isSaved;
+      notifyListeners();
+      debugPrint("API Error: Failed to toggle save medicine");
+    }
   }
   void toggleMedicineNotify(int id) {
     final item = _medicines.firstWhere((e) => e.id == id);
