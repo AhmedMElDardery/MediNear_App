@@ -2,6 +2,7 @@ import 'package:medinear_app/features/home/data/datasources/home_remote_data_sou
 import 'package:medinear_app/features/home/domain/entities/ad_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/features/home/domain/entities/pharmacy_entity.dart';
+import 'package:medinear_app/features/home/domain/entities/category_entity.dart';
 import 'package:medinear_app/features/home/domain/repositories/home_repository.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -12,14 +13,39 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<AdEntity>> getAds() async {
     final data = await remote.getAds();
-    return data
-        .map((e) => AdEntity(
-              id: e["id"]?.toString() ?? '', // ✅ int → String
-              imageUrl: e["image"]?.toString() ?? '', // ✅ null safe
-              title: e["title"]?.toString() ?? '',
-              redirectUrl: e["link"]?.toString() ?? '',
-            ))
-        .toList();
+    return data.map((e) {
+      // 1. Get raw image and icon values
+      final rawImg = e["image"]?.toString() ?? '';
+      final rawIcon = e["icon"]?.toString() ?? e["logo"]?.toString() ?? rawImg;
+      
+      // 2. Safely parse full URLs
+      final fullImg = (rawImg.isNotEmpty && !rawImg.startsWith('http')) 
+          ? 'https://medinear-eg.com/storage/$rawImg' : rawImg;
+          
+      final fullIcon = (rawIcon.isNotEmpty && !rawIcon.startsWith('http')) 
+          ? 'https://medinear-eg.com/storage/$rawIcon' : rawIcon;
+
+      // 3. Robust Coupon Parser
+      String? couponCode;
+      if (e["coupon_code"] != null) {
+        couponCode = e["coupon_code"].toString();
+      } else if (e["coupon"] is Map) {
+        couponCode = e["coupon"]["code"]?.toString() ?? e["coupon"]["coupon_code"]?.toString();
+      } else if (e["coupon"] != null && e["coupon"].toString().isNotEmpty) {
+        couponCode = e["coupon"].toString();
+      }
+
+      return AdEntity(
+        id: e["id"]?.toString() ?? '',
+        imageUrl: fullImg,
+        title: e["title"]?.toString() ?? '',
+        redirectUrl: e["link"]?.toString() ?? e["url"]?.toString() ?? '',
+        description: e["description"]?.toString() ?? e["desc"]?.toString(),
+        backgroundColor: e["color"]?.toString() ?? e["background_color"]?.toString() ?? e["bg_color"]?.toString(),
+        iconUrl: fullIcon,
+        coupon: couponCode,
+      );
+    }).toList();
   }
 
   @override
@@ -73,6 +99,28 @@ class HomeRepositoryImpl implements HomeRepository {
         name: e["name"]?.toString() ?? 'Unknown',
         imageUrl: fullImg,
         price: num.tryParse(finalPriceStr)?.toDouble() ?? 0.0,
+        description: e["description"]?.toString() ?? e["desc"]?.toString() ?? "يستخدم لتخفيف الألم الخفيف إلى المتوسط مثل الصداع، ألم الأسنان، آلام الدورة الشهرية، وآلام الجسم. كما يساعد على خفض الحرارة.",
+        composition: e["composition"]?.toString() ?? "باراسيتامول 500 مجم\nكافيين 65 مجم",
+        dosageForm: e["dosage_form"]?.toString() ?? "أقراص",
+        packageSize: e["package_size"]?.toString() ?? e["package"]?.toString() ?? "20 قرص",
+        usageInstructions: e["usage_instructions"]?.toString() ?? e["usage"]?.toString() ?? "قرص كل 6 ساعات عند الحاجة.\nلا تتجاوز 8 أقراص في اليوم.",
+        gallery: e["gallery"] != null ? List<String>.from(e["gallery"]) : (fullImg.isNotEmpty ? [fullImg, fullImg, fullImg] : []),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<CategoryEntity>> getCategories(int page, int perPage) async {
+    final rawData = await remote.getCategories(page, perPage);
+    return rawData.map((e) {
+      String rawImg = e["image"]?.toString() ?? e["icon"]?.toString() ?? e["logo"]?.toString() ?? '';
+      final fullImg = (rawImg.isNotEmpty && !rawImg.startsWith('http')) 
+          ? 'https://medinear-eg.com/storage/$rawImg' : rawImg;
+          
+      return CategoryEntity(
+        id: e["id"]?.toString() ?? '',
+        name: e["name"]?.toString() ?? '',
+        image: fullImg,
       );
     }).toList();
   }

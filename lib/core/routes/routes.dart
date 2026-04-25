@@ -24,7 +24,9 @@ class AppRoutes {
   static const login = '/login';
   static const home = '/home';
   static const notification = '/notification';
-  static const map = '/map';
+  static const String map = '/map';
+  static const String categories = '/categories';
+  static const String medicineDetails = '/medicine_details';
   static const saveditems = '/saved_items';
   static const pharmacy = '/pharmacy';
   static const mycart = '/mycart';

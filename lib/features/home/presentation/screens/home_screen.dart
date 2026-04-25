@@ -11,6 +11,8 @@ import 'package:medinear_app/features/home/presentation/widgets/pharmacy_card.da
 import 'package:medinear_app/features/home/presentation/widgets/search_bar.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 import 'package:medinear_app/features/profile/view_models/profile_provider.dart';
+import 'package:medinear_app/features/home/domain/entities/category_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 
@@ -176,6 +178,33 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               ),
 
               const SizedBox(height: 24),
+
+              /// CATEGORIES
+              if (provider.categories.isNotEmpty) ...[
+                _buildSectionHeader(
+                  title: "Categories",
+                  icon: Icons.category_rounded,
+                  count: provider.categories.length,
+                  onSeeAll: () => context.push('/categories'),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 100,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: provider.categories.length > 5 ? 5 : provider.categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 20),
+                    itemBuilder: (context, index) {
+                      final isDark = Theme.of(context).brightness == Brightness.dark;
+                      final cat = provider.categories[index];
+                      return _buildCategoryItem(cat, isDark);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
 
               /// NEAR PHARMACIES
               _buildSectionHeader(
@@ -483,6 +512,65 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem(CategoryEntity cat, bool isDark) {
+    return GestureDetector(
+      onTap: () {
+        // Todo: Navigate to specific category later
+      },
+      child: SizedBox(
+        width: 70,
+        child: Column(
+          children: [
+            Container(
+              width: 62,
+              height: 62,
+              padding: const EdgeInsets.all(8), // 🚀 Reduced padding to make image larger
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F7FA),
+                border: Border.all(
+                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: cat.image,
+                  fit: BoxFit.contain,
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.medication_liquid_rounded,
+                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              cat.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                letterSpacing: -0.2,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

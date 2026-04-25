@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medinear_app/core/routes/routes.dart';
+import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import '../manager/pharmacy_provider.dart';
 import '../widgets/pharmacy_cards.dart';
@@ -132,22 +135,36 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                                     emptyIcon: Icons.medication_outlined,
                                     itemCount:
                                         provider.filteredMedicines.length,
-                                    itemBuilder: (i) => PharmacyMedicineCard(
-                                      medicine: provider.filteredMedicines[i],
-                                      onToggleSave: () async {
-                                        await provider.toggleMedicineSaved(
-                                            provider.filteredMedicines[i].id);
-                                        if (context.mounted) {
-                                          ref.read(savedItemsProvider)
-                                              .fetchSavedItems(silent: true);
-                                        }
-                                      },
-                                      onToggleNotify: () =>
-                                          provider.toggleMedicineNotify(
-                                              provider.filteredMedicines[i].id),
-                                      onAddToCart: () => _showAddedToCart(
-                                          provider.filteredMedicines[i].name),
-                                    ),
+                                    itemBuilder: (i) {
+                                      final pharmacyMed = provider.filteredMedicines[i];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          final medEntity = MedicineEntity(
+                                            id: pharmacyMed.id.toString(),
+                                            name: pharmacyMed.name,
+                                            imageUrl: pharmacyMed.image,
+                                            price: pharmacyMed.price,
+                                          );
+                                          context.push(AppRoutes.medicineDetails, extra: medEntity);
+                                        },
+                                        child: PharmacyMedicineCard(
+                                          medicine: pharmacyMed,
+                                          onToggleSave: () async {
+                                            await provider.toggleMedicineSaved(
+                                                pharmacyMed.id);
+                                            if (context.mounted) {
+                                              ref.read(savedItemsProvider)
+                                                  .fetchSavedItems(silent: true);
+                                            }
+                                          },
+                                          onToggleNotify: () =>
+                                              provider.toggleMedicineNotify(
+                                                  pharmacyMed.id),
+                                          onAddToCart: () => _showAddedToCart(
+                                              pharmacyMed.name),
+                                        ),
+                                      );
+                                    },
                                   ),
                                   _buildList(
                                     isDark: isDark,

@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medinear_app/core/routes/routes.dart';
 import '../../domain/entities/medicine_entity.dart';
 
 class MedicineCard extends ConsumerStatefulWidget {
@@ -41,6 +43,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
+      onTap: () => context.push(AppRoutes.medicineDetails, extra: widget.medicine),
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) => _controller.reverse(),
       onTapCancel: () => _controller.reverse(),
