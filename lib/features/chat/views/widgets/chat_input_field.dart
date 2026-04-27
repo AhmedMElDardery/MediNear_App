@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 // تأكد من مسار ملف الألوان
 
 class ChatInputField extends StatelessWidget {
@@ -27,7 +26,7 @@ class ChatInputField extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     // ✅ لون النص يتغير حسب الثيم
-                    color: AppColors.primaryLight)),
+                    color: Theme.of(context).colorScheme.primary)),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -60,8 +59,7 @@ class ChatInputField extends StatelessWidget {
           const SizedBox(height: 8),
           Text(label,
               style: TextStyle(
-                  fontSize: 12, color: AppColors.primaryLight // لون النص
-                  )),
+                  fontSize: 12, color: Theme.of(context).colorScheme.primary)),
         ],
       ),
     );
@@ -89,8 +87,8 @@ class ChatInputField extends StatelessWidget {
           children: [
             IconButton(
               // ✅ استخدام لون المشروع الأساسي بدلاً من اللون الثابت
-              icon: const Icon(Icons.add,
-                  color: AppColors.primaryLight, size: 28),
+              icon: Icon(Icons.add,
+                  color: Theme.of(context).colorScheme.primary, size: 28),
               onPressed: () => _showAttachmentMenu(context),
             ),
             Expanded(
@@ -98,8 +96,7 @@ class ChatInputField extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                     // ✅ لون فقاعة حقل الكتابة يتغير في الدارك مود
-                    color:
-                        isDarkMode ? const Color(0xFF1E1E1E) : Colors.grey[100],
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(25)),
                 child: Row(
                   children: [
@@ -107,7 +104,7 @@ class ChatInputField extends StatelessWidget {
                       child: TextField(
                         controller: controller,
                         // ✅ لون النص المكتوب عشان ميبقاش أسود في الدارك
-                        style: TextStyle(color: AppColors.primaryLight),
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
                         decoration: const InputDecoration(
                             hintText: 'Type a message...',
                             hintStyle: TextStyle(color: Colors.grey),
@@ -134,8 +131,8 @@ class ChatInputField extends StatelessWidget {
                   child: CircleAvatar(
                     // ✅ ألوان المايك تتجاوب مع الدارك مود لو مفيش كتابة
                     backgroundColor: isTyping
-                        ? AppColors.primaryLight
-                        : (isDarkMode ? Colors.grey[800] : Colors.grey[200]),
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).cardColor,
                     child: Icon(isTyping ? Icons.send : Icons.mic,
                         color: isTyping ? Colors.white : Colors.grey, size: 20),
                   ),

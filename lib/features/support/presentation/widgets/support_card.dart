@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/features/support/data/models/support_item_model.dart';
 
 class SupportCard extends ConsumerStatefulWidget {
@@ -39,17 +40,19 @@ class _SupportCardState extends ConsumerState<SupportCard>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
 
-    bool isEmail = widget.item.title == "Email Us";
-    bool isCall = widget.item.title == "Call Us";
-    bool isWhatsapp = widget.item.title == "WhatsApp";
+    bool isEmail = widget.item.title == context.tr("support_email");
+    bool isCall = widget.item.title == context.tr("support_call");
+    bool isWhatsapp = widget.item.title == context.tr("support_whatsapp");
 
     Color baseColor;
     if (isEmail) {
-      baseColor = const Color(0xFF3B82F6); // Premium modern blue
-    } else if (isWhatsapp || isCall) {
-      baseColor = const Color(0xFF10B981); // Emerald green
+      baseColor = theme.colorScheme.primary;
+    } else if (isWhatsapp) {
+      baseColor = const Color(0xFF10B981); // Keep emerald green for WhatsApp
+    } else if (isCall) {
+      baseColor = theme.colorScheme.secondary;
     } else {
-      baseColor = Colors.grey.shade700;
+      baseColor = theme.colorScheme.primary;
     }
 
     Widget iconWidget;
@@ -96,19 +99,7 @@ class _SupportCardState extends ConsumerState<SupportCard>
               borderRadius: BorderRadius.circular(24),
               border: isDark
                   ? Border.all(color: theme.dividerColor.withValues(alpha: 0.1))
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: baseColor.withValues(alpha: isDark ? 0.05 : 0.08),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.04),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+                  : Border.all(color: Colors.transparent),
             ),
             child: Row(
               children: [

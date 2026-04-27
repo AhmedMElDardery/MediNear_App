@@ -40,7 +40,7 @@ class DosageCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               // ✅ إطار متجاوب (أسود في الفاتح، وأبيض في الدارك)
-              border: Border.all(color: AppColors.border, width: 1.5),
+              border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
             ),
             child: Text('${viewModel.doseCount}',
                 style: Theme.of(context).textTheme.bodyMedium),

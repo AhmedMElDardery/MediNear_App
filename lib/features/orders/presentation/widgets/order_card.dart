@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../../data/models/order_model.dart';
 
 class OrderCard extends StatelessWidget {
@@ -29,8 +28,7 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
     final statusColor = _getStatusColor(order.status);
 
@@ -58,9 +56,9 @@ class OrderCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 24,
                   backgroundColor:
-                      AppColors.primaryLight.withValues(alpha: 0.1),
-                  child: const Icon(Icons.local_pharmacy,
-                      color: AppColors.primaryLight),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  child: Icon(Icons.local_pharmacy,
+                      color: Theme.of(context).colorScheme.primary),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -116,8 +114,8 @@ class OrderCard extends StatelessWidget {
                         fontWeight: FontWeight.bold, color: textColor)),
                 Text(
                   "${order.total} EGP",
-                  style: const TextStyle(
-                      color: AppColors.primaryLight,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
@@ -139,21 +137,21 @@ class OrderCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primaryLight),
+                    border: Border.all(color: Theme.of(context).colorScheme.primary),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
                         "View Details",
                         style: TextStyle(
-                            color: AppColors.primaryLight,
+                            color: Theme.of(context).colorScheme.primary,
                             fontSize: 11,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Icon(Icons.arrow_forward_ios,
-                          size: 10, color: AppColors.primaryLight),
+                          size: 10, color: Theme.of(context).colorScheme.primary),
                     ],
                   ),
                 ),

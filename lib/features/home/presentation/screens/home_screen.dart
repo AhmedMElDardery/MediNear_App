@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 import 'package:medinear_app/core/routes/routes.dart';
 import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
 import 'package:medinear_app/features/home/presentation/provider/home_provider.dart';
@@ -51,9 +52,9 @@ class _HomeViewState extends ConsumerState<HomeScreen>
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return "Good Morning ☀️";
-    if (hour < 17) return "Good Afternoon 🌤️";
-    return "Good Evening 🌙";
+    if (hour < 12) return AppLocalizations.of(context)!.translate("greeting_morning");
+    if (hour < 17) return AppLocalizations.of(context)!.translate("greeting_afternoon");
+    return AppLocalizations.of(context)!.translate("greeting_evening");
   }
 
   @override
@@ -65,7 +66,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: _buildBody(provider, auth, profile, context),
       ),
@@ -92,14 +93,14 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               if (image != null && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content:  Row(
                       children: [
                         Icon(Icons.check_circle, color: Colors.white),
                         SizedBox(width: 8),
-                        Text('Photo captured!'),
+                        Text(AppLocalizations.of(context)!.translate("photo_captured")),
                       ],
                     ),
-                    backgroundColor: const Color(0xFF00965E),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -139,7 +140,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
     return FadeTransition(
       opacity: _fadeAnim,
       child: RefreshIndicator(
-        color: const Color(0xFF00965E),
+        color: Theme.of(context).colorScheme.primary,
         onRefresh: () async {
           await provider.loadHome();
           if (context.mounted) {
@@ -182,7 +183,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               /// CATEGORIES
               if (provider.categories.isNotEmpty) ...[
                 _buildSectionHeader(
-                  title: "Categories",
+                  title: AppLocalizations.of(context)!.translate("categories"),
                   icon: Icons.category_rounded,
                   count: provider.categories.length,
                   onSeeAll: () => context.push('/categories'),
@@ -208,7 +209,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
 
               /// NEAR PHARMACIES
               _buildSectionHeader(
-                title: "Near Pharmacies",
+                title: AppLocalizations.of(context)!.translate("near_pharmacies"),
                 icon: Icons.local_pharmacy_rounded,
                 count: provider.pharmacies.length,
                 onSeeAll: () => context.push(AppRoutes.map),
@@ -222,8 +223,11 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                     ? _buildEmptyState(
                         icon: Icons.local_pharmacy_outlined,
                         message: provider.searchQuery.isNotEmpty
-                            ? 'No pharmacies match "${provider.searchQuery}"'
-                            : "No pharmacies found nearby",
+                            ? AppLocalizations.of(context)!.translate(
+                              "no_pharmacies_match",
+                              params: {"query": provider.searchQuery},
+                            )
+                            : AppLocalizations.of(context)!.translate("no_pharmacies_nearby")
                       )
                     : ListView.separated(
                         scrollDirection: Axis.horizontal,
@@ -257,7 +261,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
 
               /// NEAR MEDICINES
               _buildSectionHeader(
-                title: "Near Medicines",
+                title: AppLocalizations.of(context)!.translate("near_medicines"),
                 icon: Icons.medication_rounded,
                 count: provider.medicines.length,
                 onSeeAll: () => context.push(AppRoutes.map),
@@ -272,8 +276,11 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                     ? _buildEmptyState(
                         icon: Icons.medication_outlined,
                         message: provider.searchQuery.isNotEmpty
-                            ? 'No medicines match "${provider.searchQuery}"'
-                            : "No medicines found nearby",
+                            ? AppLocalizations.of(context)!.translate(
+                              "no_mdicines_match",
+                              params: {"query": provider.searchQuery}
+                            )
+                            : AppLocalizations.of(context)!.translate("no_medicines_nearby"),
                       )
                     : ListView.separated(
                         scrollDirection: Axis.horizontal,
@@ -297,7 +304,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
   Widget _buildGreetingSection(
       AuthProvider auth, ProfileProvider profile, HomeProvider provider) {
     // الاسم الكامل: من البروفايل أولاً، وإلا من الأوث
-    final fullName = profile.user?.name ?? auth.currentUser?.name ?? "User";
+    final fullName = profile.user?.name ?? auth.currentUser?.name ?? AppLocalizations.of(context)!.translate("default_user");
 
     // الصورة: من البروفايل أولاً (photoUrl أو avatar)، وإلا من الأوث
     final photoUrl = profile.user?.photoUrl ??
@@ -314,12 +321,12 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF00965E).withValues(alpha: 0.3),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                 width: 2.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00965E).withValues(alpha: 0.12),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -327,7 +334,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             ),
             child: CircleAvatar(
               radius: 26,
-              backgroundColor: const Color(0xFF00965E),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
                   ? NetworkImage(photoUrl)
                   : null,
@@ -356,9 +363,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                   _getGreeting(),
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey.shade400
-                        : const Color(0xFF888888),
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -370,9 +375,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : const Color(0xFF1A1A1A),
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -380,19 +383,16 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_rounded,
-                          size: 12, color: Color(0xFF00965E)),
+                      Icon(Icons.location_on_rounded,
+                          size: 12, color: Theme.of(context).colorScheme.primary),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
-                          provider.currentLocationName ?? "Locating...",
+                          provider.currentLocationName ?? AppLocalizations.of(context)!.translate("locating"),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey.shade400
-                                    : const Color(0xFF888888),
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
                             fontSize: 11,
                             fontWeight: FontWeight.w400,
                           ),
@@ -417,32 +417,22 @@ class _HomeViewState extends ConsumerState<HomeScreen>
           _StatChip(
             icon: Icons.local_pharmacy_rounded,
             label: "${provider.pharmacies.length} Pharmacies",
-            color: const Color(0xFF00965E),
-            bgColor: Theme.of(context).brightness == Brightness.dark
-                ? const Color(0xFF00965E).withValues(alpha: 0.15)
-                : const Color(0xFFE8F5EE),
+            color: Theme.of(context).colorScheme.primary,
+            bgColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.medication_rounded,
             label: "${provider.medicines.length} Medicines",
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.blue.shade300
-                : const Color(0xFF1565C0),
-            bgColor: Theme.of(context).brightness == Brightness.dark
-                ? Colors.blue.withValues(alpha: 0.15)
-                : const Color(0xFFE3F0FF),
+            color: Colors.blue,
+            bgColor: Colors.blue.withValues(alpha: 0.15),
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.near_me_rounded,
-            label: "Nearby",
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.orange.shade300
-                : const Color(0xFFE65100),
-            bgColor: Theme.of(context).brightness == Brightness.dark
-                ? Colors.orange.withValues(alpha: 0.15)
-                : const Color(0xFFFFF3E0),
+            label: AppLocalizations.of(context)!.translate("nearby"),
+            color: Colors.orange,
+            bgColor: Colors.orange.withValues(alpha: 0.15),
           ),
         ],
       ),
@@ -463,10 +453,10 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFF00965E).withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 17, color: const Color(0xFF00965E)),
+            child: Icon(icon, size: 17, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -475,9 +465,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : const Color(0xFF1A1A1A),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 letterSpacing: -0.3,
               ),
             ),
@@ -487,26 +475,26 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF00965E).withValues(alpha: 0.08),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF00965E).withValues(alpha: 0.2),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
-              child: const Row(
+              child:  Row(
                 children: [
                   Text(
-                    "See All",
+                    AppLocalizations.of(context)!.translate("see_all"),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF00965E),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   SizedBox(width: 2),
                   Icon(Icons.arrow_forward_ios_rounded,
-                      size: 10, color: Color(0xFF00965E)),
+                      size: 10, color: Theme.of(context).colorScheme.primary),
                 ],
               ),
             ),
@@ -531,14 +519,14 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               padding: const EdgeInsets.all(8), // 🚀 Reduced padding to make image larger
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F7FA),
+                color: Theme.of(context).cardColor,
                 border: Border.all(
-                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                  color: Theme.of(context).dividerColor,
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
+                    color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -550,7 +538,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                   fit: BoxFit.contain,
                   errorWidget: (context, url, error) => Icon(
                     Icons.medication_liquid_rounded,
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     size: 24,
                   ),
                 ),
@@ -565,7 +553,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               style: TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 letterSpacing: -0.2,
               ),
             ),
@@ -584,23 +572,19 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: const Color(0xFFF0F0F0),
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(icon,
                 size: 30,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey.shade600
-                    : Colors.grey.shade400),
+                color: Theme.of(context).textTheme.bodyMedium?.color),
           ),
           const SizedBox(height: 10),
           Text(
             message,
             style: TextStyle(
               fontSize: 13,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey.shade400
-                  : Colors.grey.shade500,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -621,12 +605,12 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               boxShadow: isDark
                   ? []
                   : [
                       BoxShadow(
-                        color: const Color(0xFF00965E).withValues(alpha: 0.15),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                         blurRadius: 25,
                         spreadRadius: 2,
                         offset: const Offset(0, 8),
@@ -644,33 +628,29 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             ),
           ),
           const SizedBox(height: 28),
-          const SizedBox(
+          SizedBox(
             width: 40,
             height: 40,
             child: CircularProgressIndicator(
-              color: Color(0xFF00965E),
+              color: Theme.of(context).colorScheme.primary,
               strokeWidth: 3,
             ),
           ),
           const SizedBox(height: 20),
           Text(
-            "Finding pharmacies near you...",
+            AppLocalizations.of(context)!.translate("loading_title"),
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey.shade200
-                  : const Color(0xFF555555),
+              color: Theme.of(context).textTheme.bodyLarge?.color,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 6),
           Text(
-            "Getting your location 📍",
+            AppLocalizations.of(context)!.translate("loading_subtitle"),
             style: TextStyle(
               fontSize: 13,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey.shade400
-                  : Colors.grey.shade500,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
         ],
@@ -689,34 +669,30 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEBEE),
+                color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Icon(Icons.location_off_rounded,
-                  size: 52, color: Color(0xFFE53935)),
+              child: Icon(Icons.location_off_rounded,
+                  size: 52, color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 24),
             Text(
-              "Oops! Something went wrong",
+              AppLocalizations.of(context)!.translate("error_title"),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : const Color(0xFF1A1A1A),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               provider.errorMessage ??
-                  "Unable to fetch data. Please try again.",
+                  AppLocalizations.of(context)!.translate("error_message"),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey.shade400
-                    : const Color(0xFF777777),
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 height: 1.5,
               ),
             ),
@@ -727,8 +703,8 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               child: ElevatedButton.icon(
                 onPressed: () => provider.loadHome(),
                 icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                label: const Text(
-                  "Try Again",
+                label:  Text(
+                  AppLocalizations.of(context)!.translate("try_again"),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -736,12 +712,12 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00965E),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  shadowColor: const Color(0xFF00965E).withValues(alpha: 0.4),
+                  shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                 ),
               ),
             ),
@@ -853,14 +829,14 @@ class _AIChatFabState extends ConsumerState<_AIChatFab>
             height: 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF00D68F), Color(0xFF00965E)],
+              gradient: LinearGradient(
+                colors: [Color(0xFF00D68F), Theme.of(context).colorScheme.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00965E).withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                   blurRadius: _glowAnim.value,
                   spreadRadius: 1,
                 ),
@@ -913,16 +889,16 @@ class _CameraFabState extends ConsumerState<_CameraFab> {
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.black26
-                    : const Color(0xFF00965E).withValues(alpha: 0.2),
+                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                 blurRadius: 12,
                 spreadRadius: 1,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.camera_alt_rounded,
-            color: Color(0xFF00965E),
+            color: Theme.of(context).colorScheme.primary,
             size: 26,
           ),
         ),

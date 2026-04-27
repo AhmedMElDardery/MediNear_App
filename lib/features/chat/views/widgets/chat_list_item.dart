@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import 'package:medinear_app/features/chat/data/models/chat_model.dart';
 
 import '../chat_details_view.dart'; // ده مكانه الجديد في نفس المجلد// ✅ إضافة استيراد ملف الألوان الجديد للوصول لدالة لون النص
@@ -100,7 +99,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
         // ✅ لون اسم الطبيب متجاوب (أسود/أبيض) لعدم البهتان
         Text(widget.chat.doctorName,
             style: TextStyle(
-                color: AppColors.primaryLight,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 17)),
         const SizedBox(height: 4),

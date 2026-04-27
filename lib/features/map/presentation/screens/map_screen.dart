@@ -19,7 +19,6 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  final Color _brandGreen = const Color(0xFF1E824C);
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -84,8 +83,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     mapType: MapType.normal,
                     initialCameraPosition: CameraPosition(
                         target: provider.userLocation!, zoom: 13.5),
-                    markers: provider.markers,
-                    circles: provider.circles,
+                    markers: provider.getMarkers(Theme.of(context).colorScheme.primary),
+                    circles: provider.getCircles(Theme.of(context).colorScheme.primary),
                     onMapCreated: (controller) {
                       if (!provider.mapController.isCompleted) {
                         provider.mapController.complete(controller);
@@ -126,9 +125,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                           target: provider.userLocation!, zoom: 16.0)));
                 }
               },
-              backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              backgroundColor: Theme.of(context).cardColor,
               child: Icon(Icons.my_location,
-                  color: isDark ? Colors.white : Colors.black87),
+                  color: Theme.of(context).iconTheme.color),
             ),
           ),
 
@@ -182,13 +181,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       bottom: 100,
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-                color: isDark
-                    ? Colors.black26
-                    : Colors.black.withValues(alpha: 0.1),
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                 blurRadius: 20)
           ],
         ),
@@ -242,8 +239,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                       color: Colors.grey)),
                             ),
                             ...filteredMedicines.map((m) => ListTile(
-                                  leading: const Icon(Icons.medication_outlined,
-                                      color: Color(0xFF1E824C)),
+                                  leading: Icon(Icons.medication_outlined,
+                                      color: Theme.of(context).colorScheme.primary),
                                   title: Text(m.name),
                                   subtitle: m.categoryName != null
                                       ? Text(m.categoryName!,
@@ -269,8 +266,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                       color: Colors.grey)),
                             ),
                             ...filteredPharmacies.map((p) => ListTile(
-                                  leading: const Icon(Icons.storefront,
-                                      color: Color(0xFF1E824C)),
+                                  leading: Icon(Icons.storefront,
+                                      color: Theme.of(context).colorScheme.primary),
                                   title: Text(p.name),
                                   subtitle: Text(p.address,
                                       maxLines: 1,
@@ -298,9 +295,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          color: isDark
-              ? const Color(0xFF121212).withValues(alpha: 0.85)
-              : Colors.white.withValues(alpha: 0.90),
+          color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.85),
           padding: EdgeInsets.only(
               top: MediaQuery.of(context).padding.top + 10,
               bottom: 15,
@@ -336,9 +331,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                             ? 'searchMedicineHint'.tr(context)
                             : 'searchPharmacyHint'.tr(context),
                         hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.grey.shade500
-                                : Colors.grey.shade400),
+                            color: Theme.of(context).textTheme.bodyMedium?.color),
                         prefixIcon:
                             const Icon(Icons.search, color: Colors.grey),
                         suffixIcon: _searchController.text.isNotEmpty
@@ -352,8 +345,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                               )
                             : null,
                         filled: true,
-                        fillColor:
-                            isDark ? Colors.grey.shade900 : Colors.grey[100],
+                        fillColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
                         contentPadding: EdgeInsets.zero,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -389,20 +381,20 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
-                ? _brandGreen
-                : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
                 color: isSelected
-                    ? _brandGreen
-                    : (isDark ? Colors.grey.shade800 : Colors.grey.shade300)),
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).dividerColor),
           ),
           child: Center(
             child: Text(label,
                 style: TextStyle(
                     color: isSelected
                         ? Colors.white
-                        : (isDark ? Colors.grey.shade300 : Colors.black87),
+                        : Theme.of(context).textTheme.bodyLarge?.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 13)),
           ),
@@ -419,13 +411,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF121212) : Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
-                  color: isDark
-                      ? Colors.black26
-                      : Colors.black.withValues(alpha: 0.1),
+                  color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                   blurRadius: 15,
                   spreadRadius: 5,
                   offset: const Offset(0, -5))
@@ -451,7 +441,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                         style: TextStyle(
                             color: Colors.grey[600],
                             fontWeight: FontWeight.bold)),
-                    Icon(Icons.sort, color: _brandGreen),
+                    Icon(Icons.sort, color: Theme.of(context).colorScheme.primary),
                   ],
                 ),
               ),
@@ -495,7 +485,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                 SnackBar(
                                   content: Text(
                                       "${'addedToCart'.tr(context)} ${provider.lastQuery.isEmpty ? "" : provider.lastQuery} ${pharmacy.name}"),
-                                  backgroundColor: const Color(0xFF1E824C),
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );

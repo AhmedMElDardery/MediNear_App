@@ -6,8 +6,7 @@ class PaymentSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -39,9 +38,9 @@ class PaymentSummaryCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: textColor,
                       fontSize: 14)),
-              const Text("Free",
+              Text("Free",
                   style: TextStyle(
-                      color: Color(0xFF2E7D32),
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 14)),
             ],

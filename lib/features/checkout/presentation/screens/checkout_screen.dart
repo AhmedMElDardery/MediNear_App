@@ -25,8 +25,7 @@ class CheckoutScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     final checkout = ref.watch(checkoutProvider);
@@ -50,14 +49,14 @@ class CheckoutScreen extends ConsumerWidget {
             const SizedBox(height: 25),
             const PaymentMethodCard(),
             const SizedBox(height: 25),
-            _buildOrderSummary(cardColor, textColor, subtotal),
+            _buildOrderSummary(context, cardColor, textColor, subtotal),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
@@ -108,7 +107,7 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   Widget _buildOrderSummary(
-      Color cardColor, Color? textColor, double subtotal) {
+      BuildContext context, Color cardColor, Color? textColor, double subtotal) {
     const double deliveryFee = 0.0;
     final double grandTotal = subtotal + deliveryFee;
 
@@ -135,7 +134,7 @@ class CheckoutScreen extends ConsumerWidget {
               _summaryRow(
                   "Subtotal", "${subtotal.toStringAsFixed(2)} EGP", textColor),
               const SizedBox(height: 10),
-              _summaryRow("Delivery Fee", "Free", const Color(0xFF2E7D32),
+              _summaryRow("Delivery Fee", "Free", Theme.of(context).colorScheme.primary,
                   isBold: true),
               const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),

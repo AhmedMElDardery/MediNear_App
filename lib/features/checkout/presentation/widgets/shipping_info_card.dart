@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 
 class ShippingInfoCard extends ConsumerStatefulWidget {
   const ShippingInfoCard({super.key});
@@ -36,18 +35,17 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           "Shipping Information",
           style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppColors.primaryLight),
+              color: Theme.of(context).colorScheme.primary),
         ),
         const SizedBox(height: 10),
         Container(
@@ -65,15 +63,15 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
           child: Column(
             children: [
               // خانة الاسم العادية
-              _buildNormalTextField("Full Name", isDark),
+              _buildNormalTextField("Full Name", context),
               const Divider(height: 15, thickness: 0.5),
 
               // 🚀 خانة التليفون الاحترافية (كود الدولة + الرقم)
-              _buildPhoneField("Phone Number", isDark),
+              _buildPhoneField("Phone Number", context),
 
               const Divider(height: 15, thickness: 0.5),
               // خانة العنوان العادية
-              _buildNormalTextField("Full Address", isDark,
+              _buildNormalTextField("Full Address", context,
                   icon: Icons.map_outlined),
             ],
           ),
@@ -83,26 +81,24 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
   }
 
   // --- دالة رسم خانة التليفون الجديدة ---
-  Widget _buildPhoneField(String label, bool isDark) {
+  Widget _buildPhoneField(String label, BuildContext context) {
+    final fillColor = Theme.of(context).cardColor;
     return Row(
       children: [
-        // 1. اسم الخانة (Phone Number)
         SizedBox(
           width: 100,
           child: Text(label,
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         ),
-        // 2. الجزء الخاص بالرقم وكود الدولة
         Expanded(
           child: Row(
             children: [
-              // أ. Dropdown كود الدولة
               Container(
                 height: 35,
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.black12 : Colors.grey[100],
+                  color: fillColor,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -113,27 +109,24 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
                       return DropdownMenuItem(
                         value: c,
                         child: Text('${c['flag']} ${c['code']}',
-                            style: const TextStyle(
-                                fontSize: 11)), // صغرنا الخط سيكا عشان المساحة
+                            style: const TextStyle(fontSize: 11)),
                       );
                     }).toList(),
                     onChanged: (val) {
                       setState(() {
                         selectedCountry = val!;
-                        _phoneController.clear(); // نمسح الرقم لو غير الدولة
+                        _phoneController.clear();
                       });
                     },
                   ),
                 ),
               ),
               const SizedBox(width: 6),
-
-              // ب. خانة إدخال الرقم
               Expanded(
                 child: Container(
                   height: 35,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.black12 : Colors.grey[100],
+                    color: fillColor,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: TextField(
@@ -167,7 +160,8 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
   }
 
   // --- دالة رسم الخانات العادية (الاسم والعنوان) ---
-  Widget _buildNormalTextField(String label, bool isDark, {IconData? icon}) {
+  Widget _buildNormalTextField(String label, BuildContext context, {IconData? icon}) {
+    final fillColor = Theme.of(context).cardColor;
     return Row(
       children: [
         SizedBox(
@@ -180,7 +174,7 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
           child: Container(
             height: 35,
             decoration: BoxDecoration(
-              color: isDark ? Colors.black12 : Colors.grey[100],
+              color: fillColor,
               borderRadius: BorderRadius.circular(6),
             ),
             child: TextField(

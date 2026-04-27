@@ -37,11 +37,12 @@ class MessageBubble extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isMe ? const Color(0xFF198B61) : Colors.white,
+                    color: isMe
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).cardColor,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
-                      // عكس الزوايا الحادة بناءً على المُرسل
                       bottomLeft: isMe
                           ? const Radius.circular(16)
                           : const Radius.circular(4),
@@ -49,13 +50,19 @@ class MessageBubble extends StatelessWidget {
                           ? const Radius.circular(4)
                           : const Radius.circular(16),
                     ),
-                    border:
-                        isMe ? null : Border.all(color: Colors.grey.shade300),
+                    border: isMe
+                        ? null
+                        : Border.all(
+                            color: Theme.of(context)
+                                .dividerColor
+                                .withValues(alpha: 0.5)),
                   ),
                   child: Text(
                     message.text,
                     style: TextStyle(
-                      color: isMe ? Colors.white : Colors.black87,
+                      color: isMe
+                          ? Colors.white
+                          : Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 15,
                     ),
                   ),

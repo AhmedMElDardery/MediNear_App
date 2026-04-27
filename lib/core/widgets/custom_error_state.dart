@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 
 class CustomErrorState extends StatelessWidget {
   final String title;
@@ -15,8 +14,8 @@ class CustomErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -43,7 +42,7 @@ class CustomErrorState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
             ),
             const SizedBox(height: 12),
@@ -52,7 +51,7 @@ class CustomErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 height: 1.5,
               ),
             ),
@@ -69,7 +68,7 @@ class CustomErrorState extends StatelessWidget {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

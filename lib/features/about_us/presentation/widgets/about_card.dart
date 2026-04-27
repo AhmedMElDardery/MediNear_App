@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart'; //
 
 class AboutCard extends StatelessWidget {
   const AboutCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color:
-                isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.08),
+            color: theme.shadowColor.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -26,14 +24,14 @@ class AboutCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Icon(Icons.account_circle,
-                  color: AppColors.primaryLight, size: 36), //
+                  color: theme.colorScheme.primary, size: 36),
               SizedBox(width: 12),
               Text(
                 "MediNear",
                 style: TextStyle(
-                  color: AppColors.primaryLight, //
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w800,
                   fontSize: 20,
                 ),
@@ -44,14 +42,14 @@ class AboutCard extends StatelessWidget {
           RichText(
             text: TextSpan(
               style: TextStyle(
-                  color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  color: theme.textTheme.bodyMedium?.color,
                   fontSize: 14,
                   height: 1.5),
               children: [
                 TextSpan(
                   text: "PharmaCare+",
                   style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
+                      color: theme.textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.bold),
                 ),
                 TextSpan(

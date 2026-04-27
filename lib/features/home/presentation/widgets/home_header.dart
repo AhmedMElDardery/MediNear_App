@@ -34,16 +34,16 @@ class HomeHeader extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                        color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                         letterSpacing: -0.3,
                       ),
                     ),
-                    const TextSpan(
+                    TextSpan(
                       text: "Near",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF00965E),
+                        color: Theme.of(context).colorScheme.primary,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -123,7 +123,7 @@ class _IconBtn extends ConsumerWidget {
         child: Icon(
           icon,
           size: 24,
-          color: isDark ? Colors.white70 : const Color(0xFF444444),
+          color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
       ),
     );

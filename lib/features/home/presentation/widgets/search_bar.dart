@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SearchBarWidget extends ConsumerStatefulWidget {
@@ -65,7 +66,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
 
   Future<void> _toggleListening() async {
     if (!_speechAvailable) {
-      _showSnack("Voice search not available on this device.");
+      _showSnack(context.tr("voice_not-available"));
       return;
     }
 
@@ -96,7 +97,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
         },
         listenFor: const Duration(seconds: 10),
         pauseFor: const Duration(seconds: 3),
-        localeId: 'en_US',
+        localeId: Localizations.localeOf(context).languageCode == 'ar' ? 'ar_EG' : 'en_Us',
         listenOptions: stt.SpeechListenOptions(
           cancelOnError: true,
           partialResults: true,
@@ -111,7 +112,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
       SnackBar(
         content: Text(msg),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF00965E),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -147,7 +148,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
         boxShadow: [
           BoxShadow(
             color: (_isFocused || _isListening)
-                ? const Color(0xFF00965E).withValues(alpha: 0.18)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.18)
                 : (isDark
                     ? Colors.black.withValues(alpha: 0.3)
                     : Colors.black.withValues(alpha: 0.05)),
@@ -165,15 +166,15 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white : Colors.black,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
         decoration: InputDecoration(
           hintText: _isListening
-              ? "Listening..."
-              : "Search for medicine or pharmacy...",
+              ? context.tr("listening")
+              : context.tr("search-hint"),
           hintStyle: TextStyle(
             color:
-                _isListening ? const Color(0xFF00965E) : Colors.grey.shade500,
+                _isListening ? Theme.of(context).colorScheme.primary : Colors.grey.shade500,
             fontSize: 14,
             fontWeight: _isListening ? FontWeight.w600 : FontWeight.w400,
           ),
@@ -185,7 +186,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
               _isListening ? Icons.mic_rounded : Icons.search_rounded,
               key: ValueKey(_isListening),
               color: (_isFocused || _isListening)
-                  ? const Color(0xFF00965E)
+                  ? Theme.of(context).colorScheme.primary
                   : Colors.grey.shade500,
               size: 22,
             ),
@@ -218,7 +219,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _isListening ? Colors.red : const Color(0xFF00965E),
+                    color: _isListening ? Colors.red : Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: _isListening
@@ -240,11 +241,11 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
           filled: true,
           fillColor: _isListening
               ? (isDark
-                  ? const Color(0xFF00965E).withValues(alpha: 0.15)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
                   : const Color(0xFFE8F5EE))
               : (_isFocused
-                  ? (isDark ? Colors.grey.shade800 : Colors.white)
-                  : (isDark ? Colors.grey.shade900 : const Color(0xFFF5F7FA))),
+                  ? Theme.of(context).cardColor
+                  : Theme.of(context).scaffoldBackgroundColor),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           border: OutlineInputBorder(
@@ -254,13 +255,13 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+              color: Theme.of(context).dividerColor,
               width: 1.5,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFF00965E), width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
           ),
         ),
       ),

@@ -24,10 +24,7 @@ class _AlarmViewState extends ConsumerState<AlarmView> {
   @override
   Widget build(BuildContext context) {
     // تحديد لون الخلفية بناءً على وضع الثيم (فاتح/غامق)
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor = isDarkMode
-        ? Theme.of(context).scaffoldBackgroundColor
-        : AppColors.backgroundMint; // لون النعناع الأصلي للفاتح
+    final Color bgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -78,7 +75,7 @@ class _AlarmViewState extends ConsumerState<AlarmView> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              AppColors.primaryGreen, // أخضر ميدنير
+                              Theme.of(context).colorScheme.primary, // أخضر ميدنير
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -101,7 +98,7 @@ class _AlarmViewState extends ConsumerState<AlarmView> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              AppColors.iconRed, // أحمر صريح للإلغاء
+                              Theme.of(context).colorScheme.error, // أحمر صريح للإلغاء
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/pharmacy_entity.dart';
 
@@ -129,7 +130,7 @@ class _PharmacyCardState extends ConsumerState<PharmacyCard>
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                        color: isDark ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -139,17 +140,17 @@ class _PharmacyCardState extends ConsumerState<PharmacyCard>
                     // Address + Distance — أخضر
                     Row(
                       children: [
-                        const Icon(Icons.location_on_rounded,
-                            size: 13, color: Color(0xFF00965E)),
+                        Icon(Icons.location_on_rounded,
+                            size: 13, color: Theme.of(context).colorScheme.primary),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             _buildSubtitle(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF00965E),
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -162,14 +163,14 @@ class _PharmacyCardState extends ConsumerState<PharmacyCard>
                       // Phone — أخضر
                       Row(
                         children: [
-                          const Icon(Icons.phone_rounded,
-                              size: 12, color: Color(0xFF00965E)),
+                          Icon(Icons.phone_rounded,
+                              size: 12, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 3),
                           Text(
                             widget.pharmacy.phone!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF00965E),
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -194,7 +195,7 @@ class _PharmacyCardState extends ConsumerState<PharmacyCard>
                                 fontSize: 10.5,
                                 color: isDark
                                     ? Colors.grey.shade400
-                                    : const Color(0xFF888888),
+                                    : Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -208,10 +209,10 @@ class _PharmacyCardState extends ConsumerState<PharmacyCard>
 
               // ── Chevron ─────────────────────────────────
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 size: 24,
-                color: Color(0xFF00965E),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ],
           ),
@@ -238,7 +239,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
-        color: isOpen ? const Color(0xFF00965E) : const Color(0xFFE53935),
+        color: isOpen ? Theme.of(context).colorScheme.primary : const Color(0xFFE53935),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -252,7 +253,7 @@ class _StatusBadge extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            isOpen ? 'Open' : 'Closed',
+            isOpen ? context.tr("pharmacy_open"): context.tr("pharmacy_closed"),
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,

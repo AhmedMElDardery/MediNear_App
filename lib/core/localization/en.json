@@ -6,7 +6,6 @@
     "settings": "Settings",
     "welcomeMessage": "Welcome to Medinear!",
     "description": "Your personal health companion.",
-    "searchHint": "Search for medications, symptoms, or health tips...",
     "noResults": "No results found. Please try again.",
     "profileName": "Full Name",
     "profileEmail": "Email Address",
@@ -26,7 +25,6 @@
     "deleteAccount": "Delete Account",
     "logout": "Logout",
     "logoutConfirmMsg": "Are you sure you want to log out? You will need to sign in again to access your account.",
-    "cancel": "Cancel",
     "features": "Features",
     "myOrders": "My Orders",
     "wallet": "Packet (Wallet)",
@@ -46,11 +44,180 @@
     "medicineTab": "Medicine",
     "pharmacyTab": "Pharmacy",
     "resultsFound": "Results Found",
-    "addedToCart": "Added to cart",
     "cartEmptyTitle": "Your Cart is Empty!",
     "cartEmptySubtitle": "Looks like you haven't added any items to your cart yet.",
     "selectPharmacy": "Select a Pharmacy",
     "noPharmacyFound": "No pharmacy found!",
     "products": "Products",
-    "tryAdjustingSearch": "Try adjusting your search criteria."
+    "tryAdjustingSearch": "Try adjusting your search criteria.",
+
+    
+  "greeting_morning": "Good Morning ☀️",
+  "greeting_afternoon": "Good Afternoon 🌤️",
+  "greeting_evening": "Good Evening 🌙",
+
+  "photo_captured": "Photo captured!",
+
+  "categories": "Categories",
+  "see_all": "See All",
+
+  "near_pharmacies": "Near Pharmacies",
+  "no_pharmacies_match": "No pharmacies match \"{query}\"",
+  "no_pharmacies_nearby": "No pharmacies found nearby",
+
+  "near_medicines": "Near Medicines",
+  "no_medicines_match": "No medicines match \"{query}\"",
+  "no_medicines_nearby": "No medicines found nearby",
+
+  "nearby": "Nearby",
+
+  "loading_title": "Searching for nearby pharmacies...",
+  "loading_subtitle": "Getting your location 📍",
+
+  "error_title": "Oops! Something went wrong",
+  "error_message": "Unable to fetch data. Please try again.",
+
+  "try_again": "Try Again",
+
+  "default_user": "User",
+  "locating": "Locating...",
+
+  "coupon_copied": "Coupon copied: {code}",
+  "tap": "Tap",
+  "error_open_link": "Could not open the link",
+
+  "in_stock": "In Stock",
+  "currency_egp": "EGP",
+
+  "pharmacy_open": "Open",
+  "pharmacy_closed": "Closed",
+
+  "search_hint": "Search for medicine or pharmacy...",
+  "listening": "Listening...",
+  "voice_not_available": "Voice search not available on this device.",
+
+  "default_user_letter": "U",
+
+  "all_categories": "All Categories",
+
+  "wallet_title": "Wallet",
+  "add_new": "Add New",
+  "new_medication": "New Medication",
+  "default_med_description": "Take one pill daily.",
+  "no_medications": "No medications added yet.",
+
+  "support_title": "Support & Help",
+
+  "feedback_title": "How was your experience?",
+  "feedback_subtitle": "Your feedback helps us improve our service.",
+  "feedback_hint": "Tell us more (optional)...",
+  "feedback_thanks": "Thank you for your feedback! ❤️",
+  "submit_feedback": "Submit Feedback",
+
+  "support_banner_title": "How can we help you?",
+  "support_banner_subtitle": "We are ready to assist you anytime.",
+
+  "support_search_hint": "What do you need help with?",
+
+  "support_issue": "Having an issue?",
+  "support_active_order": "Active Order",
+  "support_get_help": "Get Help",
+
+  "support_faq": "Help & FAQs",
+  "support_faq_desc": "Frequently asked questions",
+
+  "support_feedback": "Feedback",
+  "support_feedback_desc": "Rate us & share your thoughts",
+
+  "support_privacy": "Privacy Policy",
+  "support_privacy_desc": "Terms and privacy policy",
+
+  "follow_us": "Follow us on",
+
+  "made_with": "Made with",
+  "for_health": "for your health",
+
+  "support_email": "Email Us",
+  "support_call": "Call Us",
+  "support_whatsapp": "WhatsApp",
+
+  "support_email_desc": "Send us an email anytime",
+  "support_call_desc": "Call our support team",
+  "support_whatsapp_desc": "Chat with us on WhatsApp",
+
+  "support_action": "Contact",
+
+  "saved_items_title": "Saved Items",
+
+  "search_pharmacies": "Search pharmacies...",
+  "search_medications": "Search medications...",
+
+  "sort": "Sort",
+
+  "pharmacies_tab": "Pharmacies",
+  "medications_tab": "Medications",
+
+  "no_saved_pharmacies": "No saved pharmacies found",
+  "no_saved_medications": "No saved medications found",
+
+  "removed_from_saved": "removed from saved items.",
+  "undo": "Undo",
+
+  "available": "Available",
+
+  "profile_title": "Profile",
+
+  "edit_title": "Edit {field}",
+  "cancel": "Cancel",
+  "save": "Save",
+
+  "enter_phone": "Please enter your phone number!",
+  "enter_name": "Please enter your name!",
+
+  "enter_number": "Enter number",
+  "phone_hint_eg": "01xxxxxxxxx",
+
+  "no_phone": "No Phone",
+  "no_name": "No Name",
+  "no_email": "No Email",
+
+  "searchHint": "Search medicines, doctors...",
+  "openNow": "Open Now",
+
+  "flashSale": "Flash Sale!",
+  "flashSaleDesc": "Up to 50% off on all medicines",
+  "timeRemaining": "Time remaining",
+
+  "medicines": "Medicines",
+  "doctors": "Doctors",
+  "services": "Services",
+
+  "noMedicines": "No medicines found",
+  "noDoctors": "No doctors found",
+  "noServices": "No services found",
+
+  "tryAdjustSearch": "Try adjusting your search",
+
+  "addedToCart": "{name} added to cart",
+
+  "egp": "EGP",
+  "discountOff": "{value}% off",
+  "notified": "Notified",
+  "notAvailable": "Not Available",
+
+  "painRelief": "Pain reliever and fever reducer",
+  "composition": "Composition",
+  "dosageForm": "Dosage Form",
+  "package": "Package",
+  "usage": "Usage Instructions",
+
+  "price": "Price",
+  "addToCart": "Add to Cart"
+
+  
+
+
+
+
+
 }

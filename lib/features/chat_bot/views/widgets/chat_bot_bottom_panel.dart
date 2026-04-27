@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../provider/chat_bot_provider.dart';
-import 'chat_bot_styles.dart';
 import 'chat_bot_components.dart';
 
 class ChatBotBottomPanel extends StatelessWidget {
@@ -41,9 +40,7 @@ class ChatBotBottomPanel extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF1E1E1E).withAlpha(200)
-                  : ChatBotStyles.panelBg.withAlpha(180),
+              color: Theme.of(context).cardColor.withAlpha(200),
               // ✅ إضافة const للحواف
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
@@ -51,7 +48,7 @@ class ChatBotBottomPanel extends StatelessWidget {
               ),
               border: Border(
                 top: BorderSide(
-                    color: ChatBotStyles.g1.withAlpha(40), width: 0.8),
+                    color: Theme.of(context).dividerColor.withAlpha(40), width: 0.8),
               ),
             ),
             child: Column(
@@ -64,7 +61,7 @@ class ChatBotBottomPanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: ChatBotStyles.g1.withAlpha(20),
+                          color: Theme.of(context).dividerColor.withAlpha(20),
                           width: 0.5,
                         ),
                       ),
@@ -86,9 +83,9 @@ class ChatBotBottomPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // تم إزالة زر الميكروفون بناءً على طلبك السابق
-                      Expanded(child: _buildTextField(isDark)),
+                      Expanded(child: _buildTextField(context, isDark)),
                       const SizedBox(width: 10),
-                      _buildSendButton(vm),
+                      _buildSendButton(context, vm),
                     ],
                   ),
                 ),
@@ -100,15 +97,15 @@ class ChatBotBottomPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(bool isDark) {
+  Widget _buildTextField(BuildContext context, bool isDark) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2C2C2E) : Colors.white.withAlpha(200),
+        color: Theme.of(context).scaffoldBackgroundColor.withAlpha(200),
         // ✅ تحويلها لـ const
         borderRadius: const BorderRadius.all(Radius.circular(24)),
-        border: Border.all(color: ChatBotStyles.g1.withAlpha(50), width: 0.8),
+        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(50), width: 0.8),
       ),
       // المحاذاة لليسار للغة الإنجليزية
       alignment: Alignment.centerLeft,
@@ -120,20 +117,20 @@ class ChatBotBottomPanel extends StatelessWidget {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white : ChatBotStyles.dark,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
         decoration: InputDecoration(
           hintText: "Type your message...",
           hintTextDirection: TextDirection.ltr,
           border: InputBorder.none,
           isCollapsed: true,
-          hintStyle: TextStyle(color: ChatBotStyles.soft, fontSize: 13),
+          hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 13),
         ),
       ),
     );
   }
 
-  Widget _buildSendButton(ChatBotProvider vm) {
+  Widget _buildSendButton(BuildContext context, ChatBotProvider vm) {
     return GestureDetector(
       onTap: () {
         if (controller.text.trim().isNotEmpty) {
@@ -148,14 +145,14 @@ class ChatBotBottomPanel extends StatelessWidget {
           // ✅ تحويلها لـ const
           borderRadius: const BorderRadius.all(Radius.circular(24)),
           // ✅ الجراديانت هنا بقت const فمش هتترسم تاني
-          gradient: const LinearGradient(
-            colors: [ChatBotStyles.g1, ChatBotStyles.g3],
+          gradient: LinearGradient(
+            colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: ChatBotStyles.g2.withAlpha(50),
+              color: Theme.of(context).colorScheme.primary.withAlpha(50),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),

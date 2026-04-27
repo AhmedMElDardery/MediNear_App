@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart'; //
 
 class SupportTile extends StatelessWidget {
   final IconData leadingIcon;
@@ -15,18 +14,17 @@ class SupportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color:
-                isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
+            color: theme.shadowColor.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -34,7 +32,7 @@ class SupportTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(leadingIcon, color: AppColors.primaryLight, size: 26), //
+          Icon(leadingIcon, color: theme.colorScheme.primary, size: 26),
           const SizedBox(width: 18),
           Expanded(
             child: Text(
@@ -42,7 +40,7 @@ class SupportTile extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: isDark ? Colors.white : AppColors.textLight, //
+                color: theme.textTheme.bodyLarge?.color,
               ),
             ),
           ),

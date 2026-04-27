@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import 'package:medinear_app/features/cart/presentation/manager/cart_provider.dart';
 import 'package:medinear_app/core/widgets/app_shimmer.dart';
 import 'package:medinear_app/core/widgets/custom_empty_state.dart';
@@ -35,8 +34,7 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Scaffold(
@@ -104,16 +102,16 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                         _searchText = value;
                       });
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Search",
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: const TextStyle(color: Colors.grey),
                       prefixIcon:
-                          Icon(Icons.search, color: AppColors.primaryLight),
+                          Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
                       suffixIcon: Icon(Icons.filter_list,
-                          color: AppColors.primaryLight),
+                          color: Theme.of(context).colorScheme.primary),
                       border: InputBorder.none,
                       contentPadding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                          const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     ),
                   ),
                 ),
@@ -162,13 +160,13 @@ class _CartPharmaciesScreenState extends ConsumerState<CartPharmaciesScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 28,
-                                    backgroundColor: AppColors.primaryLight
+                                    backgroundColor: Theme.of(context).colorScheme.primary
                                         .withValues(alpha: 0.2),
                                     backgroundImage: pharmacy.image != null
                                         ? NetworkImage(pharmacy.image!)
                                         : null,
                                     child: pharmacy.image == null 
-                                      ? const Icon(Icons.store, color: AppColors.primaryLight, size: 28)
+                                      ? Icon(Icons.store, color: Theme.of(context).colorScheme.primary, size: 28)
                                       : null,
                                   ),
                                   const SizedBox(width: 15),

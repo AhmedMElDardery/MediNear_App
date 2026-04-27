@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/features/support/presentation/widgets/support_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
@@ -20,7 +21,6 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
 
   void _showFeedbackBottomSheet(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     int selectedRating = 0;
 
     showModalBottomSheet(
@@ -37,7 +37,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 right: 24,
               ),
               decoration: BoxDecoration(
-                color: isDark ? theme.cardColor : Colors.white,
+                color: theme.cardColor,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(32)),
               ),
@@ -48,31 +48,27 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                     width: 48,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: isDark ? theme.dividerColor : Colors.grey.shade300,
+                      color: theme.dividerColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    "How was your experience?",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: isDark
-                            ? theme.textTheme.bodyLarge?.color ?? Colors.white
-                            : const Color(0xFF0F172A),
-                        letterSpacing: -0.5),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Your feedback helps us improve our service.",
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade500),
-                    textAlign: TextAlign.center,
-                  ),
+                    Text(
+                      context.tr("feedback_title"),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: theme.textTheme.bodyLarge?.color,
+                          letterSpacing: -0.5),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.tr("feedback_subtitle"),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: theme.textTheme.bodyMedium?.color),
+                      textAlign: TextAlign.center,
+                    ),
                   const SizedBox(height: 32),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -92,10 +88,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                                 : Icons.star_outline_rounded,
                             size: 44,
                             color: index < selectedRating
-                                ? const Color(0xFFF59E0B)
-                                : (isDark
-                                    ? theme.dividerColor.withValues(alpha: 0.5)
-                                    : Colors.grey.shade300),
+                                ? Colors.amber
+                                : theme.dividerColor,
                           ),
                         ),
                       );
@@ -104,27 +98,19 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   const SizedBox(height: 32),
                   Container(
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.scaffoldBackgroundColor
-                          : const Color(0xFFF8FAFC),
+                      color: theme.scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                          color: isDark
-                              ? theme.dividerColor.withValues(alpha: 0.2)
-                              : Colors.grey.shade200),
+                          color: theme.dividerColor.withValues(alpha: 0.2)),
                     ),
                     child: TextField(
                       maxLines: 3,
                       style: TextStyle(
-                          color: isDark
-                              ? theme.textTheme.bodyLarge?.color ?? Colors.white
-                              : Colors.black),
+                          color: theme.textTheme.bodyLarge?.color),
                       decoration: InputDecoration(
-                        hintText: "Tell us more (optional)...",
+                        hintText: context.tr("feedback_hint"),
                         hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontSize: 14),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(20),
@@ -141,11 +127,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text(
-                                      "Thank you for your feedback! ❤️",
+                                  content: Text(
+                                      context.tr("feedback_thanks"),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
-                                  backgroundColor: const Color(0xFF10B981),
+                                  backgroundColor: Colors.green,
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)),
@@ -154,23 +140,20 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        disabledBackgroundColor:
-                            isDark ? theme.dividerColor : Colors.grey.shade200,
+                        backgroundColor: theme.colorScheme.primary,
+                        disabledBackgroundColor: theme.dividerColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),
-                      child: Text("Submit Feedback",
+                      child: Text(context.tr("submit_feedback"),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: selectedRating > 0
                                   ? Colors.white
-                                  : (isDark
-                                      ? Colors.grey.shade400
-                                      : Colors.grey.shade400))),
+                                  : theme.textTheme.bodyMedium?.color)),
                     ),
                   ),
                 ],
@@ -200,18 +183,9 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isDark ? theme.cardColor : Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: isDark
-              ? Border.all(color: theme.dividerColor.withValues(alpha: 0.1))
-              : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.05 : 0.02),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
         ),
         child: Material(
           color: Colors.transparent,
@@ -247,36 +221,20 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? theme.textTheme.bodyLarge?.color ??
-                                        Colors.white
-                                    : const Color(0xFF0F172A),
+                                color: theme.textTheme.bodyLarge?.color,
                                 letterSpacing: -0.3)),
                         const SizedBox(height: 4),
                         Text(subtitle,
                             style: TextStyle(
-                                color: isDark
-                                    ? Colors.grey.shade400
-                                    : Colors.grey.shade500,
+                                color: theme.textTheme.bodyMedium?.color,
                                 fontSize: 13,
                                 height: 1.2)),
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.scaffoldBackgroundColor
-                          : const Color(0xFFF1F5F9),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.arrow_forward_ios_rounded,
-                        size: 14,
-                        color: isDark
-                            ? Colors.grey.shade500
-                            : Colors.grey.shade400),
-                  ),
+                  Icon(Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: theme.textTheme.bodyMedium?.color),
                 ],
               ),
             ),
@@ -296,19 +254,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-            color: isDark ? theme.cardColor : Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-                color: isDark
-                    ? theme.dividerColor.withValues(alpha: 0.1)
-                    : Colors.grey.shade100),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.05 : 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ]),
+                color: theme.dividerColor.withValues(alpha: 0.1)),
+        ),
         child: Center(
           child: FaIcon(icon, color: color, size: 20),
         ),
@@ -324,24 +274,21 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? theme.scaffoldBackgroundColor : const Color(0xFFF8FAFC),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          "Support & Help",
+          context.tr("support_title"),
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 20,
-            color: isDark
-                ? theme.textTheme.titleLarge?.color ?? Colors.white
-                : const Color(0xFF0F172A),
+            color: theme.textTheme.titleLarge?.color,
             letterSpacing: -0.5,
           ),
         ),
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
-        foregroundColor: isDark ? Colors.white : Colors.black,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         leadingWidth: 64,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12.0),
@@ -350,25 +297,13 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: isDark ? theme.cardColor : Colors.white,
+                  color: theme.cardColor,
                   shape: BoxShape.circle,
-                  border: isDark
-                      ? Border.all(
-                          color: theme.dividerColor.withValues(alpha: 0.2))
-                      : null,
-                  boxShadow: isDark
-                      ? []
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          )
-                        ]),
+                  border: Border.all(
+                          color: theme.dividerColor.withValues(alpha: 0.2)),
+              ),
               child: Icon(Icons.arrow_back_rounded,
-                  color: isDark
-                      ? theme.iconTheme.color ?? Colors.white
-                      : const Color(0xFF0F172A),
+                  color: theme.iconTheme.color,
                   size: 20),
             ),
           ),
@@ -381,25 +316,13 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: isDark ? theme.cardColor : Colors.white,
+                    color: theme.cardColor,
                     shape: BoxShape.circle,
-                    border: isDark
-                        ? Border.all(
-                            color: theme.dividerColor.withValues(alpha: 0.2))
-                        : null,
-                    boxShadow: isDark
-                        ? []
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            )
-                          ]),
+                    border: Border.all(
+                            color: theme.dividerColor.withValues(alpha: 0.2)),
+                ),
                 child: Icon(Icons.more_horiz_rounded,
-                    color: isDark
-                        ? theme.iconTheme.color ?? Colors.white
-                        : const Color(0xFF0F172A),
+                    color: theme.iconTheme.color,
                     size: 20),
               ),
             ),
@@ -429,40 +352,22 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isDark
-                        ? [const Color(0xFF172554), const Color(0xFF1E3A8A)]
-                        : const [Color(0xFFE0F2FE), Color(0xFFDBEAFE)],
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.4)
-                          : const Color(0xFF3B82F6).withValues(alpha: 0.12),
-                      blurRadius: 24,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 85,
-                      height: 85,
+                      width: 120,
+                      height: 100,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
+                        shape: BoxShape.circle,
                         image: const DecorationImage(
                           image: AssetImage("assets/images/image_support.jpeg"),
                           fit: BoxFit.cover,
@@ -475,25 +380,21 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "How can we\nhelp you?",
+                            context.tr("support_banner_title"),
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
                               height: 1.15,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
+                              color: Colors.white,
                               letterSpacing: -0.5,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "We are ready to assist you anytime.",
+                            context.tr("support_banner_subtitle"),
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF475569),
+                              color: Colors.white70,
                               height: 1.3,
                               fontWeight: FontWeight.w500,
                             ),
@@ -517,40 +418,24 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   child: Opacity(opacity: value, child: child),
                 );
               },
-              child: Container(
-                margin: const EdgeInsets.only(top: 24, bottom: 24),
-                decoration: BoxDecoration(
-                  color: isDark ? theme.cardColor : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: isDark
-                          ? theme.dividerColor.withValues(alpha: 0.1)
-                          : Colors.grey.shade100),
-                  boxShadow: [
-                    BoxShadow(
-                      color:
-                          Colors.black.withValues(alpha: isDark ? 0.05 : 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
+                child: Container(
+                  margin: const EdgeInsets.only(top: 24, bottom: 24),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: theme.dividerColor.withValues(alpha: 0.1)),
+                  ),
                 child: TextField(
                   style: TextStyle(
-                      color: isDark
-                          ? theme.textTheme.bodyLarge?.color ?? Colors.white
-                          : Colors.black),
+                      color: theme.textTheme.bodyLarge?.color),
                   decoration: InputDecoration(
-                    hintText: "What do you need help with?",
+                    hintText: context.tr("support_search_hint"),
                     hintStyle: TextStyle(
-                        color: isDark
-                            ? Colors.grey.shade500
-                            : Colors.grey.shade400,
+                        color: theme.textTheme.bodyMedium?.color,
                         fontSize: 15),
                     prefixIcon: Icon(Icons.search_rounded,
-                        color: isDark
-                            ? Colors.grey.shade500
-                            : Colors.grey.shade400),
+                        color: theme.textTheme.bodyMedium?.color),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 18),
                   ),
@@ -583,17 +468,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                       color: isDark
-                          ? const Color(0xFF9A3412).withValues(alpha: 0.5)
-                          : const Color(0xFFFDBA74).withValues(alpha: 0.5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.3)
-                          : const Color(0xFFF97316).withValues(alpha: 0.08),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+                          ? Colors.orange.withValues(alpha: 0.3)
+                          : Colors.orange.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -607,7 +483,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                             BoxShadow(
                               color: isDark
                                   ? Colors.black.withValues(alpha: 0.2)
-                                  : const Color(0xFFF97316)
+                                  : Colors.orange
                                       .withValues(alpha: 0.15),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
@@ -615,8 +491,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                           ]),
                       child: Icon(Icons.local_shipping_rounded,
                           color: isDark
-                              ? const Color(0xFFFDBA74)
-                              : const Color(0xFFF97316),
+                              ? Colors.orangeAccent
+                              : Colors.orange,
                           size: 24),
                     ),
                     const SizedBox(width: 16),
@@ -624,15 +500,15 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Having an issue?",
+                          Text(context.tr("support_issue"),
                               style: TextStyle(
                                   fontSize: 13,
                                   color: isDark
-                                      ? const Color(0xFFFDBA74)
-                                      : const Color(0xFF9A3412),
+                                      ? Colors.orangeAccent
+                                      : Colors.orange.shade800,
                                   fontWeight: FontWeight.w600)),
                           const SizedBox(height: 2),
-                          Text("Active Order",
+                          Text(context.tr("support_active_order"),
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
@@ -646,16 +522,14 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark
-                            ? const Color(0xFFEA580C)
-                            : const Color(0xFFF97316),
+                        backgroundColor: Colors.orange,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16)),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 0),
                       ),
-                      child: const Text("Get Help",
+                      child: Text(context.tr("support_get_help"),
                           style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -676,26 +550,26 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
             const SizedBox(height: 8),
 
             // Extra static options with premium styling and interactive feedback
-            _buildStaticOption("Help & FAQs", "Frequently asked questions",
-                Icons.help_center_rounded, const Color(0xFF0EA5E9), itemsCount,
+            _buildStaticOption(context.tr("support_faq"), context.tr("support_faq_desc"),
+                Icons.help_center_rounded, theme.colorScheme.primary, itemsCount,
                 theme: theme),
-            _buildStaticOption("Feedback", "Rate us & share your thoughts",
-                Icons.star_rounded, const Color(0xFFF59E0B), itemsCount + 1,
+            _buildStaticOption(context.tr("support_feedback"), context.tr("support_feedback_desc"),
+                Icons.star_rounded, Colors.amber, itemsCount + 1,
                 onTap: () => _showFeedbackBottomSheet(context), theme: theme),
             _buildStaticOption(
                 "Privacy Policy",
                 "Terms and privacy policy",
                 Icons.privacy_tip_rounded,
-                const Color(0xFF8B5CF6),
+                theme.colorScheme.secondary,
                 itemsCount + 2,
                 theme: theme),
 
             const SizedBox(height: 32),
 
             // Social Media Row
-            Text("Follow us on",
+            Text(context.tr("follow_us"),
                 style: TextStyle(
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                    color: theme.textTheme.bodyMedium?.color,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5)),
@@ -727,29 +601,23 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
               children: [
                 Text("MediNear App v1.0.0",
                     style: TextStyle(
-                        color: isDark
-                            ? Colors.grey.shade600
-                            : Colors.grey.shade400,
+                        color: theme.textTheme.bodyMedium?.color,
                         fontSize: 13,
                         fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Made with ",
+                    Text(context.tr("made_with"),
                         style: TextStyle(
-                            color: isDark
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontSize: 12,
                             fontWeight: FontWeight.w500)),
                     const Icon(Icons.favorite_rounded,
-                        color: Color(0xFFF43F5E), size: 14),
-                    Text(" for your health",
+                        color: Colors.redAccent, size: 14),
+                    Text(context.tr("for_health"),
                         style: TextStyle(
-                            color: isDark
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontSize: 12,
                             fontWeight: FontWeight.w500)),
                   ],

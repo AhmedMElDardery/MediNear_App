@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
@@ -65,12 +66,14 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
     if (url == null) return;
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
-      debugPrint("Could not launch $url");
+      debugPrint(
+        AppLocalizations.of(context)!.translate("error_open_link")
+      );
     }
   }
 
   Color _parseColor(String? hexColor) {
-    if (hexColor == null || hexColor.isEmpty) return const Color(0xFF00965E);
+    if (hexColor == null || hexColor.isEmpty) return Theme.of(context).colorScheme.primary;
     String hex = hexColor.replaceAll('#', '');
     if (hex.length == 6) {
       hex = 'FF$hex'; // Add opacity
@@ -194,10 +197,13 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                           children: [
                             const Icon(Icons.check_circle_rounded, color: Colors.white),
                             const SizedBox(width: 8),
-                            Text('تم نسخ الكوبون: ${ad.coupon!}'),
+                            Text(AppLocalizations.of(context)!.translate(
+                              "coupon_copied",
+                              params: {"code": ad.coupon!},
+                            )),
                           ],
                         ),
-                        backgroundColor: const Color(0xFF00965E),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         margin: const EdgeInsets.all(16),
@@ -223,8 +229,8 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                       children: [
                         Text(
                           ad.coupon!.toUpperCase(),
-                          style: const TextStyle(
-                            color: Color(0xFF00965E),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w900,
                             fontSize: 13,
                             letterSpacing: 0.5,
@@ -253,20 +259,16 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
           fadeOutDuration: Duration.zero,
           memCacheWidth: 800,
           placeholder: (context, url) => Shimmer.fromColors(
-            baseColor: isDark
-                ? Colors.grey.shade800
-                : Colors.grey.shade300,
-            highlightColor: isDark
-                ? Colors.grey.shade700
-                : Colors.grey.shade100,
+            baseColor: Theme.of(context).dividerColor,
+            highlightColor: Theme.of(context).cardColor,
             child: Container(color: Colors.white),
           ),
           errorWidget: (context, url, error) => Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF00965E),
-                  Color(0xFF00C47A)
+                  Theme.of(context).colorScheme.primary,
+                  const Color(0xFF00C47A)
                 ],
               ),
             ),
@@ -317,13 +319,13 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
               color: Colors.black.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Row(
+            child:  Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.touch_app_rounded,
                     size: 12, color: Colors.white),
                 SizedBox(width: 3),
-                Text("Tap",
+                Text(AppLocalizations.of(context)!.translate("tap"),
                     style: TextStyle(
                         fontSize: 11, color: Colors.white)),
               ],
@@ -347,7 +349,7 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                         Text('تم نسخ الكوبون: ${ad.coupon!}'),
                       ],
                     ),
-                    backgroundColor: const Color(0xFF00965E),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     margin: const EdgeInsets.all(16),
@@ -373,8 +375,8 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                   children: [
                     Text(
                       ad.coupon!.toUpperCase(),
-                      style: const TextStyle(
-                        color: Color(0xFF00965E),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w900,
                         fontSize: 13,
                         letterSpacing: 0.5,
@@ -467,8 +469,8 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                 height: 6,
                 decoration: BoxDecoration(
                   color: isActive
-                      ? const Color(0xFF00965E)
-                      : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(3),
                 ),
               );

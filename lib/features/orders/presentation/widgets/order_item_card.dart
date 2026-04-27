@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 // تأكد إن المسار ده صح للموديل بتاعك (لو الموديل في فولدر models)
 import '../../data/models/order_item_model.dart';
 
@@ -11,8 +10,7 @@ class OrderItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // تظبيط الألوان (فاتح / غامق)
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -35,11 +33,11 @@ class OrderItemCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.medication_outlined,
-                color: AppColors.primaryLight, size: 30),
+            child: Icon(Icons.medication_outlined,
+                color: Theme.of(context).colorScheme.primary, size: 30),
           ),
           const SizedBox(width: 15),
 
@@ -72,9 +70,9 @@ class OrderItemCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildBadge("Price: ${item.price} EGP"),
+              _buildBadge(context, "Price: ${item.price} EGP"),
               const SizedBox(height: 8),
-              _buildBadge("Total: ${item.total} EGP"),
+              _buildBadge(context, "Total: ${item.total} EGP"),
             ],
           )
         ],
@@ -83,11 +81,11 @@ class OrderItemCard extends StatelessWidget {
   }
 
   // دالة صغيرة لرسم المربع الأخضر بتاع السعر
-  Widget _buildBadge(String text) {
+  Widget _buildBadge(BuildContext context, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFF2E7D32), // الأخضر الغامق
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

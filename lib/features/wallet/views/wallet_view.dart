@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/features/medication/data/models/medication_model.dart';
 import 'package:medinear_app/features/medication/views/widgets/medication_card.dart';
-import 'package:medinear_app/features/wallet/view_models/wallet_view_model.dart';
 import 'package:medinear_app/features/wallet/views/widgets/custom_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
@@ -21,7 +21,7 @@ class WalletView extends ConsumerWidget {
 
       appBar: AppBar(
         elevation: 0,
-        title: const Text('Wallet'),
+        title:  Text(context.tr("wallet_title")),
         centerTitle: true,
       ),
       body: Container(
@@ -30,14 +30,14 @@ class WalletView extends ConsumerWidget {
           children: [
             // زر الإضافة
             CustomButton(
-              label: 'Add New',
+              label: context.tr("add_new"),
               icon: Icons.add,
               onPressed: () {
                 viewModel.addMedication(
                   MedicationModel(
                     id: DateTime.now().toString(),
-                    name: 'New Medication',
-                    description: 'Take one pill daily.',
+                    name: context.tr("new_medication"),
+                    description: context.tr("default_med_description"),
                     imagePath: 'assets/med1.png',
                   ),
                 );
@@ -67,7 +67,7 @@ class WalletView extends ConsumerWidget {
             // القائمة الديناميكية
             Expanded(
               child: viewModel.medications.isEmpty
-                  ? const Center(child: Text("No medications added yet."))
+                  ?  Center(child: Text(context.tr("no_medications")))
                   : ListView.builder(
                       itemCount: viewModel.medications.length,
                       itemBuilder: (context, index) {

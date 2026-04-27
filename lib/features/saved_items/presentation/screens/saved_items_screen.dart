@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import '../manager/saved_items_provider.dart';
 import '../widgets/saved_item_cards.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
@@ -45,7 +46,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
-          'Saved Items',
+          context.tr("saved_items_title"),
           style: TextStyle(
             color: theme.textTheme.bodyMedium?.color,
             fontSize: 20,
@@ -79,16 +80,12 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
                             TextStyle(color: theme.textTheme.bodyMedium?.color),
                         decoration: InputDecoration(
                           hintText: _selectedTab == 0
-                              ? "Search pharmacies..."
-                              : "Search medications...",
+                              ? context.tr("search_pharmacies")
+                              : context.tr("search_medications"),
                           hintStyle: TextStyle(
-                              color: isDark
-                                  ? Colors.grey.shade400
-                                  : Colors.grey.shade600),
+                              color: theme.textTheme.bodyMedium?.color),
                           prefixIcon: Icon(Icons.search,
-                              color: isDark
-                                  ? Colors.grey.shade400
-                                  : Colors.grey.shade600),
+                              color: theme.textTheme.bodyMedium?.color),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.clear,
@@ -100,9 +97,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade100,
+                          fillColor: theme.cardColor,
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 0, horizontal: 16),
                           border: OutlineInputBorder(
@@ -114,9 +109,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
                     const SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade100,
+                        color: theme.cardColor,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -127,7 +120,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
                           color: theme.primaryColor,
                         ),
                         onPressed: () => provider.toggleSort(),
-                        tooltip: 'Sort',
+                        tooltip: context.tr("sort"),
                       ),
                     ),
                   ],
@@ -143,14 +136,14 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
                   children: [
                     Expanded(
                         child: _buildTabButton(
-                            'Pharmacies (${provider.savedPharmaciesCount})',
+                            '${context.tr("pharmacies_tab")} (${provider.savedPharmaciesCount})',
                             0,
                             theme,
                             provider)),
                     const SizedBox(width: 12),
                     Expanded(
                         child: _buildTabButton(
-                            'Medications (${provider.savedMedicationsCount})',
+                            '${context.tr("medications_tab")} (${provider.savedMedicationsCount})',
                             1,
                             theme,
                             provider)),
@@ -192,7 +185,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
           border: Border.all(
             color: isSelected
                 ? theme.primaryColor
-                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                : theme.dividerColor,
           ),
         ),
         child: Text(
@@ -212,8 +205,9 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
 
   Widget _buildPharmaciesList(SavedItemsProvider provider, ThemeData theme) {
     final pharmacies = provider.pharmacies;
-    if (pharmacies.isEmpty)
-      return _emptyState("No saved pharmacies found", theme);
+    if (pharmacies.isEmpty) {
+      return _emptyState(context.tr("no_saved_pharmacies"), theme);
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -225,7 +219,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
           theme: theme,
           onDismissed: () {
             provider.removePharmacy(pharmacy);
-            _showUndoSnackBar('${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+            _showUndoSnackBar('${pharmacy.name} ${context.tr("removed_from_saved")}', theme, () => provider.undoRemovePharmacy(pharmacy));
           },
           child: GestureDetector(
             onTap: () {
@@ -244,7 +238,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
               theme: theme,
               onRemove: () {
                 provider.removePharmacy(pharmacy);
-                _showUndoSnackBar('${pharmacy.name} removed from saved items.', theme, () => provider.undoRemovePharmacy(pharmacy));
+                _showUndoSnackBar('${pharmacy.name} ${context.tr("removed_from_saved")}', theme, () => provider.undoRemovePharmacy(pharmacy));
               },
             ),
           ),
@@ -255,8 +249,9 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
 
   Widget _buildMedicationsList(SavedItemsProvider provider, ThemeData theme) {
     final medications = provider.medications;
-    if (medications.isEmpty)
-      return _emptyState("No saved medications found", theme);
+    if (medications.isEmpty) {
+      return _emptyState(context.tr("no_saved_medications",), theme);
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -272,7 +267,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
             if (error != null) {
               _showErrorSnackBar(error, theme);
             } else {
-              _showUndoSnackBar('${medication.name} removed from saved items.', theme, () async {
+              _showUndoSnackBar('${medication.name} ${context.tr("removed_from_saved")}', theme, () async {
                 final undoError = await provider.undoRemoveMedication(medication);
                 if (!mounted) return;
                 if (undoError != null) _showErrorSnackBar(undoError, theme);
@@ -288,7 +283,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
               if (error != null) {
                 _showErrorSnackBar(error, theme);
               } else {
-                _showUndoSnackBar('${medication.name} removed from saved items.', theme, () async {
+                _showUndoSnackBar('${medication.name} ${context.tr("removed_from_saved")}', theme, () async {
                   final undoError = await provider.undoRemoveMedication(medication);
                   if (!mounted) return;
                   if (undoError != null) _showErrorSnackBar(undoError, theme);
@@ -334,7 +329,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
         children: [
           Icon(Icons.bookmark_border,
               size: 80,
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+              color: theme.dividerColor),
           const SizedBox(height: 16),
           Text(msg,
               style: const TextStyle(
@@ -355,7 +350,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         action: SnackBarAction(
-            label: 'Undo', textColor: theme.primaryColor, onPressed: onUndo),
+            label: context.tr("undo"), textColor: theme.primaryColor, onPressed: onUndo),
         duration: const Duration(seconds: 3),
       ),
     );

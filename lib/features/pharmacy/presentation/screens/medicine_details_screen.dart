@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 
 class MedicineDetailsScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
     final gallery = med.gallery != null && med.gallery!.isNotEmpty ? med.gallery! : [med.imageUrl];
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFFAFAFA),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFFAFAFA),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -47,7 +48,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w900,
-                          color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                          color: isDark ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -55,19 +56,19 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF00965E).withValues(alpha: 0.15) : const Color(0xFFE8F5EE),
+                          color: isDark ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15) : const Color(0xFFE8F5EE),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF00965E).withValues(alpha: 0.3),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          "مسكن للألم وخافض للحرارة",
+                          context.tr("painRelief"),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? const Color(0xFF00C47A) : const Color(0xFF00965E),
+                            color: isDark ? const Color(0xFF00C47A) : Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -104,13 +105,13 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                         child: Column(
                           children: [
                             if (med.composition != null)
-                              _buildPropertyRow("التركيبة", med.composition!, Icons.science_outlined, isDark, true),
+                              _buildPropertyRow(context.tr("composition"), med.composition!, Icons.science_outlined, isDark, true),
                             if (med.dosageForm != null)
-                              _buildPropertyRow("الشكل الدوائي", med.dosageForm!, Icons.medication_outlined, isDark, true),
+                              _buildPropertyRow(context.tr("dosageForm"), med.dosageForm!, Icons.medication_outlined, isDark, true),
                             if (med.packageSize != null)
-                              _buildPropertyRow("العبوة", med.packageSize!, Icons.inventory_2_outlined, isDark, true),
+                              _buildPropertyRow(context.tr("package"), med.packageSize!, Icons.inventory_2_outlined, isDark, true),
                             if (med.usageInstructions != null)
-                              _buildPropertyRow("طريقة الاستخدام", med.usageInstructions!, Icons.assignment_outlined, isDark, false),
+                              _buildPropertyRow(context.tr("usage"), med.usageInstructions!, Icons.assignment_outlined, isDark, false),
                           ],
                         ),
                       ),
@@ -210,8 +211,8 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       color: _currentImageIndex == index
-                          ? const Color(0xFF00965E)
-                          : const Color(0xFF00965E).withValues(alpha: 0.2),
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                     ),
                   ),
                 ),
@@ -258,7 +259,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                   color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F9F6),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: const Color(0xFF00965E), size: 24),
+                child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
               ),
               const SizedBox(width: 16),
               // Text Content
@@ -268,8 +269,8 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Color(0xFF00965E),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
@@ -327,7 +328,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Price",
+                  context.tr("price"),
                   style: TextStyle(
                     color: Colors.grey.shade500,
                     fontSize: 13,
@@ -336,9 +337,9 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  "${price.toStringAsFixed(0)} EGP",
-                  style: const TextStyle(
-                    color: Color(0xFF00965E),
+                  "${price.toStringAsFixed(0)} ${context.tr("egp")}",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
                   ),
@@ -351,19 +352,19 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xFF00965E),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Row(
+                child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
                     SizedBox(width: 8),
                     Text(
-                      "Add to Cart",
+                      context.tr("addToCart"),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

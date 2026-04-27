@@ -7,7 +7,6 @@ import 'package:medinear_app/features/support/presentation/screen/support_screen
 import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../view_models/profile_provider.dart';
 import 'widgets/profile_widgets.dart';
 import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
@@ -63,21 +62,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       controller.text = cleanPhone;
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     showDialog(
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (stateCtx, setDialogState) {
           return AlertDialog(
-            backgroundColor:
-                isDark ? Theme.of(context).cardColor : Colors.white,
+            backgroundColor: theme.cardColor,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: Text('Edit $title',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87)),
+                    color: theme.textTheme.bodyLarge?.color)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,17 +90,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               border: Border.all(
                                   color: errorMessage != null
                                       ? Colors.red
-                                      : (isDark
-                                          ? Theme.of(context).dividerColor
-                                          : Colors.grey.shade300),
+                                      : theme.dividerColor,
                                   width: errorMessage != null ? 1.5 : 1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<Map<String, dynamic>>(
-                                dropdownColor: isDark
-                                    ? Theme.of(context).cardColor
-                                    : Colors.white,
+                                dropdownColor: theme.cardColor,
                                 value: selectedCountry,
                                 items: countries
                                     .map((c) => DropdownMenuItem(
@@ -110,9 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                         child: Text('${c['flag']} ${c['code']}',
                                             style: TextStyle(
                                                 fontSize: 14,
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black87))))
+                                                color: theme.textTheme.bodyLarge?.color))))
                                     .toList(),
                                 onChanged: (val) {
                                   setDialogState(() {
@@ -132,8 +124,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 controller: controller,
                                 keyboardType: TextInputType.phone,
                                 style: TextStyle(
-                                    color:
-                                        isDark ? Colors.white : Colors.black87),
+                                    color: theme.textTheme.bodyLarge?.color),
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                   LengthLimitingTextInputFormatter(
@@ -145,18 +136,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   hintText: selectedCountry['code'] == '+20'
                                       ? "01xxxxxxxxx"
                                       : "Enter number",
-                                  hintStyle: TextStyle(
-                                      color: isDark
-                                          ? Colors.grey.shade500
-                                          : Colors.grey.shade400),
+                                  hintStyle: TextStyle(color: theme.hintColor),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide(
                                         color: errorMessage != null
                                             ? Colors.red
-                                            : (isDark
-                                                ? Theme.of(context).dividerColor
-                                                : Colors.grey.shade300),
+                                            : theme.dividerColor,
                                         width: errorMessage != null ? 1.5 : 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
@@ -164,7 +150,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     borderSide: BorderSide(
                                         color: errorMessage != null
                                             ? Colors.red
-                                            : AppColors.primaryLight,
+                                            : theme.colorScheme.primary,
                                         width: 2),
                                   ),
                                 ),
@@ -175,8 +161,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       )
                     : TextField(
                         controller: controller,
-                        style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black87),
+                        style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                         onChanged: (v) =>
                             setDialogState(() => errorMessage = null),
                         decoration: InputDecoration(
@@ -185,9 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             borderSide: BorderSide(
                                 color: errorMessage != null
                                     ? Colors.red
-                                    : (isDark
-                                        ? Theme.of(context).dividerColor
-                                        : Colors.grey.shade300),
+                                    : theme.dividerColor,
                                 width: errorMessage != null ? 1.5 : 1),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -195,7 +178,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             borderSide: BorderSide(
                                 color: errorMessage != null
                                     ? Colors.red
-                                    : AppColors.primaryLight,
+                                    : theme.colorScheme.primary,
                                 width: 2),
                           ),
                         ),
@@ -228,7 +211,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.grey, fontWeight: FontWeight.bold))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryLight,
+                  backgroundColor: theme.colorScheme.primary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
@@ -264,7 +247,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _showLogoutDialog(BuildContext parentContext, bool isDark) {
+  void _showLogoutDialog(BuildContext parentContext) {
+    final theme = Theme.of(parentContext);
     showDialog(
       context: parentContext,
       builder: (dialogCtx) {
@@ -281,11 +265,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(25, 50, 25, 25),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                        color: isDark ? Colors.black26 : Colors.black12,
+                        color: theme.shadowColor.withValues(alpha: 0.08),
                         blurRadius: 10,
                         offset: const Offset(0, 10))
                   ],
@@ -298,7 +282,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87),
+                          color: theme.textTheme.bodyLarge?.color),
                     ),
                     const SizedBox(height: 15),
                     Text(
@@ -306,7 +290,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 16,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey,
+                          color: theme.textTheme.bodyMedium?.color,
                           height: 1.4),
                     ),
                     const SizedBox(height: 30),
@@ -315,10 +299,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Expanded(
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                  color: isDark
-                                      ? Colors.grey.shade700
-                                      : Colors.grey.shade300),
+                              side: BorderSide(color: theme.dividerColor),
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
@@ -326,9 +307,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onPressed: () => Navigator.pop(dialogCtx),
                             child: Text('cancel'.tr(context),
                                 style: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey.shade300
-                                        : Colors.grey.shade700,
+                                    color: theme.textTheme.bodyMedium?.color,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold)),
                           ),
@@ -376,8 +355,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color:
-                              isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          color: theme.cardColor,
                           spreadRadius: 5,
                           blurRadius: 0,
                         ),
@@ -416,10 +394,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         final isDark = theme.brightness == Brightness.dark;
 
         if (provider.isLoading || user == null) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
                 child:
-                    CircularProgressIndicator(color: AppColors.primaryLight)),
+                    CircularProgressIndicator(color: theme.colorScheme.primary)),
           );
         }
 
@@ -450,9 +428,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       height: 155,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E3A8A).withValues(alpha: 0.15)
-                            : const Color(0xFF00965E).withValues(alpha: 0.06),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.07),
                         borderRadius: const BorderRadius.vertical(
                             bottom: Radius.circular(40)),
                       ),
@@ -466,9 +442,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF00965E))),
+                                color: theme.colorScheme.primary)),
                         const SizedBox(height: 15),
                         TweenAnimationBuilder<double>(
                           tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -486,9 +460,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: isDark
-                                      ? theme.scaffoldBackgroundColor
-                                      : Colors.white,
+                                  color: theme.scaffoldBackgroundColor,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withValues(
@@ -504,15 +476,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     height: 105,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: isDark
-                                          ? theme.cardColor
-                                          : AppColors.primaryLight
-                                              .withValues(alpha: 0.1),
+                                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                                       border: Border.all(
-                                          color: isDark
-                                              ? theme.dividerColor
-                                                  .withValues(alpha: 0.1)
-                                              : Colors.grey.shade100,
+                                          color: theme.dividerColor.withValues(alpha: 0.15),
                                           width: 1.5),
                                       image: getProfileImage() != null
                                           ? DecorationImage(
@@ -522,9 +488,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           : null,
                                     ),
                                     child: getProfileImage() == null
-                                        ? const Icon(Icons.person_rounded,
+                                        ? Icon(Icons.person_rounded,
                                             size: 55,
-                                            color: AppColors.primaryLight)
+                                            color: theme.colorScheme.primary)
                                         : null,
                                   ),
                                   Positioned(
@@ -536,10 +502,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           color: const Color(0xFF0EA5E9),
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                              color: isDark
-                                                  ? theme
-                                                      .scaffoldBackgroundColor
-                                                  : Colors.white,
+                                              color: theme.scaffoldBackgroundColor,
                                               width: 3.5),
                                           boxShadow: [
                                             BoxShadow(
@@ -569,17 +532,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? theme.textTheme.bodyLarge?.color
-                              : const Color(0xFF1E293B),
+                          color: theme.textTheme.bodyLarge?.color,
                           letterSpacing: -0.5)),
                   const SizedBox(height: 4),
                   Text(user.email,
                       style: TextStyle(
                           fontSize: 14,
-                          color: isDark
-                              ? Colors.grey.shade400
-                              : Colors.grey.shade500)),
+                          color: theme.textTheme.bodyMedium?.color)),
                 ]),
                 const SizedBox(height: 32),
                 Padding(
@@ -632,9 +591,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 iconColor: const Color(0xFF8B5CF6),
                                 trailing: Icon(Icons.lock_rounded,
                                     size: 16,
-                                    color: isDark
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400),
+                                    color: theme.unselectedWidgetColor),
                                 onTap: () {},
                               ),
                             ]),
@@ -717,7 +674,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 iconColor: const Color(0xFFEF4444),
                                 isDestructive: true,
                                 trailing: const SizedBox(),
-                                onTap: () => _showLogoutDialog(context, isDark),
+                                onTap: () => _showLogoutDialog(context),
                               ),
                             ]),
                       ),

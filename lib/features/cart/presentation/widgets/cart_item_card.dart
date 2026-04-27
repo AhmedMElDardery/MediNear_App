@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../../data/models/cart_item_model.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -18,8 +17,7 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Stack(
@@ -43,12 +41,12 @@ class CartItemCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
+                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                 backgroundImage: item.medicine.image != null 
                     ? NetworkImage(item.medicine.image!) 
                     : null,
                 child: item.medicine.image == null 
-                    ? const Icon(Icons.medication, color: AppColors.primaryLight) 
+                    ? Icon(Icons.medication, color: Theme.of(context).colorScheme.primary) 
                     : null,
               ),
               const SizedBox(width: 15),
@@ -72,7 +70,7 @@ class CartItemCard extends StatelessWidget {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: AppColors.primaryLight,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(

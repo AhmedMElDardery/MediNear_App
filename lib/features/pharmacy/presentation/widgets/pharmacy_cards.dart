@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import '../../data/models/pharmacy_models.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -18,8 +19,7 @@ class PharmacyMedicineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = theme.cardColor;
     final textColor = theme.textTheme.bodyMedium?.color;
 
     return Container(
@@ -30,9 +30,7 @@ class PharmacyMedicineCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-                color: isDark
-                    ? Colors.black38
-                    : Colors.grey.withValues(alpha: 0.1),
+                color: theme.shadowColor.withValues(alpha: 0.05),
                 blurRadius: 5,
                 offset: const Offset(0, 2))
           ]),
@@ -71,7 +69,7 @@ class PharmacyMedicineCard extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(6)),
-                          child: Text('${medicine.discount}% off',
+                          child: Text('${medicine.discount} ${context.tr("discoundOff")}',
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -93,7 +91,7 @@ class PharmacyMedicineCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: textColor)),
                 const SizedBox(height: 4),
-                Text('${medicine.oldPrice} EGP',
+                Text('${medicine.oldPrice} ${context.tr("egp")}',
                     style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
@@ -101,7 +99,7 @@ class PharmacyMedicineCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Text('${medicine.price} EGP',
+                    Text('${medicine.price} ${context.tr("egp")}',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -127,8 +125,8 @@ class PharmacyMedicineCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8))),
                         child: Text(
                             medicine.notifyAvailable
-                                ? 'Notified'
-                                : 'Not Available',
+                                ? context.tr("notified")
+                                : context.tr("notAvailable"),
                             style: const TextStyle(
                                 fontSize: 10, color: Colors.white)),
                       ),
@@ -151,8 +149,7 @@ class PharmacyDoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = theme.cardColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -162,9 +159,7 @@ class PharmacyDoctorCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-                color: isDark
-                    ? Colors.black38
-                    : Colors.grey.withValues(alpha: 0.1),
+                color: theme.shadowColor.withValues(alpha: 0.05),
                 blurRadius: 5,
                 offset: const Offset(0, 2))
           ]),
@@ -221,8 +216,7 @@ class PharmacyServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = theme.cardColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -232,9 +226,7 @@ class PharmacyServiceCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-                color: isDark
-                    ? Colors.black38
-                    : Colors.grey.withValues(alpha: 0.1),
+                color: theme.shadowColor.withValues(alpha: 0.05),
                 blurRadius: 5,
                 offset: const Offset(0, 2))
           ]),
@@ -277,7 +269,7 @@ class PharmacyServiceCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 14, color: Colors.grey))
                 ]),
                 const SizedBox(height: 4),
-                Text('${service.price} EGP',
+                Text('${service.price} ${context.tr("egp")}',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:medinear_app/features/home/presentation/provider/home_provider.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -14,26 +14,26 @@ class CategoriesScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: isDark ? Colors.white : Colors.black, size: 20),
+          icon: Icon(Directionality.of(context) == TextDirection.rtl ?  Icons.arrow_forward_ios_rounded : Icons.arrow_back_ios_new_rounded , color: Theme.of(context).textTheme.bodyLarge?.color, size: 20),
           onPressed: () => context.pop(),
         ),
         title: Text(
-          "All Categories",
+          context.tr("all_categories"),
           style: TextStyle(
-            color: isDark ? Colors.white : Colors.black,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
       ),
       body: provider.isLoading 
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00965E)))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
           : GridView.builder(
               padding: const EdgeInsets.all(16),
               physics: const BouncingScrollPhysics(),
@@ -52,7 +52,7 @@ class CategoriesScreen extends ConsumerWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -75,7 +75,7 @@ class CategoriesScreen extends ConsumerWidget {
                               fit: BoxFit.contain,
                               errorWidget: (context, url, error) => Icon(
                                 Icons.medication_liquid_rounded,
-                                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                              color: Theme.of(context).unselectedWidgetColor,
                                 size: 36,
                               ),
                             ),
@@ -92,7 +92,7 @@ class CategoriesScreen extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                              color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                               height: 1.2,
                             ),
                           ),

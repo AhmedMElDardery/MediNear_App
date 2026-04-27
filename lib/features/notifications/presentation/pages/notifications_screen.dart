@@ -49,7 +49,7 @@ class NotificationsScreen extends ConsumerWidget {
           : Column(
               children: [
                 Container(
-                  color: isDark ? Colors.grey[900] : Colors.white,
+                  color: Theme.of(context).cardColor,
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -122,8 +122,7 @@ class NotificationsScreen extends ConsumerWidget {
                           ),
                   ),
                 ),
-                _buildBottomActionArea(context, ref, theme.primaryColor,
-                    isDark ? Colors.grey[900]! : Colors.white),
+                _buildBottomActionArea(context, ref, theme.primaryColor, Theme.of(context).cardColor),
               ],
             ),
     );
@@ -141,7 +140,7 @@ class NotificationsScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? activeColor
-              : (isDark ? Colors.grey[800] : Colors.grey[100]),
+              : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           border: isSelected
               ? Border.all(color: activeColor)
@@ -152,7 +151,7 @@ class NotificationsScreen extends ConsumerWidget {
           style: TextStyle(
             color: isSelected
                 ? Colors.white
-                : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                : Theme.of(context).textTheme.bodyMedium?.color,
             fontWeight: FontWeight.w600,
           ),
         ),

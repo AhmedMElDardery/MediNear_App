@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
-import '../provider/chat_bot_provider.dart';
-import 'widgets/chat_bot_styles.dart';
 import 'widgets/chat_bot_header.dart';
 import 'widgets/chat_bot_empty_state.dart';
 import 'widgets/chat_bot_message_bubble.dart';
@@ -40,12 +38,9 @@ class _ChatBotViewState extends ConsumerState<ChatBotView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: isDark
-          ? Theme.of(context).scaffoldBackgroundColor
-          : ChatBotStyles.bgBase,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(

@@ -23,8 +23,8 @@ class AnimatedDots extends StatelessWidget {
                 height: 8,
                 decoration: BoxDecoration(
                     color: currentIndex == index
-                        ? AppColors.primaryLight
-                        : AppColors.grey,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).disabledColor,
                     borderRadius: BorderRadius.circular(10)),
               )),
     );

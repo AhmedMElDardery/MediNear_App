@@ -13,7 +13,7 @@ class HomeFloatingButton extends ConsumerWidget {
     final nav = ref.read(navigationProvider);
     final selectedIndex = ref.watch(navigationProvider).currentIndex;
 
-    const Color mainGreen = Color(0xFF00965E);
+    Color mainGreen = Theme.of(context).colorScheme.primary;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 

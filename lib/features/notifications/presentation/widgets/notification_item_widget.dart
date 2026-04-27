@@ -23,12 +23,12 @@ class NotificationItemWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: item.isRead
-              ? (isDark ? Colors.grey[850] : Colors.white)
+              ? theme.cardColor
               : theme.primaryColor.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: item.isRead
-                ? (isDark ? Colors.grey[800]! : Colors.grey.shade200)
+                ? theme.dividerColor
                 : theme.primaryColor.withValues(alpha: 0.3),
           ),
           boxShadow: item.isRead

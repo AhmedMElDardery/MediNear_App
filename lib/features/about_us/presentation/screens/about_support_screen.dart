@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../manager/about_provider.dart';
 import '../widgets/about_card.dart';
 import '../widgets/support_tile.dart';
@@ -26,22 +25,20 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor:
-          isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: isDark ? Colors.white : AppColors.textLight),
+          icon: Icon(Icons.arrow_back, color: theme.appBarTheme.foregroundColor),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text("About Us & Support",
             style: TextStyle(
-                color: isDark ? Colors.white : AppColors.textLight,
+                color: theme.textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.bold,
                 fontSize: 18)),
         centerTitle: true,
@@ -50,9 +47,9 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
         builder: (context, ref, child) {
           final provider = ref.watch(aboutProvider);
           if (provider.isLoading) {
-            return const Center(
-                child:
-                    CircularProgressIndicator(color: AppColors.primaryLight));
+                    return Center(
+                        child: CircularProgressIndicator(
+                            color: theme.colorScheme.primary));
           }
 
           return SingleChildScrollView(
@@ -67,7 +64,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : Colors.black)),
+                        color: theme.textTheme.bodyLarge?.color)),
                 const SizedBox(height: 15),
 
                 // 🚀 عرض خيارات الدعم من البروفايدر
@@ -82,9 +79,9 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : Colors.black)),
+                        color: theme.textTheme.bodyLarge?.color)),
                 const SizedBox(height: 15),
-                _buildFollowUsCard(provider.version, isDark),
+                _buildFollowUsCard(provider.version),
                 const SizedBox(height: 30),
               ],
             ),
@@ -94,16 +91,16 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
     );
   }
 
-  Widget _buildFollowUsCard(String version, bool isDark) {
+  Widget _buildFollowUsCard(String version) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color:
-                isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.05),
+            color: theme.shadowColor.withValues(alpha: 0.05),
             blurRadius: 15,
           )
         ],
@@ -113,7 +110,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
           Text("App Version $version",
               style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.grey.shade400 : AppColors.textLight)),
+                  color: theme.textTheme.bodyMedium?.color)),
           const Spacer(),
           // ✅ تم التغيير لـ FaIcon لحل الإيرور
           const FaIcon(FontAwesomeIcons.facebook,

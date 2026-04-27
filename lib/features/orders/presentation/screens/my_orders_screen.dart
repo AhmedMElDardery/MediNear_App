@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart'; // 🚀 للتعامل مع الـ Provider
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../../data/models/order_model.dart';
 import '../manager/order_provider.dart'; // 🚀 استدعاء المدير
 import '../widgets/order_card.dart';
@@ -45,8 +44,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Scaffold(
@@ -117,9 +115,9 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                 // 3. عرض النتائج أو حالة التحميل
                 Expanded(
                   child: provider.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
-                              color: AppColors.primaryLight))
+                              color: Theme.of(context).colorScheme.primary))
                       : filteredOrders.isEmpty
                           ? _buildEmptyState(textColor)
                           : ListView.builder(
@@ -164,7 +162,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(10)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

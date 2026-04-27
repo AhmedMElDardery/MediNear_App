@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 // Core & Theme - المسارات العالمية بتبدأ بـ package
 
 // Models - المسار الجديد داخل الميزة
@@ -32,7 +31,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Deleted ${chat.doctorName}"),
-        backgroundColor: AppColors.primaryLight,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",
@@ -123,7 +122,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
         border:
-            Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
+            Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -134,9 +133,9 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
       ),
       child: TextField(
         onChanged: _viewModel.search,
-        style: TextStyle(color: AppColors.primaryLight),
+        style: TextStyle(color: Theme.of(context).colorScheme.primary),
         decoration: InputDecoration(
-          icon: const Icon(Icons.search, color: AppColors.primaryLight),
+          icon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
           hintText: 'Search your doctor...',
           hintStyle: const TextStyle(color: Colors.grey),
           border: InputBorder.none,
@@ -162,25 +161,24 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           // ✅ ألوان متفاعلة مع الدارك مود لمنع البهتان أو البياض الزائد
-          color: isDarkMode ? const Color(0xFF1A2E28) : const Color(0xFFF0F5F2),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          border:
-              Border.all(color: AppColors.primaryLight.withValues(alpha: 0.2)),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.archive_outlined, color: AppColors.primaryLight),
+            Icon(Icons.archive_outlined, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 12),
             Text("Archived Chats",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primaryLight // نص واضح
+                    color: Theme.of(context).colorScheme.primary,
                     )),
             const Spacer(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text("$count",

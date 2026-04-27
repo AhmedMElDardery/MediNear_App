@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/saved_item_models.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
+
 
 class SavedPharmacyCard extends StatelessWidget {
   final SavedPharmacyModel pharmacy;
@@ -61,19 +63,17 @@ class SavedPharmacyCard extends StatelessWidget {
   }
 
   BoxDecoration _boxDecoration(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
     return BoxDecoration(
-      color: isDark ? Colors.grey.shade900 : Colors.white,
+      color: theme.cardColor,
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-            color: isDark ? Colors.black38 : Colors.grey.shade200,
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 6,
             offset: const Offset(0, 3)),
       ],
     );
   }
-
   Widget _imageBox(String image, ThemeData theme, {double size = 50}) {
     return Container(
       width: size,
@@ -125,7 +125,7 @@ class SavedMedicationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _availableTag(theme, medication.isAvailable),
+                _availableTag(context,theme, medication.isAvailable),
                 const SizedBox(height: 8),
                 Text(
                   medication.name,
@@ -147,7 +147,7 @@ class SavedMedicationCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: theme.primaryColor.withOpacity(0.08),
+                      color: theme.primaryColor.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -187,19 +187,17 @@ class SavedMedicationCard extends StatelessWidget {
   }
 
   BoxDecoration _boxDecoration(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
     return BoxDecoration(
-      color: isDark ? Colors.grey.shade900 : Colors.white,
+      color: theme.cardColor,
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-            color: isDark ? Colors.black38 : Colors.grey.shade200,
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 6,
             offset: const Offset(0, 3)),
       ],
     );
   }
-
   Widget _imageBox(String image, ThemeData theme, {double size = 50}) {
     return Container(
       width: size,
@@ -226,13 +224,13 @@ class SavedMedicationCard extends StatelessWidget {
     );
   }
 
-  Widget _availableTag(ThemeData theme, bool isAvailable) {
+  Widget _availableTag(BuildContext context, ThemeData theme, bool isAvailable) {
     if (!isAvailable) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
           color: theme.primaryColor, borderRadius: BorderRadius.circular(4)),
-      child: const Text('Available',
+      child:  Text( context.tr("available"),
           style: TextStyle(
               color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600)),
     );

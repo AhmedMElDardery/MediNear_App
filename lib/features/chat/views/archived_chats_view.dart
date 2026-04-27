@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 // Core & Theme - المسارات الكاملة (Package) للثيم والألوان
 
 // Models - مسار نسبي للوصول للموديل
@@ -56,12 +55,14 @@ class _ArchivedChatsViewState extends ConsumerState<ArchivedChatsView> {
         elevation: 0,
         leading: IconButton(
           // أيقونة الرجوع تتلون تلقائياً (أسود صريح / أبيض صريح)
-          icon: Icon(Icons.arrow_back, color: AppColors.primaryLight),
+          icon: Icon(Icons.arrow_back,
+              color: Theme.of(context).colorScheme.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('Archived Chats',
             style: TextStyle(
-                color: AppColors.primaryLight, fontWeight: FontWeight.bold)),
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: ListenableBuilder(

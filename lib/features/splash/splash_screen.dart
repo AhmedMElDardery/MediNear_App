@@ -41,11 +41,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF121212) : AppColors.backgroundLight,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: FadeTransition(
           opacity: _fade,
@@ -62,7 +59,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 Text(
                   'MediNear Pharmacies',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: isDark ? Colors.white : AppColors.primaryLight,
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,

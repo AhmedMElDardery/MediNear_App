@@ -26,7 +26,7 @@ class PremiumProfileGroup extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+                color: theme.textTheme.bodySmall?.color,
                 letterSpacing: 1.2,
               ),
             ),
@@ -35,12 +35,10 @@ class PremiumProfileGroup extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(bottom: 24),
           decoration: BoxDecoration(
-            color: isDark ? theme.cardColor : Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-                color: isDark
-                    ? theme.dividerColor.withValues(alpha: 0.1)
-                    : Colors.grey.shade100),
+                color: theme.dividerColor.withValues(alpha: 0.15)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isDark ? 0.05 : 0.02),
@@ -58,9 +56,7 @@ class PremiumProfileGroup extends StatelessWidget {
                     height: 1,
                     thickness: 1,
                     indent: 64,
-                    color: isDark
-                        ? theme.dividerColor.withValues(alpha: 0.1)
-                        : Colors.grey.shade100,
+                    color: theme.dividerColor.withValues(alpha: 0.15),
                   ),
               ],
             ],
@@ -137,10 +133,7 @@ class PremiumProfileTile extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: isDestructive
                             ? const Color(0xFFEF4444)
-                            : (isDark
-                                ? theme.textTheme.bodyLarge?.color ??
-                                    Colors.white
-                                : const Color(0xFF1E293B)),
+                            : theme.textTheme.bodyLarge?.color,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -150,9 +143,7 @@ class PremiumProfileTile extends StatelessWidget {
                         subtitle!,
                         style: TextStyle(
                           fontSize: 13,
-                          color: isDark
-                              ? Colors.grey.shade400
-                              : Colors.grey.shade500,
+                          color: theme.textTheme.bodySmall?.color,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -163,8 +154,8 @@ class PremiumProfileTile extends StatelessWidget {
               ),
               trailing ??
                   Icon(
-                    Icons.chevron_right_rounded,
-                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                    Directionality.of(context) == TextDirection.rtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
+                    color: theme.unselectedWidgetColor,
                     size: 22,
                   ),
             ],

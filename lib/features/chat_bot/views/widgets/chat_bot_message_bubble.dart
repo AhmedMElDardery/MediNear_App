@@ -4,7 +4,6 @@ import 'package:intl/intl.dart' hide TextDirection;
 // ✅ مفيش أي استدعاء لمكتبة الماركداون هنا خالص
 import '../../provider/chat_bot_provider.dart';
 import '../../data/models/chat_bot_model.dart';
-import 'chat_bot_styles.dart';
 import 'chat_bot_components.dart';
 
 class ChatBotMessageBubble extends StatelessWidget {
@@ -31,7 +30,7 @@ class ChatBotMessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (isBot) ...[
-            _buildGlowAvatar(),
+            _buildGlowAvatar(context),
             const SizedBox(width: 4),
           ],
           Flexible(
@@ -59,13 +58,13 @@ class ChatBotMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildGlowAvatar() {
+  Widget _buildGlowAvatar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: ChatBotStyles.g1.withValues(alpha: 0.6),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
             blurRadius: 15,
             spreadRadius: 2,
           ),
@@ -90,8 +89,8 @@ class ChatBotMessageBubble extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       decoration: BoxDecoration(
         color: isBot
-            ? (isDark ? const Color(0xFF2C2C2E) : ChatBotStyles.botBubble)
-            : (isDark ? const Color(0xFF1A7A60) : Colors.white),
+            ? Theme.of(context).cardColor
+            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(20),
           topRight: const Radius.circular(20),
@@ -100,11 +99,11 @@ class ChatBotMessageBubble extends StatelessWidget {
           bottomRight:
               isBot ? const Radius.circular(20) : const Radius.circular(4),
         ),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0D000000),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -124,7 +123,7 @@ class ChatBotMessageBubble extends StatelessWidget {
                 : Text(
                     msg.text,
                     style: TextStyle(
-                      color: isDark ? Colors.white : const Color(0xFF2D3132),
+                      color: isBot ? Theme.of(context).textTheme.bodyLarge?.color : Colors.white,
                       fontSize: 15.5,
                       height: 1.4,
                       fontWeight: FontWeight.w500,
@@ -137,8 +136,8 @@ class ChatBotMessageBubble extends StatelessWidget {
                 time,
                 style: TextStyle(
                   color: isBot
-                      ? ChatBotStyles.g3.withValues(alpha: 0.7)
-                      : (isDark ? Colors.white70 : Colors.black26),
+                      ? Theme.of(context).textTheme.bodyMedium?.color
+                      : Colors.white70,
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
                 ),
@@ -157,11 +156,11 @@ class ChatBotMessageBubble extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[800] : Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           shape: BoxShape.circle,
-          boxShadow: const [BoxShadow(color: Color(0x26000000), blurRadius: 8)],
+          boxShadow: [BoxShadow(color: Theme.of(context).shadowColor.withValues(alpha: 0.15), blurRadius: 8)],
           border: Border.all(
-              color: isDark ? const Color(0xFF444444) : const Color(0xFFF0F4F4),
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
               width: 1.5),
         ),
         child: Text(msg.reaction!, style: const TextStyle(fontSize: 12)),
@@ -182,9 +181,7 @@ class ChatBotMessageBubble extends StatelessWidget {
           child: Container(
             height: 110,
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.grey[900]!.withValues(alpha: 0.85)
-                  : Colors.white.withValues(alpha: 0.85),
+              color: Theme.of(context).cardColor.withValues(alpha: 0.85),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(30)),
             ),

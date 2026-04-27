@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
+import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/routes/routes.dart';
@@ -56,7 +58,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
         child: Container(
           width: 150,
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E272E) : Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
@@ -82,9 +84,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                     child: Container(
                       height: 105,
                       width: double.infinity,
-                      color: isDark
-                          ? const Color(0xFF121212)
-                          : const Color(0xFFF0FBF5),
+                      color: Theme.of(context).cardColor,
                       child: widget.medicine.imageUrl.isNotEmpty
                           ? (widget.medicine.imageUrl.startsWith('http')
                               ? CachedNetworkImage(
@@ -97,20 +97,16 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                                   memCacheWidth: 200,
                                   placeholder: (context, url) =>
                                       Shimmer.fromColors(
-                                    baseColor: isDark
-                                        ? Colors.grey.shade800
-                                        : Colors.grey.shade300,
-                                    highlightColor: isDark
-                                        ? Colors.grey.shade700
-                                        : Colors.grey.shade100,
+                                    baseColor: Theme.of(context).dividerColor,
+                                    highlightColor: Theme.of(context).cardColor,
                                     child: Container(color: Colors.white),
                                   ),
                                   errorWidget: (context, url, error) =>
-                                      const Center(
+                                      Center(
                                     child: Icon(
                                       Icons.medication_rounded,
                                       size: 45,
-                                      color: Color(0xFF00965E),
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 )
@@ -120,19 +116,19 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                                   width: double.infinity,
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) =>
-                                      const Center(
+                                      Center(
                                     child: Icon(
                                       Icons.medication_rounded,
                                       size: 45,
-                                      color: Color(0xFF00965E),
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 ))
-                          : const Center(
+                          : Center(
                               child: Icon(
                                 Icons.medication_rounded,
                                 size: 45,
-                                color: Color(0xFF00965E),
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                     ),
@@ -145,11 +141,11 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00965E),
+                        color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        "In Stock",
+                      child:  Text(
+                        AppLocalizations.of(context)!.translate("in_stock"),
                         style: TextStyle(
                           fontSize: 9,
                           color: Colors.white,
@@ -174,7 +170,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                        color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                         height: 1.3,
                       ),
                     ),
@@ -186,9 +182,9 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${widget.medicine.price.toStringAsFixed(0)} EGP",
-                          style: const TextStyle(
-                            color: Color(0xFF00965E),
+                          "${widget.medicine.price.toStringAsFixed(0)} ${context.tr("currency_egp")}",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w800,
                             fontSize: 13.5,
                           ),
@@ -197,13 +193,13 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                           width: 28,
                           height: 28,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF00965E), Color(0xFF00C47A)],
+                            gradient: LinearGradient(
+                              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                             ),
                             borderRadius: BorderRadius.circular(9),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF00965E)
+                                color: Theme.of(context).colorScheme.primary
                                     .withValues(alpha: 0.3),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 import '../../data/models/order_model.dart';
 
 class OrderHeaderCard extends StatelessWidget {
@@ -23,8 +22,7 @@ class OrderHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     // بنحدد اللون هنا بناءً على حالة الطلب
@@ -48,9 +46,9 @@ class OrderHeaderCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
-                child: const Icon(Icons.local_pharmacy,
-                    color: AppColors.primaryLight, size: 30),
+                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                child: Icon(Icons.local_pharmacy,
+                    color: Theme.of(context).colorScheme.primary, size: 30),
               ),
               const SizedBox(width: 12),
               Expanded(

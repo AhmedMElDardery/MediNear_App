@@ -11,6 +11,7 @@ import '../manager/pharmacy_provider.dart';
 import '../widgets/pharmacy_cards.dart';
 import '../../../../features/saved_items/presentation/manager/saved_items_provider.dart';
 import '../../../../core/widgets/app_shimmer.dart';
+import 'package:medinear_app/core/theme/app_colors.dart';
 
 class PharmacyScreen extends ConsumerStatefulWidget {
   final String pharmacyId; // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
@@ -40,7 +41,6 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
   Timer? _timer;
   int _seconds = 10 * 3600 + 20 * 60 + 29; // 10:20:29
 
-  static const _green = Color(0xFF00965E);
   static const _greenLight = Color(0xFFE0F5F2);
 
   @override
@@ -92,7 +92,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Consumer(
           builder: (context, ref, _) {
             final provider = ref.watch(pharmacyProvider);
@@ -215,9 +215,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
   // ──────────────────────────────────────────────────────────
   Widget _buildHeader(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00C47A), _green],
+          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primaryContainer],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -296,17 +296,17 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                               fadeInDuration: Duration.zero,
                               fadeOutDuration: Duration.zero,
                               memCacheWidth: 160,
-                              placeholder: (context, url) => const Icon(
+                              placeholder: (context, url) => Icon(
                                   Icons.local_pharmacy_rounded,
                                   size: 42,
-                                  color: _green),
-                              errorWidget: (context, url, error) => const Icon(
+                                  color: Theme.of(context).colorScheme.primary),
+                              errorWidget: (context, url, error) => Icon(
                                   Icons.local_pharmacy_rounded,
                                   size: 42,
-                                  color: _green),
+                                  color: Theme.of(context).colorScheme.primary),
                             )
-                          : const Icon(Icons.local_pharmacy_rounded,
-                              size: 42, color: _green),
+                          : Icon(Icons.local_pharmacy_rounded,
+                              size: 42, color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -476,7 +476,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
           hintStyle: TextStyle(
               color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
               fontSize: 14),
-          prefixIcon: const Icon(Icons.search_rounded, color: _green, size: 22),
+          prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 22),
           suffixIcon: _searchController.text.isNotEmpty
               ? GestureDetector(
                   onTap: () {
@@ -489,7 +489,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                 )
               : null,
           filled: true,
-          fillColor: isDark ? Colors.grey.shade900 : const Color(0xFFF5F7FA),
+          fillColor: Theme.of(context).cardColor,
           contentPadding:
               const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           border: OutlineInputBorder(
@@ -503,7 +503,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: _green, width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
           ),
         ),
       ),
@@ -522,10 +522,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: _green,
-        unselectedLabelColor:
-            isDark ? Colors.grey.shade400 : Colors.grey.shade500,
-        indicatorColor: _green,
+        labelColor: Theme.of(context).colorScheme.primary,
+        unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+        indicatorColor: Theme.of(context).colorScheme.primary,
         indicatorWeight: 3,
         labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
         unselectedLabelStyle:
@@ -570,22 +569,21 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
             Container(
               width: 76,
               height: 76,
-              decoration: const BoxDecoration(
-                  color: _greenLight, shape: BoxShape.circle),
-              child: Icon(emptyIcon, size: 34, color: _green),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
+              child: Icon(emptyIcon, size: 34, color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(height: 14),
             Text(emptyMsg,
                 style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : const Color(0xFF444444))),
+                    color: Theme.of(context).textTheme.bodyLarge?.color)),
             const SizedBox(height: 4),
             Text('Try adjusting your search',
                 style: TextStyle(
                     fontSize: 13,
-                    color:
-                        isDark ? Colors.grey.shade500 : Colors.grey.shade400)),
+                    color: Theme.of(context).textTheme.bodyMedium?.color)),
           ],
         ),
       );
@@ -608,7 +606,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
             Expanded(child: Text('$name added to cart')),
           ],
         ),
-        backgroundColor: _green,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),

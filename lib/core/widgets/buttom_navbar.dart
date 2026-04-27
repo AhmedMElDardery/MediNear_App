@@ -16,11 +16,11 @@ class CustomBottomNavBar extends ConsumerWidget {
 
     return BottomAppBar(
       height: 75,
-      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      color: Theme.of(context).cardColor,
       shape: const CircularNotchedRectangle(),
       notchMargin: 10,
       elevation: 20,
-      shadowColor: isDark ? Colors.black : Colors.black45,
+      shadowColor: Theme.of(context).shadowColor,
       padding: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: GestureDetector(
@@ -50,7 +50,7 @@ class CustomBottomNavBar extends ConsumerWidget {
   ) {
     final bool isSelected = selectedIndex == index;
 
-    const Color mainGreen = Color(0xFF00965E);
+    Color mainGreen = Theme.of(context).colorScheme.primary;
 
     return BouncingIconButton(
       onTap: () => nav.changeIndex(index),
@@ -75,7 +75,7 @@ class CustomBottomNavBar extends ConsumerWidget {
                 icon,
                 color: isSelected
                     ? mainGreen
-                    : (isDark ? Colors.grey[500] : Colors.grey[400]),
+                    : Theme.of(context).unselectedWidgetColor,
                 size: 24,
               ),
             ),
@@ -85,7 +85,7 @@ class CustomBottomNavBar extends ConsumerWidget {
               style: TextStyle(
                 color: isSelected
                     ? mainGreen
-                    : (isDark ? Colors.grey[500] : Colors.grey[400]),
+                    : Theme.of(context).unselectedWidgetColor,
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
               ),

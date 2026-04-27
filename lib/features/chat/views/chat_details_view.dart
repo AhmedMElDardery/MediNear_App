@@ -37,7 +37,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
 
       appBar: AppBar(
         // 🚀 لون الهيدر: أسود شيك في الدارك، وأبيض ناصع في اللايت عشان يبرز خط الليزر
-        backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
+        backgroundColor: isDarkMode ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
         elevation: 0, // بنلغي الظل العادي عشان هنعمل ظل "ليزر"
         leading: BackButton(
           color: Theme.of(context).textTheme.bodyMedium?.color,

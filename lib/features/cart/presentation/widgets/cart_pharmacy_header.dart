@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medinear_app/core/theme/app_colors.dart';
 
 class CartPharmacyHeader extends StatelessWidget {
   final String pharmacyName;
@@ -15,8 +14,7 @@ class CartPharmacyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = Theme.of(context).cardColor;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -34,8 +32,8 @@ class CartPharmacyHeader extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
-            child: const Icon(Icons.store, color: AppColors.primaryLight),
+            backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            child: Icon(Icons.store, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -44,15 +42,15 @@ class CartPharmacyHeader extends StatelessWidget {
               children: [
                 Text(
                   pharmacyName,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                      color: AppColors.primaryLight),
+                      color: Theme.of(context).colorScheme.primary),
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.location_on,
-                        size: 14, color: AppColors.primaryLight),
+                    Icon(Icons.location_on,
+                        size: 14, color: Theme.of(context).colorScheme.primary),
                     Text(location,
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 13)),
@@ -64,7 +62,7 @@ class CartPharmacyHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(

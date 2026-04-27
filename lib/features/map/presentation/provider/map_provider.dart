@@ -246,20 +246,20 @@ class MapProvider extends ChangeNotifier {
   }
 
   // مخرجات الخريطة (Markers & Circles)
-  Set<Marker> get markers => pharmacies
+  Set<Marker> getMarkers(Color primaryColor) => pharmacies
       .map((p) => Marker(
             markerId: MarkerId(p.id),
             position: LatLng(p.lat, p.lng),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 p.id == selectedPharmacyId
-                    ? BitmapDescriptor.hueGreen
+                    ? BitmapDescriptor.hueViolet // Or keep Green for selected? 
                     : BitmapDescriptor.hueRed),
             infoWindow: InfoWindow(title: p.name, snippet: p.address),
             onTap: () => selectPharmacy(p.id),
           ))
       .toSet();
 
-  Set<Circle> get circles {
+  Set<Circle> getCircles(Color primaryColor) {
     if (selectedPharmacyId == null || pharmacies.isEmpty) return {};
     try {
       final p =
@@ -270,8 +270,8 @@ class MapProvider extends ChangeNotifier {
           center: LatLng(p.lat, p.lng),
           radius: 400, // مسافة مناسبة بصرياً
           strokeWidth: 2,
-          strokeColor: const Color(0xFF1E824C),
-          fillColor: const Color(0xFF1E824C).withValues(alpha: 0.15),
+          strokeColor: primaryColor,
+          fillColor: primaryColor.withValues(alpha: 0.15),
         )
       };
     } catch (e) {
