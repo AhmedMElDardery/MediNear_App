@@ -13,11 +13,32 @@ class CartProvider extends ChangeNotifier {
   CartPharmacyDetailsModel? _currentPharmacyDetails;
   bool _isLoadingPharmacyItems = false;
 
+  // Local state to keep track of items added during this session for optimistic UI in Home Screen
+  final Set<String> _localCartItems = {};
+
   List<CartPharmacyModel> get cartPharmacies => _cartPharmacies;
   bool get isLoadingPharmacies => _isLoadingPharmacies;
 
   CartPharmacyDetailsModel? get currentPharmacyDetails => _currentPharmacyDetails;
   bool get isLoadingPharmacyItems => _isLoadingPharmacyItems;
+
+  bool isItemInLocalCart(String id) => _localCartItems.contains(id);
+
+  void toggleLocalItem(String id) {
+    if (_localCartItems.contains(id)) {
+      _localCartItems.remove(id);
+    } else {
+      _localCartItems.add(id);
+    }
+    notifyListeners();
+  }
+
+  void removeFromLocalCart(String id) {
+    if (_localCartItems.contains(id)) {
+      _localCartItems.remove(id);
+      notifyListeners();
+    }
+  }
 
   Future<void> loadCartPharmacies() async {
     _isLoadingPharmacies = true;
@@ -96,6 +117,7 @@ class CartProvider extends ChangeNotifier {
     
     final oldItems = List<CartItemModel>.from(_currentPharmacyDetails!.items);
     _currentPharmacyDetails!.items.removeWhere((e) => e.cartItemId == item.cartItemId);
+    _localCartItems.remove(item.medicine.id.toString()); // Remove from local UI state
     _recalculateTotal();
     notifyListeners();
     

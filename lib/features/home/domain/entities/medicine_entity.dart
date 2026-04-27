@@ -11,6 +11,8 @@ class MedicineEntity {
   final String? packageSize;
   final String? usageInstructions;
   final List<String>? gallery;
+  final String? pharmacyId;
+  final String? pharmacyName;
 
   MedicineEntity({
     required this.id,
@@ -23,5 +25,7 @@ class MedicineEntity {
     this.packageSize,
     this.usageInstructions,
     this.gallery,
+    this.pharmacyId,
+    this.pharmacyName,
   });
 }

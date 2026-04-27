@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
+import 'chat_bot_styles.dart';
 
 class GlassBtn extends StatelessWidget {
   final IconData icon;
@@ -45,8 +47,8 @@ class AvatarDot extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: isBot
-              ? [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary]
-              : [Theme.of(context).colorScheme.primary.withValues(alpha: 0.8), Theme.of(context).colorScheme.primary],
+              ? [ChatBotStyles.g1, ChatBotStyles.g3]
+              : [AppColors.primaryLight, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -80,7 +82,7 @@ class SugChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withAlpha(180),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(30), width: 1),
+        border: Border.all(color: ChatBotStyles.g1.withAlpha(30), width: 1),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
@@ -95,8 +97,8 @@ class SugChip extends StatelessWidget {
         textDirection: TextDirection.ltr,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.bodyLarge?.color,
+        style: const TextStyle(
+          color: ChatBotStyles.sugText,
           fontSize: 13,
           fontWeight: FontWeight.w700,
         ),
@@ -116,9 +118,9 @@ class SugChipSolid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       constraints: const BoxConstraints(maxWidth: 200),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme.of(context).brightness == Brightness.dark ? AppColors.surfaceDarkVariant : AppColors.surfaceLightVariant,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(80), width: 1),
+        border: Border.all(color: ChatBotStyles.g1.withAlpha(80), width: 1),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
@@ -133,8 +135,8 @@ class SugChipSolid extends StatelessWidget {
         textDirection: TextDirection.ltr,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.bodyLarge?.color,
+        style: const TextStyle(
+          color: ChatBotStyles.sugText,
           fontSize: 12,
           fontWeight: FontWeight.w700,
         ),
@@ -179,10 +181,10 @@ class _PulsingDotState extends ConsumerState<PulsingDot>
         child: Container(
           width: 7,
           height: 7,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
+          decoration: const BoxDecoration(
+            color: AppColors.warning,
             shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.secondary.withAlpha(170), blurRadius: 5)],
+            boxShadow: [BoxShadow(color: AppColors.warning, blurRadius: 5)],
           ),
         ),
       ),
@@ -242,7 +244,9 @@ class TypewriterTextState extends ConsumerState<TypewriterText>
         builder: (_, __) => Text(
           _cleanText.substring(0, _n.value),
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyLarge?.color,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.textPrimaryDark
+                : AppColors.textPrimaryLight,
             fontSize: 15.5,
             height: 1.4,
             fontWeight: FontWeight.w500, // ✅ وزن ثابت ومريح للعين لكل الكلام

@@ -7,6 +7,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/routes/routes.dart';
 import '../../domain/entities/medicine_entity.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
+import 'package:medinear_app/features/cart/data/datasources/cart_remote_data_source.dart';
+import 'package:medinear_app/features/saved_items/data/datasources/saved_items_remote_data_source.dart';
 
 class MedicineCard extends ConsumerStatefulWidget {
   final MedicineEntity medicine;
@@ -21,6 +24,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
+  bool? _localIsSaved;
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isInCart = ref.watch(cartProvider).isItemInLocalCart(widget.medicine.id);
 
     return GestureDetector(
       onTap: () => context.push(AppRoutes.medicineDetails, extra: widget.medicine),
@@ -154,6 +159,66 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                       ),
                     ),
                   ),
+                  
+                  // Save Button
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final isSavedFromProvider = ref.watch(savedItemsProvider).medications.any((m) => m.id == widget.medicine.id && m.isSaved);
+                        final isSaved = _localIsSaved ?? isSavedFromProvider;
+                        
+                        return GestureDetector(
+                          onTap: () async {
+                            setState(() => _localIsSaved = !isSaved);
+                            
+                            final mIdStr = widget.medicine.id;
+                            final pIdStr = widget.medicine.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
+                            int pId = int.tryParse(pIdStr) ?? 0;
+                            if (pId == 0) pId = 1;
+                            
+                            final response = await SavedItemsRemoteDataSource().toggleSaveMedicine(
+                              mIdStr,
+                              pId.toString()
+                            );
+                            
+                            if (context.mounted) {
+                              if (response == true) {
+                                ref.read(savedItemsProvider).fetchSavedItems(silent: true).then((_) {
+                                  if (mounted) setState(() => _localIsSaved = null); // Reset local override once provider is synced
+                                });
+                              } else {
+                                setState(() => _localIsSaved = null); // Revert
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Failed to save item: $response"), backgroundColor: Colors.red),
+                                );
+                              }
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: isDark ? Colors.black45 : Colors.white70,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+                              size: 16,
+                              color: isSaved ? Theme.of(context).colorScheme.primary : (isDark ? Colors.white70 : Colors.black54),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
 
@@ -163,15 +228,18 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     /// Name
-                    Text(
-                      widget.medicine.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
-                        height: 1.3,
+                    SizedBox(
+                      height: 34,
+                      child: Text(
+                        widget.medicine.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                          height: 1.3,
+                        ),
                       ),
                     ),
 
@@ -189,25 +257,65 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                             fontSize: 13.5,
                           ),
                         ),
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+                        GestureDetector(
+                          onTap: () async {
+                            // Optimistic update
+                            ref.read(cartProvider).toggleLocalItem(widget.medicine.id);
+                            
+                            final mId = int.tryParse(widget.medicine.id) ?? 0;
+                            final pIdStr = widget.medicine.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
+                            int pId = int.tryParse(pIdStr) ?? 0;
+                            
+                            if (pId == 0) {
+                              pId = 1; // Fallback to pharmacy 1 if not specified to allow adding to cart
+                            }
+                            
+                            bool success = await CartRemoteDataSource().toggleCartItem(
+                              medicineId: mId,
+                              pharmacyId: pId,
+                              quantity: 1, // API usually toggles if passed 1
+                            );
+                            
+                            if (context.mounted) {
+                              if (success) {
+                                ref.read(cartProvider).loadCartPharmacies();
+                                // Silently add/remove without showing a SnackBar
+                              } else {
+                                // Revert state
+                                ref.read(cartProvider).toggleLocalItem(widget.medicine.id);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Failed to update cart"), backgroundColor: Colors.red),
+                                );
+                              }
+                            }
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              gradient: isInCart
+                                  ? LinearGradient(
+                                      colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+                                    )
+                                  : null,
+                              color: isInCart ? null : (isDark ? Colors.black45 : Colors.white),
+                              borderRadius: BorderRadius.circular(10),
+                              border: isInCart ? null : Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1.5),
+                              boxShadow: isInCart ? [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ] : [],
                             ),
-                            borderRadius: BorderRadius.circular(9),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.primary
-                                    .withValues(alpha: 0.3),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                            child: Icon(
+                                isInCart ? Icons.shopping_cart_rounded : Icons.shopping_cart_outlined,
+                                size: 16, 
+                                color: isInCart ? Colors.white : Theme.of(context).colorScheme.primary,
+                            ),
                           ),
-                          child: const Icon(Icons.add_rounded,
-                              size: 18, color: Colors.white),
                         ),
                       ],
                     ),

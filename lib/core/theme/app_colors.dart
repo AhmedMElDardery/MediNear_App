@@ -5,9 +5,9 @@ class AppColors {
   // الألوان الدلالية - الوضع الفاتح (Light Theme)
   // -----------------------------------------
   // لون الهوية الرئيسي (البنفسجي) - يُستخدم في الأزرار والعناوين الرئيسية
-  static const Color primaryLight = Color(0xFF321D75); 
+  static const Color primaryLight = Color(0xFF00965E); 
   // لون الهوية الثانوي - يُستخدم للتنويع البصري أو العناصر الأقل أهمية
-  static const Color secondaryLight = Color(0xFF321D75);
+  static const Color secondaryLight = Color(0xFF00965E);
   // لون الخلفية الأساسي للتطبيق في الوضع الفاتح
   static const Color backgroundLight = Color(0xFFFFFFFF);
   // لون أسطح الكروت (Cards) والمساحات البيضاء
@@ -29,9 +29,9 @@ class AppColors {
   // الألوان الدلالية - الوضع الداكن (Dark Theme)
   // -----------------------------------------
   // لون الهوية الرئيسي في الوضع الداكن
-  static const Color primaryDark = Color(0xFF321D75); 
+  static const Color primaryDark = Color(0xFF00965E); 
   // لون الهوية الثانوي في الوضع الداكن
-  static const Color secondaryDark = Color(0xFF0D1A5C);
+  static const Color secondaryDark = Color(0xFF00965E);
   // لون الخلفية الأساسي في الوضع الداكن
   static const Color backgroundDark = Color(0xFF121212);
   // لون أسطح الكروت في الوضع الداكن

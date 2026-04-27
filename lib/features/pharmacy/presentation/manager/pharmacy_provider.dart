@@ -20,6 +20,7 @@ class PharmacyProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
   bool get isPharmacySaved => _isPharmacySaved; // 🚀 Getter عشان الـ UI يقراه
+  String get currentPharmacyId => _currentPharmacyId;
 
   // 1. جلب البيانات من الـ API
   Future<void> fetchPharmacyData(String pharmacyId,

@@ -1,20 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
+import 'package:medinear_app/core/di/global_providers.dart';
+import 'package:medinear_app/features/cart/data/datasources/cart_remote_data_source.dart';
+import 'package:medinear_app/features/saved_items/data/datasources/saved_items_remote_data_source.dart';
+import 'pharmacy_screen.dart';
 
-class MedicineDetailsScreen extends StatefulWidget {
+class MedicineDetailsScreen extends ConsumerStatefulWidget {
   final MedicineEntity medicine;
 
   const MedicineDetailsScreen({super.key, required this.medicine});
 
   @override
-  State<MedicineDetailsScreen> createState() => _MedicineDetailsScreenState();
+  ConsumerState<MedicineDetailsScreen> createState() => _MedicineDetailsScreenState();
 }
 
-class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
+class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
   int _currentImageIndex = 0;
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final isSaved = ref.read(savedItemsProvider).medications.any(
+          (m) => m.id == widget.medicine.id && m.isSaved);
+      setState(() {
+        _isFavorite = isSaved;
+      });
+    });
+  }
+
+  Map<String, String> _getPharmacyData(BuildContext context, WidgetRef ref) {
+    final med = widget.medicine;
+    
+    String pId = med.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
+    if (pId.isEmpty || pId == "0") pId = "1";
+    
+    String pName = "صيدلية ميدينير المركزية";
+    String pImage = "";
+    
+    if (med.pharmacyName != null && med.pharmacyName!.isNotEmpty) {
+      pName = med.pharmacyName!;
+    }
+    
+    if (pId != "0") {
+      try {
+        final pharmacies = ref.read(homeProvider).pharmacies;
+        final p = pharmacies.firstWhere((element) => element.id.toString() == pId);
+        pName = p.name;
+        pImage = p.image;
+      } catch (e) {}
+    }
+    
+    return {
+      "id": pId,
+      "name": pName,
+      "image": pImage,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,35 +133,111 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                         ),
                       ),
                       
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       
-                      // Properties Unified Card
-                      Container(
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
+                      // Pharmacy Name Card
+                      GestureDetector(
+                        onTap: () {
+                          final pData = _getPharmacyData(context, ref);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PharmacyScreen(
+                                pharmacyId: pData['id']!,
+                                pharmacyName: pData['name']!,
+                                doctorName: pData['name']!,
+                                pharmacyImage: pData['image']!,
+                              ),
                             ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Column(
-                          children: [
-                            if (med.composition != null)
-                              _buildPropertyRow(context.tr("composition"), med.composition!, Icons.science_outlined, isDark, true),
-                            if (med.dosageForm != null)
-                              _buildPropertyRow(context.tr("dosageForm"), med.dosageForm!, Icons.medication_outlined, isDark, true),
-                            if (med.packageSize != null)
-                              _buildPropertyRow(context.tr("package"), med.packageSize!, Icons.inventory_2_outlined, isDark, true),
-                            if (med.usageInstructions != null)
-                              _buildPropertyRow(context.tr("usage"), med.usageInstructions!, Icons.assignment_outlined, isDark, false),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 24).copyWith(bottom: 28),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: isDark ? Colors.transparent : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: isDark ? Colors.black26 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
+                                blurRadius: 15,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Builder(
+                                builder: (context) {
+                                  final pImage = _getPharmacyData(context, ref)['image'];
+                                  if (pImage != null && pImage.isNotEmpty) {
+                                    return Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
+                                        image: DecorationImage(
+                                          image: CachedNetworkImageProvider(pImage),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    return Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Icon(Icons.storefront_rounded, size: 24, color: Theme.of(context).colorScheme.primary),
+                                    );
+                                  }
+                                }
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Sold by",
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _getPharmacyData(context, ref)['name'] ?? 'Local Pharmacy',
+                                      style: TextStyle(
+                                        fontSize: 15.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: isDark ? Colors.white : Colors.black87,
+                                        letterSpacing: -0.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.grey.shade400),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                      
+
                     ],
                   ),
                 ),
@@ -134,7 +257,40 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildIconButton(Icons.arrow_back_ios_new_rounded, () => context.pop(), isDark),
-                    _buildIconButton(Icons.favorite_border_rounded, () {}, isDark),
+                    _buildIconButton(
+                      _isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, 
+                      () async {
+                        setState(() {
+                          _isFavorite = !_isFavorite;
+                        });
+                        
+                        // Call API in background
+                        final pIdStr = widget.medicine.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
+                        final pId = pIdStr.isNotEmpty ? pIdStr : '0';
+                        
+                        try {
+                          bool success = await SavedItemsRemoteDataSource().toggleSaveMedicine(widget.medicine.id, pId);
+                          if (!success && context.mounted) {
+                             // Revert UI if API fails
+                             setState(() {
+                               _isFavorite = !_isFavorite;
+                             });
+                          } else {
+                            if (context.mounted) {
+                              ref.read(savedItemsProvider).fetchSavedItems(silent: true);
+                            }
+                          }
+                        } catch(e) {
+                          if (context.mounted) {
+                             setState(() {
+                               _isFavorite = !_isFavorite;
+                             });
+                          }
+                        }
+                      }, 
+                      isDark,
+                      color: _isFavorite ? Theme.of(context).colorScheme.primary : null,
+                    ),
                   ],
                 ),
               ),
@@ -223,7 +379,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
     );
   }
 
-  Widget _buildIconButton(IconData icon, VoidCallback onTap, bool isDark) {
+  Widget _buildIconButton(IconData icon, VoidCallback onTap, bool isDark, {Color? color}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -239,7 +395,7 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
             ),
           ],
         ),
-        child: Icon(icon, color: isDark ? Colors.white : Colors.black87, size: 22),
+        child: Icon(icon, color: color ?? (isDark ? Colors.white : Colors.black87), size: 22),
       ),
     );
   }
@@ -304,78 +460,178 @@ class _MedicineDetailsScreenState extends State<MedicineDetailsScreen> {
 
   Widget _buildBottomBar(double price, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24), // Floating effect padding
+      color: Colors.transparent,
       child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.tr("price"),
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "${price.toStringAsFixed(0)} ${context.tr("egp")}",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.grey.shade200,
+              width: 1.5,
             ),
-            const SizedBox(width: 32),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? Colors.black54 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                blurRadius: 25,
+                spreadRadius: -5,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Container(
+                  height: 56,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
-                ),
-                child:  Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      context.tr("addToCart"),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final mId = int.tryParse(widget.medicine.id) ?? 0;
+                      final pIdStr = widget.medicine.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
+                      int pId = int.tryParse(pIdStr) ?? 0;
+                      
+                      if (pId == 0) {
+                        pId = 1; // Fallback to pharmacy 1 if not specified to allow adding to cart
+                      }
+
+                      // 🚀 Add to Cart Logic
+                      bool success = await CartRemoteDataSource().toggleCartItem(
+                        medicineId: mId,
+                        pharmacyId: pId,
+                        quantity: 1,
+                      );
+
+                      if (context.mounted) {
+                        if (success) {
+                          ref.read(cartProvider).loadCartPharmacies();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      '${widget.medicine.name} added to cart',
+                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              margin: const EdgeInsets.all(20),
+                              duration: const Duration(seconds: 2),
+                              elevation: 10,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Row(
+                                children: [
+                                  Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
+                                  SizedBox(width: 10),
+                                  Text("Failed to add to cart", style: TextStyle(fontWeight: FontWeight.w600)),
+                                ],
+                              ), 
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              margin: const EdgeInsets.all(20),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          context.tr("addToCart"),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 24),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    context.tr("price"),
+                    style: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        price.toStringAsFixed(0),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          height: 1.1,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 3),
+                        child: Text(
+                          context.tr("egp"),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

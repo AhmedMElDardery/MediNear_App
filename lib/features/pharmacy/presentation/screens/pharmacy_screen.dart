@@ -144,6 +144,8 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                                             name: pharmacyMed.name,
                                             imageUrl: pharmacyMed.image,
                                             price: pharmacyMed.price,
+                                            pharmacyId: widget.pharmacyId,
+                                            pharmacyName: widget.pharmacyName,
                                           );
                                           context.push(AppRoutes.medicineDetails, extra: medEntity);
                                         },

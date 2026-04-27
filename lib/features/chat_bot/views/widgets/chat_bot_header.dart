@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../provider/chat_bot_provider.dart';
+import 'chat_bot_styles.dart';
 import 'chat_bot_components.dart';
 
 class ChatBotHeader extends StatelessWidget {
@@ -14,8 +15,8 @@ class ChatBotHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(10, top + 10, 10, 14),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+        gradient: const LinearGradient(
+          colors: [ChatBotStyles.hTop, ChatBotStyles.hMid, ChatBotStyles.hBot],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -25,7 +26,7 @@ class ChatBotHeader extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withAlpha(55),
+            color: ChatBotStyles.g2.withAlpha(55),
             blurRadius: 22,
             offset: const Offset(0, 8),
           ),
@@ -106,11 +107,11 @@ class _StaticOnlineDot extends StatelessWidget {
     return Container(
       width: 7,
       height: 7,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+      decoration: const BoxDecoration(
+        color: Color(0xFF6EFFD8),
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Theme.of(context).colorScheme.secondary.withAlpha(136), blurRadius: 5),
+          BoxShadow(color: Color(0x886EFFD8), blurRadius: 5),
         ],
       ),
     );

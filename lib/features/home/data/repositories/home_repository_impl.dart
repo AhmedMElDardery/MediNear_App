@@ -105,6 +105,8 @@ class HomeRepositoryImpl implements HomeRepository {
         packageSize: e["package_size"]?.toString() ?? e["package"]?.toString() ?? "20 قرص",
         usageInstructions: e["usage_instructions"]?.toString() ?? e["usage"]?.toString() ?? "قرص كل 6 ساعات عند الحاجة.\nلا تتجاوز 8 أقراص في اليوم.",
         gallery: e["gallery"] != null ? List<String>.from(e["gallery"]) : (fullImg.isNotEmpty ? [fullImg, fullImg, fullImg] : []),
+        pharmacyId: e["pivot"] != null ? e["pivot"]["pharmacy_id"]?.toString() : (e["pharmacy_id"]?.toString() ?? (e["pharmacy"] != null ? e["pharmacy"]["id"]?.toString() : null)),
+        pharmacyName: e["pharmacy_name"]?.toString() ?? (e["pharmacy"] != null ? e["pharmacy"]["name"]?.toString() : null),
       );
     }).toList();
   }

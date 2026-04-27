@@ -9,7 +9,6 @@ import 'package:medinear_app/features/home/presentation/widgets/ads_slider.dart'
 import 'package:medinear_app/features/home/presentation/widgets/home_header.dart';
 import 'package:medinear_app/features/home/presentation/widgets/medicine_card.dart';
 import 'package:medinear_app/features/home/presentation/widgets/pharmacy_card.dart';
-import 'package:medinear_app/features/home/presentation/widgets/search_bar.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 import 'package:medinear_app/features/profile/view_models/profile_provider.dart';
 import 'package:medinear_app/features/home/domain/entities/category_entity.dart';
@@ -159,16 +158,6 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               /// GREETING + USER INFO
               _buildGreetingSection(auth, profile, provider),
 
-              /// SEARCH BAR
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                child: SearchBarWidget(
-                  onSearch: (value) {
-                    ref.read(homeProvider).search(value);
-                  },
-                ),
-              ),
-
               /// QUICK STATS
               _buildQuickStats(provider),
 
@@ -312,10 +301,17 @@ class _HomeViewState extends ConsumerState<HomeScreen>
         auth.currentUser?.imageUrl;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(40),
+          onTap: () => ref.read(navigationProvider).changeIndex(4),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
           /// Avatar with border
           Container(
             decoration: BoxDecoration(
@@ -404,7 +400,10 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               ],
             ),
           ),
-        ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

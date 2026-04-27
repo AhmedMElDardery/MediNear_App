@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../provider/chat_bot_provider.dart';
+import '../../../../core/theme/app_colors.dart';
+import 'chat_bot_styles.dart';
 
 class ChatBotEmptyState extends StatelessWidget {
   final ChatBotProvider vm;
@@ -29,8 +31,8 @@ class ChatBotEmptyState extends StatelessWidget {
 
                 // Welcome Text
                 ShaderMask(
-                  shaderCallback: (r) => LinearGradient(
-                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+                  shaderCallback: (r) => const LinearGradient(
+                    colors: [ChatBotStyles.g2, ChatBotStyles.g1],
                   ).createShader(r),
                   child: const Text(
                     "Hello! How can I help you?",
@@ -51,7 +53,7 @@ class ChatBotEmptyState extends StatelessWidget {
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                    color: isDark ? Colors.white70 : ChatBotStyles.soft,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -92,10 +94,14 @@ class _SuggestionCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: isDark
+                ? AppColors.surfaceDark
+                : AppColors.surfaceLight.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+              color: isDark
+                  ? Colors.white24
+                  : ChatBotStyles.g1.withValues(alpha: 0.1),
               width: 1.2,
             ),
             boxShadow: const [
@@ -108,22 +114,22 @@ class _SuggestionCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.chat_bubble_outline_rounded,
-                  size: 18, color: Theme.of(context).colorScheme.primary),
+              const Icon(Icons.chat_bubble_outline_rounded,
+                  size: 18, color: ChatBotStyles.g1),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   text,
                   textDirection: TextDirection.ltr,
                   style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              Icon(Icons.arrow_forward_ios_rounded,
-                  size: 13, color: Theme.of(context).colorScheme.primary),
+              const Icon(Icons.arrow_forward_ios_rounded,
+                  size: 13, color: ChatBotStyles.g1),
             ],
           ),
         ),
@@ -140,16 +146,16 @@ class _BotIcon extends StatelessWidget {
     return Container(
       width: 90,
       height: 90,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+          colors: [ChatBotStyles.g1, ChatBotStyles.g3],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
+            color: Color(0x404DD9AC),
             blurRadius: 25,
             spreadRadius: 2,
           ),
