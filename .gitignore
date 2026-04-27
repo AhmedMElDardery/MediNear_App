@@ -46,3 +46,6 @@ app.*.map.json
 
 # Dotenv
 .env
+
+# API Keys and Secrets
+assets/.env
