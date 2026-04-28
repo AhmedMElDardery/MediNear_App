@@ -252,7 +252,7 @@ class MapProvider extends ChangeNotifier {
             position: LatLng(p.lat, p.lng),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 p.id == selectedPharmacyId
-                    ? BitmapDescriptor.hueViolet // Or keep Green for selected? 
+                    ? BitmapDescriptor.hueRed 
                     : BitmapDescriptor.hueRed),
             infoWindow: InfoWindow(title: p.name, snippet: p.address),
             onTap: () => selectPharmacy(p.id),
