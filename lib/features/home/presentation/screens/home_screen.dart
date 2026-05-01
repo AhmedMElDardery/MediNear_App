@@ -7,6 +7,7 @@ import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
 import 'package:medinear_app/features/home/presentation/provider/home_provider.dart';
 import 'package:medinear_app/features/home/presentation/widgets/ads_slider.dart';
 import 'package:medinear_app/features/home/presentation/widgets/home_header.dart';
+import 'package:medinear_app/features/home/presentation/widgets/home_search_bar.dart';
 import 'package:medinear_app/features/home/presentation/widgets/medicine_card.dart';
 import 'package:medinear_app/features/home/presentation/widgets/pharmacy_card.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
@@ -157,6 +158,13 @@ class _HomeViewState extends ConsumerState<HomeScreen>
 
               /// GREETING + USER INFO
               _buildGreetingSection(auth, profile, provider),
+
+              /// SEARCH BAR
+              HomeSearchBar(
+                query: provider.searchQuery,
+                onChanged: (query) => provider.search(query),
+                onClear: () => provider.clearSearch(),
+              ),
 
               /// QUICK STATS
               _buildQuickStats(provider),

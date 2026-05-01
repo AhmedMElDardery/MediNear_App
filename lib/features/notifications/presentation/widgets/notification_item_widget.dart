@@ -19,84 +19,123 @@ class NotificationItemWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: item.isRead
-              ? theme.cardColor
-              : theme.primaryColor.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: item.isRead
-                ? theme.dividerColor
-                : theme.primaryColor.withValues(alpha: 0.3),
-          ),
-          boxShadow: item.isRead
-              ? []
-              : [
-                  BoxShadow(
-                    color: theme.primaryColor.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                color: item.iconColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(item.icon, color: item.iconColor, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight:
-                                item.isRead ? FontWeight.w600 : FontWeight.w800,
-                            color: theme.textTheme.bodyMedium?.color,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        item.time,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    item.body,
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.4,
-                      color: item.isRead
-                          ? Colors.grey[600]
-                          : theme.textTheme.bodyMedium?.color,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+          color: isDark ? theme.cardColor.withOpacity(0.8) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black.withOpacity(0.4) : item.iconColor.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 🎨 Left thick colored strip
+                Container(
+                  width: 5,
+                  decoration: BoxDecoration(
+                    color: item.isRead ? Colors.transparent : item.iconColor,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ✨ Squircle Icon
+                        Container(
+                          height: 52,
+                          width: 52,
+                          decoration: BoxDecoration(
+                            color: item.iconColor.withOpacity(isDark ? 0.2 : 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(item.icon, color: item.iconColor, size: 26),
+                        ),
+                        const SizedBox(width: 16),
+                        // 📝 Text Content
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      item.title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: item.isRead ? FontWeight.w600 : FontWeight.w800,
+                                        color: theme.textTheme.bodyLarge?.color,
+                                        letterSpacing: -0.4,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    item.time,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                item.body,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  height: 1.4,
+                                  color: item.isRead
+                                      ? theme.textTheme.bodyMedium?.color?.withOpacity(0.6)
+                                      : theme.textTheme.bodyMedium?.color?.withOpacity(0.9),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // 🔴 Unread Dot Indicator
+                        if (!item.isRead) ...[
+                          const SizedBox(width: 12),
+                          Container(
+                            margin: const EdgeInsets.only(top: 8),
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.primaryColor.withOpacity(0.6),
+                                  blurRadius: 6,
+                                  spreadRadius: 2,
+                                )
+                              ]
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

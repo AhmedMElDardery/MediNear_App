@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medinear_app/core/components/app_logo.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 import 'package:medinear_app/features/splash/splash_provider.dart';
@@ -21,6 +22,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
+    FlutterNativeSplash.remove(); // Remove native splash to show our Flutter splash screen
 
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
@@ -53,7 +55,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               children: [
                 const AppLogo(
                   imagePath: 'assets/images/logo.png',
-                  size: 120,
+                  size: 150,
                 ),
                 const SizedBox(height: 15),
                 Text(
@@ -64,6 +66,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
+                ),
+                const SizedBox(height: 40),
+                CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                  strokeWidth: 3,
                 ),
               ],
             ),
