@@ -21,6 +21,8 @@ class MedicineDetailsScreen extends ConsumerStatefulWidget {
 class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
   int _currentImageIndex = 0;
   bool _isFavorite = false;
+  bool _isAddedToCart = false;
+  bool _isLoadingCart = false;
 
   @override
   void initState() {
@@ -68,6 +70,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
     final med = widget.medicine;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final gallery = med.gallery != null && med.gallery!.isNotEmpty ? med.gallery! : [med.imageUrl];
+    final isInCart = ref.watch(cartProvider).isItemInLocalCart(med.id);
 
     return Scaffold(
       backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFFAFAFA),
@@ -300,7 +303,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
       ),
       
       // Sticky Bottom Navigation Bar (Price + Cart)
-      bottomNavigationBar: _buildBottomBar(med.price, isDark),
+      bottomNavigationBar: _buildBottomBar(med.price, isDark, isInCart),
     );
   }
 
@@ -458,7 +461,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
     );
   }
 
-  Widget _buildBottomBar(double price, bool isDark) {
+  Widget _buildBottomBar(double price, bool isDark, bool isInCart) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24), // Floating effect padding
       color: Colors.transparent,
@@ -491,7 +494,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                        color: isInCart ? const Color(0xFF00C47A).withValues(alpha: 0.3) : (isDark ? Colors.black26 : Colors.black12),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
@@ -499,6 +502,11 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
+                      if (_isLoadingCart) return;
+                      setState(() {
+                        _isLoadingCart = true;
+                      });
+
                       final mId = int.tryParse(widget.medicine.id) ?? 0;
                       final pIdStr = widget.medicine.pharmacyId ?? ref.read(pharmacyProvider).currentPharmacyId;
                       int pId = int.tryParse(pIdStr) ?? 0;
@@ -515,30 +523,38 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                       );
 
                       if (context.mounted) {
+                        setState(() {
+                          _isLoadingCart = false;
+                        });
+
                         if (success) {
+                          ref.read(cartProvider).toggleLocalItem(widget.medicine.id);
                           ref.read(cartProvider).loadCartPharmacies();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      '${widget.medicine.name} added to cart',
-                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                          
+                          if (!isInCart) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        '${widget.medicine.name} added to cart',
+                                        style: const TextStyle(fontWeight: FontWeight.w600),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                backgroundColor: const Color(0xFF00C47A),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                margin: const EdgeInsets.all(20),
+                                duration: const Duration(seconds: 2),
+                                elevation: 10,
                               ),
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              margin: const EdgeInsets.all(20),
-                              duration: const Duration(seconds: 2),
-                              elevation: 10,
-                            ),
-                          );
+                            );
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -546,7 +562,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                                 children: [
                                   Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
                                   SizedBox(width: 10),
-                                  Text("Failed to add to cart", style: TextStyle(fontWeight: FontWeight.w600)),
+                                  Text("Failed to update cart", style: TextStyle(fontWeight: FontWeight.w600)),
                                 ],
                               ), 
                               backgroundColor: Colors.red,
@@ -560,27 +576,63 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: isInCart ? const Color(0xFF00C47A) : (isDark ? const Color(0xFF2C2C2E) : const Color(0xFF1E1E1E)),
+                      foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          context.tr("addToCart"),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ],
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (Widget child, Animation<double> animation) {
+                        return ScaleTransition(scale: animation, child: child);
+                      },
+                      child: _isLoadingCart
+                        ? const SizedBox(
+                            key: ValueKey('loading'),
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : isInCart
+                            ? Row(
+                                key: const ValueKey('added'),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.check_circle_rounded, color: Colors.white, size: 22),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    context.tr("added"), // "Added"
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.2,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                key: const ValueKey('add'),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    context.tr("addToCart"),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
                     ),
                   ),
                 ),

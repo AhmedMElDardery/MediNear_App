@@ -6,7 +6,12 @@ import 'widgets/chat_input_field.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
 class ChatDetailsView extends ConsumerStatefulWidget {
-  const ChatDetailsView({super.key});
+  final String chatName;
+
+  const ChatDetailsView({
+    super.key,
+    this.chatName = "Pharmacy Chat",
+  });
 
   @override
   ConsumerState<ChatDetailsView> createState() => _ChatDetailsViewState();
@@ -69,7 +74,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _viewModel.doctorName,
+                  widget.chatName,
                   style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 16,

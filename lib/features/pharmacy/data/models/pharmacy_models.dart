@@ -6,6 +6,7 @@ class PharmacyMedicineModel {
   final int discount;
   final double rating;
   final bool inStock;
+  final int quantity;
   final String image;
   bool notifyAvailable;
   bool isSaved;
@@ -19,6 +20,7 @@ class PharmacyMedicineModel {
     required this.discount,
     required this.rating,
     required this.inStock,
+    this.quantity = 0,
     required this.image,
     this.notifyAvailable = false,
     this.isSaved = false,
@@ -34,6 +36,7 @@ class PharmacyMedicineModel {
       discount: json['discount'] ?? 0,
       rating: (json['rating'] ?? 0).toDouble(),
       inStock: json['inStock'] ?? (json['status'] == 'available') ?? true,
+      quantity: json['quantity'] ?? 0,
       image: json['image'] ?? '',
       notifyAvailable: json['notifyAvailable'] ?? false,
       isSaved: json['isSaved'] ?? json['is_saved'] ?? false,

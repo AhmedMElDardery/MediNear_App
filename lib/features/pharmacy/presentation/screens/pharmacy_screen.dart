@@ -39,7 +39,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
 
   // Countdown timer
   Timer? _timer;
-  int _seconds = 10 * 3600 + 20 * 60 + 29; // 10:20:29
+  final ValueNotifier<int> _secondsNotifier = ValueNotifier<int>(10 * 3600 + 20 * 60 + 29); // 10:20:29
 
   static const _greenLight = Color(0xFFE0F5F2);
 
@@ -62,18 +62,18 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_seconds > 0) {
-        setState(() => _seconds--);
+      if (_secondsNotifier.value > 0) {
+        _secondsNotifier.value--;
       } else {
         _timer?.cancel();
       }
     });
   }
 
-  String get _formattedTime {
-    final h = (_seconds ~/ 3600).toString().padLeft(2, '0');
-    final m = ((_seconds % 3600) ~/ 60).toString().padLeft(2, '0');
-    final s = (_seconds % 60).toString().padLeft(2, '0');
+  String _formatTime(int seconds) {
+    final h = (seconds ~/ 3600).toString().padLeft(2, '0');
+    final m = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
     return '$h:$m:$s';
   }
 
@@ -82,6 +82,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     _searchController.dispose();
     _tabController.dispose();
     _timer?.cancel();
+    _secondsNotifier.dispose();
     super.dispose();
   }
 
@@ -424,6 +425,24 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  context.push(AppRoutes.chatdetails, extra: widget.pharmacyName);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -497,15 +516,20 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
               color: Colors.black.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Text(
-              _formattedTime,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
+            child: ValueListenableBuilder<int>(
+              valueListenable: _secondsNotifier,
+              builder: (context, seconds, child) {
+                return Text(
+                  _formatTime(seconds),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 2,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
+                );
+              },
             ),
           ),
 

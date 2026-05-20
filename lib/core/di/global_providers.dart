@@ -155,8 +155,8 @@ final walletViewModelProvider =
     ChangeNotifierProvider.autoDispose<WalletViewModel>(
         (ref) => WalletViewModel());
 final alarmViewModelProvider =
-    ChangeNotifierProvider.autoDispose<AlarmViewModel>(
-        (ref) => AlarmViewModel());
+    ChangeNotifierProvider<AlarmViewModel>(
+        (ref) => AlarmViewModel(dio: ref.read(dioClientProvider).dio));
 final supportProvider = ChangeNotifierProvider.autoDispose<SupportProvider>(
     (ref) => SupportProvider());
 final notificationsProvider =

@@ -91,11 +91,32 @@ class PharmacyMedicineCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: textColor)),
                 const SizedBox(height: 4),
-                Text('${medicine.oldPrice} ${context.tr("egp")}',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough)),
+                Row(
+                  children: [
+                    if (medicine.oldPrice > 0)
+                      Text('${medicine.oldPrice} ${context.tr("egp")}',
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough)),
+                    if (medicine.oldPrice > 0) const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Qty: ${medicine.quantity}',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [

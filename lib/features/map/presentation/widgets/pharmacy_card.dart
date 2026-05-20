@@ -165,7 +165,7 @@ class PharmacyCard extends StatelessWidget {
                               onPressed: onGoTap ?? onTap,
                               icon: const Icon(Icons.arrow_forward_rounded,
                                   size: 16, color: Colors.white),
-                              label: const Text("Go",
+                              label: const Text("Page",
                                   style: TextStyle(color: Colors.white)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).colorScheme.primary,

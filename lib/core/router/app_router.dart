@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/routes/routes.dart';
+import 'package:medinear_app/features/alarm/views/alarm_ring_screen.dart';
+import 'package:alarm/alarm.dart';
 
 import 'package:medinear_app/features/about_us/presentation/screens/about_support_screen.dart';
 import 'package:medinear_app/features/alarm/views/alarm_view.dart';
@@ -24,7 +27,10 @@ import 'package:medinear_app/features/splash/splash_screen.dart';
 import 'package:medinear_app/features/support/presentation/screen/support_screen.dart';
 import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: AppRoutes.splash,
   routes: [
     GoRoute(
@@ -99,7 +105,10 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.chatdetails,
-      builder: (context, state) => const ChatDetailsView(),
+      builder: (context, state) {
+        final chatName = state.extra as String? ?? "Pharmacy Chat";
+        return ChatDetailsView(chatName: chatName);
+      },
     ),
     GoRoute(
       path: AppRoutes.chatbot,
@@ -108,6 +117,15 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.alarm,
       builder: (context, state) => const AlarmView(),
+    ),
+    GoRoute(
+      path: '/alarm-ring',
+      pageBuilder: (context, state) {
+        final settings = state.extra as AlarmSettings;
+        return NoTransitionPage(
+          child: AlarmRingScreen(alarmSettings: settings),
+        );
+      },
     ),
     GoRoute(
       path: AppRoutes.wallet,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:medinear_app/core/localization/app_localizations.dart';
-import 'package:medinear_app/features/alarm/views/alarm_view.dart';
+import 'package:medinear_app/features/alarm/views/alarms_list_screen.dart';
 import 'package:medinear_app/features/support/presentation/screen/support_screen.dart';
 import 'package:medinear_app/features/wallet/views/wallet_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -630,7 +630,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: 'medicineReminder'.tr(context),
                             icon: Icons.alarm_rounded,
                             iconColor: const Color(0xFF8B5CF6),
-                            onTap: () => _navigateTo(const AlarmView()),
+                            onTap: () => _navigateTo(const AlarmsListScreen()),
                           ),
                         ]),
                       ),
