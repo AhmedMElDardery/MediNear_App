@@ -13,6 +13,8 @@ import 'package:medinear_app/features/auth/presentation/auth_provider.dart';
 
 import 'package:medinear_app/features/about_us/presentation/screens/about_support_screen.dart';
 import 'package:medinear_app/features/orders/presentation/screens/my_orders_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medinear_app/core/routes/routes.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -615,10 +617,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () => _navigateTo(const MyOrdersScreen()),
                           ),
                           PremiumProfileTile(
-                            title: 'wallet'.tr(context),
-                            icon: Icons.account_balance_wallet_outlined,
-                            iconColor: const Color(0xFF0EA5E9),
-                            onTap: () => _navigateTo(const WalletView()),
+                            title: 'Medical Packets',
+                            icon: Icons.folder_special_rounded,
+                            iconColor: const Color(0xFFE91E63),
+                            onTap: () => context.push(AppRoutes.packets),
                           ),
                           PremiumProfileTile(
                             title: 'familyMembers'.tr(context),

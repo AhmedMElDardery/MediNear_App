@@ -5,6 +5,7 @@ import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/localization/translate_helper.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
+import 'package:medinear_app/core/routes/routes.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -36,7 +37,7 @@ class CategoriesScreen extends ConsumerWidget {
                 final cat = provider.categories[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate to specific category later
+                    context.push(AppRoutes.categoryMedicines, extra: cat);
                   },
                   child: Container(
                     decoration: BoxDecoration(

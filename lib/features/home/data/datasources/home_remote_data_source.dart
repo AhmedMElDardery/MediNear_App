@@ -9,4 +9,6 @@ abstract class HomeRemoteDataSource {
   Future<List<Map<String, dynamic>>> getNearbyMedicines(double lat, double lng);
 
   Future<List<Map<String, dynamic>>> getCategories(int page, int perPage);
+  
+  Future<List<Map<String, dynamic>>> getCategoryMedicines(String categoryId, int page, int perPage);
 }

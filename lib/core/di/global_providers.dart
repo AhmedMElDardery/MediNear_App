@@ -22,6 +22,7 @@ import 'package:medinear_app/features/home/data/datasources/home_remote_data_sou
 import 'package:medinear_app/features/home/data/repositories/home_repository_impl.dart';
 import 'package:medinear_app/features/home/domain/repositories/home_repository.dart';
 import 'package:medinear_app/features/home/presentation/provider/home_provider.dart';
+import 'package:medinear_app/features/home/presentation/provider/category_medicines_provider.dart';
 
 import 'package:medinear_app/features/map/data/datasource/map_remote_datasource.dart'
     hide MapProvider;
@@ -46,6 +47,11 @@ import 'package:medinear_app/features/notifications/presentation/manager/notific
 import 'package:medinear_app/features/notifications/domain/usecases/get_notifications_usecase.dart';
 import 'package:medinear_app/features/notifications/data/repositories/notifications_repository_impl.dart';
 import 'package:medinear_app/features/notifications/data/datasources/notifications_remote_data_source.dart';
+
+import 'package:medinear_app/features/packets/data/datasources/packets_remote_data_source.dart';
+import 'package:medinear_app/features/packets/data/repositories/packets_repository_impl.dart';
+import 'package:medinear_app/features/packets/domain/repositories/packets_repository.dart';
+import 'package:medinear_app/features/packets/presentation/provider/packets_provider.dart';
 
 // ==========================================
 // 1. Core Services & Clients
@@ -95,6 +101,10 @@ final homeRepositoryProvider = Provider<HomeRepository>((ref) {
 
 final homeProvider = ChangeNotifierProvider<HomeProvider>((ref) {
   return HomeProvider(ref.read(homeRepositoryProvider));
+});
+
+final categoryMedicinesProvider = ChangeNotifierProvider.autoDispose<CategoryMedicinesProvider>((ref) {
+  return CategoryMedicinesProvider(ref.read(homeRepositoryProvider));
 });
 
 // ==========================================
@@ -168,4 +178,18 @@ final notificationsProvider =
       ),
     ),
   );
+});
+
+// ==========================================
+// 6. Packets Dependencies
+// ==========================================
+final packetsRepositoryProvider = Provider<PacketsRepository>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return PacketsRepositoryImpl(
+    remoteDataSource: PacketsRemoteDataSourceImpl(dio: dioClient.dio),
+  );
+});
+
+final packetsProvider = ChangeNotifierProvider<PacketsProvider>((ref) {
+  return PacketsProvider(ref.read(packetsRepositoryProvider));
 });

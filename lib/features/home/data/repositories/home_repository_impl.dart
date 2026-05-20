@@ -126,4 +126,37 @@ class HomeRepositoryImpl implements HomeRepository {
       );
     }).toList();
   }
+
+  @override
+  Future<List<MedicineEntity>> getCategoryMedicines(String categoryId, int page, int perPage) async {
+    final data = await remote.getCategoryMedicines(categoryId, page, perPage);
+    return data.map((e) {
+      final img = e["image"]?.toString();
+      final fullImg = (img != null && img.isNotEmpty)
+          ? (img.startsWith('http')
+              ? img
+              : 'https://medinear-eg.com/storage/$img')
+          : '';
+
+      final pivotPrice =
+          e["pivot"] != null ? e["pivot"]["price"]?.toString() : null;
+      final officialPrice = e["official_price"]?.toString();
+      final finalPriceStr = pivotPrice ?? officialPrice ?? '0';
+
+      return MedicineEntity(
+        id: e["id"]?.toString() ?? '', // ✅ int → String
+        name: e["name"]?.toString() ?? 'Unknown',
+        imageUrl: fullImg,
+        price: num.tryParse(finalPriceStr)?.toDouble() ?? 0.0,
+        description: e["description"]?.toString() ?? e["desc"]?.toString() ?? "",
+        composition: e["composition"]?.toString() ?? "",
+        dosageForm: e["dosage_form"]?.toString() ?? "",
+        packageSize: e["package_size"]?.toString() ?? e["package"]?.toString() ?? "",
+        usageInstructions: e["usage_instructions"]?.toString() ?? e["usage"]?.toString() ?? "",
+        gallery: e["gallery"] != null ? List<String>.from(e["gallery"]) : (fullImg.isNotEmpty ? [fullImg, fullImg, fullImg] : []),
+        pharmacyId: e["pivot"] != null ? e["pivot"]["pharmacy_id"]?.toString() : (e["pharmacy_id"]?.toString() ?? (e["pharmacy"] != null ? e["pharmacy"]["id"]?.toString() : null)),
+        pharmacyName: e["pharmacy_name"]?.toString() ?? (e["pharmacy"] != null ? e["pharmacy"]["name"]?.toString() : null),
+      );
+    }).toList();
+  }
 }
