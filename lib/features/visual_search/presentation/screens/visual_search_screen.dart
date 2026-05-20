@@ -3,20 +3,21 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 import '../providers/visual_search_provider.dart';
 import '../widgets/image_source_bottom_sheet.dart';
 import '../../visual_search_dependency_injection.dart';
 
 class VisualSearchScreen extends ConsumerStatefulWidget {
-  const VisualSearchScreen({Key? key}) : super(key: key);
+  const VisualSearchScreen({super.key});
 
   @override
   ConsumerState<VisualSearchScreen> createState() => _VisualSearchScreenState();
 }
 
-class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with SingleTickerProviderStateMixin {
+class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -46,12 +47,13 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('البحث البصري', 
+        title: Text(
+          'vs_title'.tr(context),
           style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87, 
+            color: isDark ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.5,
-          )
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -91,7 +93,6 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
               ),
             ),
           ),
-          
           SafeArea(
             bottom: false,
             child: FadeTransition(
@@ -106,17 +107,14 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
 
   Widget _buildBody(BuildContext context, VisualSearchProvider provider, bool isDark, ThemeData theme) {
     if (provider.state == VisualSearchState.loading) {
-      return _buildLoadingState(theme, isDark);
+      return _buildLoadingState(context, theme);
     }
-
     if (provider.state == VisualSearchState.error) {
       return _buildErrorState(context, provider, isDark, theme);
     }
-
     if (provider.state == VisualSearchState.success) {
       return _buildSuccessState(context, provider, isDark, theme);
     }
-
     return _buildInitialState(context, provider, isDark, theme);
   }
 
@@ -126,328 +124,381 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
         // Premium Scan Card
         SliverToBoxAdapter(
           child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDark 
-                    ? [const Color(0xFF1E1E1E), const Color(0xFF2C2C2C)]
-                    : [Colors.white, const Color(0xFFF8FBFF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: isDark ? Colors.white.withValues(alpha: 0.05) : theme.colorScheme.primary.withValues(alpha: 0.1),
-                width: 1.5,
-              ),
-              boxShadow: isDark ? [] : [
-                BoxShadow(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                  blurRadius: 30,
-                  offset: const Offset(0, 15),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? [const Color(0xFF1E1E1E), const Color(0xFF2C2C2C)]
+                      : [Colors.white, const Color(0xFFF8FBFF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : theme.colorScheme.primary.withValues(alpha: 0.1),
+                  width: 1.5,
+                ),
+                boxShadow: isDark
+                    ? []
+                    : [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                          blurRadius: 30,
+                          offset: const Offset(0, 15),
+                        ),
+                      ],
+              ),
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      Icon(CupertinoIcons.viewfinder_circle_fill, size: 55, color: theme.colorScheme.primary),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'vs_smart_scan'.tr(context),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: theme.textTheme.bodyLarge?.color,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'vs_choose_type'.tr(context),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                      fontSize: 14,
+                      height: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Grid of 4 options
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 1.1,
+                    children: [
+                      _buildScanOptionCard(
+                        context,
+                        title: 'vs_scan_box'.tr(context),
+                        icon: CupertinoIcons.cube_box_fill,
+                        color: theme.colorScheme.primary,
+                        onTap: () async {
+                          final source = await ImageSourceBottomSheet.show(context);
+                          if (source != null) provider.startVisualSearch(source);
+                        },
+                      ),
+                      _buildScanOptionCard(
+                        context,
+                        title: 'vs_read_rx'.tr(context),
+                        icon: CupertinoIcons.doc_text_viewfinder,
+                        color: Colors.blueAccent,
+                        onTap: () async {
+                          final source = await ImageSourceBottomSheet.show(context);
+                          if (source != null) provider.startPrescriptionScan(source);
+                        },
+                      ),
+                      _buildScanOptionCard(
+                        context,
+                        title: 'vs_pill_id'.tr(context),
+                        icon: Icons.medication,
+                        color: Colors.purpleAccent,
+                        onTap: () async {
+                          final source = await ImageSourceBottomSheet.show(context);
+                          if (source != null) provider.startPillIdentification(source);
+                        },
+                      ),
+                      _buildScanOptionCard(
+                        context,
+                        title: 'vs_counterfeit'.tr(context),
+                        icon: CupertinoIcons.shield_lefthalf_fill,
+                        color: Colors.redAccent,
+                        onTap: () async {
+                          final source = await ImageSourceBottomSheet.show(context);
+                          if (source != null) provider.startCounterfeitCheck(source);
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Food Interaction Button (Full Width)
+                  Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.orange.withValues(alpha: 0.1),
+                      border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 1.5),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final source = await ImageSourceBottomSheet.show(context);
+                        if (source != null) provider.startFoodInteractionCheck(source);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.orange,
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.restaurant_menu, color: Colors.orange),
+                          const SizedBox(width: 10),
+                          Text(
+                            'vs_food_analyzer'.tr(context),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
+                          ),
+                        ],
                       ),
                     ),
-                    Icon(CupertinoIcons.viewfinder_circle_fill, size: 55, color: theme.colorScheme.primary),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'التصوير الذكي',
-                  style: TextStyle(
-                    fontSize: 22, 
-                    fontWeight: FontWeight.w900, 
-                    color: theme.textTheme.bodyLarge?.color,
-                    letterSpacing: -0.5,
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'اختر نوع الفحص المطلوب:',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7), fontSize: 14, height: 1.6),
-                ),
-                const SizedBox(height: 24),
-                
-                // Grid of 4 options
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.1,
-                  children: [
-                    _buildScanOptionCard(
-                      context,
-                      title: 'فحص علبة',
-                      icon: CupertinoIcons.cube_box_fill,
-                      color: theme.colorScheme.primary,
-                      onTap: () async {
-                        final source = await ImageSourceBottomSheet.show(context);
-                        if (source != null) provider.startVisualSearch(source);
-                      },
-                    ),
-                    _buildScanOptionCard(
-                      context,
-                      title: 'قراءة روشتة',
-                      icon: CupertinoIcons.doc_text_viewfinder,
-                      color: Colors.blueAccent,
-                      onTap: () async {
-                        final source = await ImageSourceBottomSheet.show(context);
-                        if (source != null) provider.startPrescriptionScan(source);
-                      },
-                    ),
-                    _buildScanOptionCard(
-                      context,
-                      title: 'حبة دواء',
-                      icon: Icons.medication,
-                      color: Colors.purpleAccent,
-                      onTap: () async {
-                        final source = await ImageSourceBottomSheet.show(context);
-                        if (source != null) provider.startPillIdentification(source);
-                      },
-                    ),
-                    _buildScanOptionCard(
-                      context,
-                      title: 'كشف غش',
-                      icon: CupertinoIcons.shield_lefthalf_fill,
-                      color: Colors.redAccent,
-                      onTap: () async {
-                        final source = await ImageSourceBottomSheet.show(context);
-                        if (source != null) provider.startCounterfeitCheck(source);
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Food Interaction Button (Full Width)
-                Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.orange.withValues(alpha: 0.1),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 1.5),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final source = await ImageSourceBottomSheet.show(context);
-                      if (source != null) provider.startFoodInteractionCheck(source);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: Colors.orange,
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 0,
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.restaurant_menu, color: Colors.orange),
-                        SizedBox(width: 10),
-                        Text('محلل الأطعمة والمكملات', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
         ),
 
         const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
-        // History Section
-        SliverFillRemaining(
+        // History Header
+        SliverToBoxAdapter(
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(top: 30, left: 24, right: 24),
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF121212) : Colors.white,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-              boxShadow: isDark ? [] : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
-                ),
-              ],
+              boxShadow: isDark
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 20,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'العمليات السابقة',
-                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: theme.textTheme.bodyLarge?.color),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${provider.history.length} عمليات',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
-                      ),
-                    )
-                  ],
+                Text(
+                  'vs_history_title'.tr(context),
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    color: theme.textTheme.bodyLarge?.color,
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: provider.history.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: theme.dividerColor.withValues(alpha: 0.05),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(CupertinoIcons.archivebox, size: 40, color: theme.dividerColor),
-                              ),
-                              const SizedBox(height: 16),
-                              Text('لم تقم بأي عمليات فحص بعد', 
-                                style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5), fontSize: 15)
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.separated(
-                          itemCount: provider.history.length,
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 30),
-                          separatorBuilder: (context, index) => const SizedBox(height: 16),
-                          itemBuilder: (context, index) {
-                            final item = provider.history[index];
-                            return Dismissible(
-                              key: Key(item.key.toString()),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (_) {
-                                provider.deleteHistoryItem(item);
-                              },
-                              background: Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.redAccent,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
-                                child: const Icon(CupertinoIcons.trash, color: Colors.white, size: 28),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: theme.dividerColor.withValues(alpha: isDark ? 0.1 : 0.05)),
-                                  boxShadow: isDark ? [] : [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.02),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    )
-                                  ]
-                                ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {},
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Row(
-                                      children: [
-                                        Hero(
-                                          tag: 'image_${item.imagePath}',
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(16),
-                                              image: DecorationImage(
-                                                image: FileImage(File(item.imagePath)),
-                                                fit: BoxFit.cover,
-                                              )
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                item.text, 
-                                                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: theme.textTheme.bodyLarge?.color),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Row(
-                                                children: [
-                                                  Icon(CupertinoIcons.clock, size: 14, color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    DateFormat('MMM dd, hh:mm a').format(item.timestamp),
-                                                    style: TextStyle(fontSize: 12, color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6)),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: theme.colorScheme.primary.withValues(alpha: 0.05),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(CupertinoIcons.arrow_right, size: 18, color: theme.colorScheme.primary),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                          },
-                        ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.translate('vs_history_count',
+                        params: {'count': provider.history.length.toString()}),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
+
+        // History Body
+        if (provider.history.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Container(
+              color: isDark ? const Color(0xFF121212) : Colors.white,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: theme.dividerColor.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(CupertinoIcons.archivebox, size: 40, color: theme.dividerColor),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'vs_no_history'.tr(context),
+                      style: TextStyle(
+                        color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final item = provider.history[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Dismissible(
+                      key: Key(item.key.toString()),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) => provider.deleteHistoryItem(item),
+                      background: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: const Icon(CupertinoIcons.trash, color: Colors.white, size: 28),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.dividerColor.withValues(alpha: isDark ? 0.1 : 0.05),
+                          ),
+                          boxShadow: isDark
+                              ? []
+                              : [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.02),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  Hero(
+                                    tag: 'image_${item.imagePath}',
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.file(
+                                        File(item.imagePath),
+                                        width: 70,
+                                        height: 70,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          width: 70,
+                                          height: 70,
+                                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                          child: Icon(CupertinoIcons.photo,
+                                              color: theme.colorScheme.primary, size: 30),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.text,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16,
+                                            color: theme.textTheme.bodyLarge?.color,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              CupertinoIcons.clock,
+                                              size: 14,
+                                              color: theme.textTheme.bodyMedium?.color
+                                                  ?.withValues(alpha: 0.5),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              DateFormat('MMM dd, hh:mm a').format(item.timestamp),
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: theme.textTheme.bodyMedium?.color
+                                                    ?.withValues(alpha: 0.6),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(CupertinoIcons.arrow_right,
+                                        size: 18, color: theme.colorScheme.primary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                childCount: provider.history.length,
+              ),
+            ),
+          ),
       ],
     );
   }
 
-  Widget _buildLoadingState(ThemeData theme, bool isDark) {
+
+  Widget _buildLoadingState(BuildContext context, ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -476,12 +527,21 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
             ],
           ),
           const SizedBox(height: 32),
-          Text('جاري التحليل...', 
-            style: TextStyle(fontSize: 20, color: theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.bold)
+          Text(
+            'vs_analyzing'.tr(context),
+            style: TextStyle(
+              fontSize: 20,
+              color: theme.textTheme.bodyLarge?.color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
-          Text('يقوم الذكاء الاصطناعي باستخراج اسم الدواء', 
-            style: TextStyle(fontSize: 14, color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7))
+          Text(
+            'vs_ai_extracting'.tr(context),
+            style: TextStyle(
+              fontSize: 14,
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+            ),
           ),
         ],
       ),
@@ -506,7 +566,7 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
             ),
             const SizedBox(height: 28),
             Text(
-              'تعذر الفحص',
+              'vs_error_title'.tr(context),
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: theme.textTheme.bodyLarge?.color),
             ),
             const SizedBox(height: 12),
@@ -522,7 +582,7 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
               child: ElevatedButton.icon(
                 onPressed: provider.reset,
                 icon: const Icon(CupertinoIcons.refresh_thick, color: Colors.white),
-                label: const Text('إعادة المحاولة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+                label: Text('vs_retry'.tr(context), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.error,
                   elevation: 0,
@@ -530,14 +590,19 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildScanOptionCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildScanOptionCard(BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return GestureDetector(
@@ -547,33 +612,28 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: color.withValues(alpha: 0.2), width: 1.5),
-          boxShadow: isDark ? [] : [
-            BoxShadow(
-              color: color.withValues(alpha: 0.1),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.1),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
               child: Icon(icon, color: color, size: 30),
             ),
             const SizedBox(height: 12),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: theme.textTheme.bodyLarge?.color,
-              ),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color),
             ),
           ],
         ),
@@ -582,7 +642,6 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
   }
 
   Widget _buildSuccessState(BuildContext context, VisualSearchProvider provider, bool isDark, ThemeData theme) {
-    final result = provider.searchResult;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(30.0),
@@ -592,18 +651,17 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle),
               child: const Icon(CupertinoIcons.checkmark_seal_fill, color: Colors.green, size: 60),
             ),
             const SizedBox(height: 28),
             Text(
-              'التطابق ناجح!',
+              'vs_success_title'.tr(context),
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: theme.textTheme.bodyLarge?.color),
             ),
             const SizedBox(height: 24),
+
+            // Prescription Result
             if (provider.prescriptionResult != null)
               ListView.separated(
                 shrinkWrap: true,
@@ -634,11 +692,14 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${med['name']}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color)),
+                              Text(
+                                '${med['name']}',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color),
+                              ),
                               if (med['dosage'] != null && med['dosage'].toString().isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text('${med['dosage']}', style: TextStyle(color: theme.textTheme.bodyMedium?.color, fontSize: 13)),
-                              ]
+                              ],
                             ],
                           ),
                         ),
@@ -647,13 +708,15 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                   );
                 },
               )
-            else if (result != null)
+
+            // Box Result
+            else if (provider.searchResult != null)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isDark 
+                    colors: isDark
                         ? [const Color(0xFF1E1E1E), const Color(0xFF2C2C2C)]
                         : [Colors.white, const Color(0xFFF0FDF4)],
                     begin: Alignment.topLeft,
@@ -661,31 +724,26 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.green.withValues(alpha: 0.2), width: 1.5),
-                  boxShadow: isDark ? [] : [
-                    BoxShadow(
-                      color: Colors.green.withValues(alpha: 0.05),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    )
-                  ]
                 ),
                 child: Column(
                   children: [
                     Icon(Icons.medication_rounded, size: 30, color: theme.colorScheme.primary),
                     const SizedBox(height: 16),
-                    Text('${result['name']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: theme.textTheme.bodyLarge?.color)),
+                    Text('${provider.searchResult!['name']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: theme.textTheme.bodyLarge?.color)),
                     const SizedBox(height: 12),
-                    Text('${result['description']}', textAlign: TextAlign.center, style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8), height: 1.5)),
+                    Text('${provider.searchResult!['description']}', textAlign: TextAlign.center, style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8), height: 1.5)),
                   ],
                 ),
               )
+
+            // Pill Result
             else if (provider.pillResult != null)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isDark 
+                    colors: isDark
                         ? [const Color(0xFF1E1E1E), const Color(0xFF2C2C2C)]
                         : [Colors.white, const Color(0xFFF3E8FF)],
                     begin: Alignment.topLeft,
@@ -696,39 +754,66 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.medication, size: 40, color: Colors.purple),
+                    const Icon(Icons.medication, size: 40, color: Colors.purple),
                     const SizedBox(height: 16),
                     Text('${provider.pillResult!['name']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: theme.textTheme.bodyLarge?.color)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(color: Colors.purple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                      child: Text('ثقة التعرف: ${provider.pillResult!['confidence']}', style: const TextStyle(color: Colors.purple, fontSize: 12, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        AppLocalizations.of(context)!.translate('vs_confidence', params: {'value': '${provider.pillResult!['confidence']}'}),
+                        style: const TextStyle(color: Colors.purple, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text('${provider.pillResult!['description']}', textAlign: TextAlign.center, style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8), height: 1.5)),
                   ],
                 ),
               )
+
+            // Counterfeit Result
             else if (provider.counterfeitResult != null)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: provider.counterfeitResult!['is_authentic'] ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                  color: provider.counterfeitResult!['is_authentic']
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red, width: 2),
+                  border: Border.all(
+                    color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red,
+                    width: 2,
+                  ),
                 ),
                 child: Column(
                   children: [
-                    Icon(provider.counterfeitResult!['is_authentic'] ? CupertinoIcons.checkmark_shield_fill : CupertinoIcons.exclamationmark_shield_fill, size: 40, color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red),
+                    Icon(
+                      provider.counterfeitResult!['is_authentic']
+                          ? CupertinoIcons.checkmark_shield_fill
+                          : CupertinoIcons.exclamationmark_shield_fill,
+                      size: 40,
+                      color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red,
+                    ),
                     const SizedBox(height: 16),
-                    Text(provider.counterfeitResult!['is_authentic'] ? 'العلبة تبدو أصلية وموثوقة' : 'تحذير: اشتباه في غش تجاري', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red)),
+                    Text(
+                      provider.counterfeitResult!['is_authentic']
+                          ? 'vs_authentic'.tr(context)
+                          : 'vs_counterfeit_warning'.tr(context),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: provider.counterfeitResult!['is_authentic'] ? Colors.green : Colors.red,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     Text('${provider.counterfeitResult!['analysis']}', textAlign: TextAlign.center, style: TextStyle(color: theme.textTheme.bodyMedium?.color, height: 1.5)),
                   ],
                 ),
               )
+
+            // Food Interaction Result
             else if (provider.foodInteractionResult != null)
               Container(
                 width: double.infinity,
@@ -742,15 +827,16 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                   children: [
                     const Icon(Icons.restaurant, size: 40, color: Colors.orange),
                     const SizedBox(height: 16),
-                    Text('تحليل التفاعلات الدوائية', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: theme.textTheme.bodyLarge?.color)),
+                    Text('vs_food_analysis_title'.tr(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: theme.textTheme.bodyLarge?.color)),
                     const SizedBox(height: 16),
                     Text('${provider.foodInteractionResult}', style: TextStyle(color: theme.textTheme.bodyMedium?.color, height: 1.6)),
                   ],
                 ),
               ),
+
             const SizedBox(height: 32),
-            
-            // --- Interactions Check UI ---
+
+            // Drug Interactions Check
             if (provider.prescriptionResult != null && provider.prescriptionResult!.length > 1) ...[
               if (provider.interactionsResult != null)
                 Container(
@@ -758,9 +844,15 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: provider.interactionsResult!.contains('آمن') ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
+                    color: provider.interactionsResult!.contains('آمن') || provider.interactionsResult!.toLowerCase().contains('safe')
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: provider.interactionsResult!.contains('آمن') ? Colors.green.withValues(alpha: 0.3) : Colors.orange.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: provider.interactionsResult!.contains('آمن') || provider.interactionsResult!.toLowerCase().contains('safe')
+                          ? Colors.green.withValues(alpha: 0.3)
+                          : Colors.orange.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -768,13 +860,23 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                       Row(
                         children: [
                           Icon(
-                            provider.interactionsResult!.contains('آمن') ? CupertinoIcons.checkmark_shield_fill : CupertinoIcons.exclamationmark_triangle_fill,
-                            color: provider.interactionsResult!.contains('آمن') ? Colors.green : Colors.orange,
+                            provider.interactionsResult!.contains('آمن') || provider.interactionsResult!.toLowerCase().contains('safe')
+                                ? CupertinoIcons.checkmark_shield_fill
+                                : CupertinoIcons.exclamationmark_triangle_fill,
+                            color: provider.interactionsResult!.contains('آمن') || provider.interactionsResult!.toLowerCase().contains('safe')
+                                ? Colors.green
+                                : Colors.orange,
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'نتيجة الفحص',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: provider.interactionsResult!.contains('آمن') ? Colors.green : Colors.orange),
+                            'vs_interaction_result_title'.tr(context),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: provider.interactionsResult!.contains('آمن') || provider.interactionsResult!.toLowerCase().contains('safe')
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
                           ),
                         ],
                       ),
@@ -799,34 +901,37 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                     ),
                     child: provider.isCheckingInteractions
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Row(
+                        : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(CupertinoIcons.exclamationmark_shield_fill, color: Colors.white),
-                              SizedBox(width: 10),
-                              Text('فحص التعارضات الدوائية', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+                              const Icon(CupertinoIcons.exclamationmark_shield_fill, color: Colors.white),
+                              const SizedBox(width: 10),
+                              Text(
+                                'vs_interaction_check_btn'.tr(context),
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                              ),
                             ],
                           ),
                   ),
                 ),
               const SizedBox(height: 16),
             ],
-            // ---------------------------
 
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
-                  provider.reset();
-                },
+                onPressed: () => provider.reset(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   elevation: 0,
                   shadowColor: Colors.green.withValues(alpha: 0.4),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
-                child: const Text('عرض التفاصيل والبدائل', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+                child: Text(
+                  'vs_view_details'.tr(context),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -838,9 +943,16 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen> with Si
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
-                child: Text('مسح عنصر آخر', style: TextStyle(color: theme.textTheme.bodyMedium?.color, fontWeight: FontWeight.w600, fontSize: 16)),
+                child: Text(
+                  'vs_scan_another'.tr(context),
+                  style: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),

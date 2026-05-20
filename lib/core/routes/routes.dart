@@ -26,7 +26,10 @@ class AppRoutes {
   static const notification = '/notification';
   static const String map = '/map';
   static const String categories = '/categories';
+  static const String categoryMedicines = '/categoryMedicines';
   static const String medicineDetails = '/medicine_details';
+  static const String packets = '/packets';
+  static const String packetDetails = '/packetDetails';
   static const saveditems = '/saved_items';
   static const pharmacy = '/pharmacy';
   static const mycart = '/mycart';

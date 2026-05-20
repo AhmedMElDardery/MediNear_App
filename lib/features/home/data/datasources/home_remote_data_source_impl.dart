@@ -182,4 +182,38 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       throw Exception("Categories API Error: $e");
     }
   }
+
+  @override
+  Future<List<Map<String, dynamic>>> getCategoryMedicines(String categoryId, int page, int perPage) async {
+    try {
+      final token = await tokenStorage.getToken();
+      final response = await dio.get(
+        "/pharmacy/categories/$categoryId/medicines",
+        queryParameters: {
+          "page": page,
+          "per_page": perPage,
+        },
+        options: Options(
+          headers: {
+            if (token != null) "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      final data = response.data;
+      if (data is Map && data.containsKey('data')) {
+        final inner = data['data'];
+        if (inner is Map && inner.containsKey('medicines')) {
+          final medicines = inner['medicines'];
+          if (medicines is Map && medicines.containsKey('data')) {
+            return List<Map<String, dynamic>>.from(medicines['data']);
+          }
+        }
+      }
+      return [];
+    } catch (e) {
+      debugPrint("Category Medicines API Error: $e");
+      throw Exception("Category Medicines API Error: $e");
+    }
+  }
 }

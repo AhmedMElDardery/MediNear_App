@@ -508,7 +508,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
   Widget _buildCategoryItem(CategoryEntity cat, bool isDark) {
     return GestureDetector(
       onTap: () {
-        // Todo: Navigate to specific category later
+        context.push(AppRoutes.categoryMedicines, extra: cat);
       },
       child: SizedBox(
         width: 70,

@@ -13,4 +13,6 @@ abstract class HomeRepository {
   Future<List<MedicineEntity>> getNearbyMedicines(double lat, double lng);
 
   Future<List<CategoryEntity>> getCategories(int page, int perPage);
+  
+  Future<List<MedicineEntity>> getCategoryMedicines(String categoryId, int page, int perPage);
 }
