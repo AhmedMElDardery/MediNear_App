@@ -92,6 +92,30 @@ class VisualSearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> openHistoryItem(SearchHistoryModel history) async {
+    if (history.text.startsWith('روشتة') || history.text.startsWith('Prescription')) {
+       _errorMessage = 'لا يمكن فتح تفاصيل روشتة كاملة من السجل حالياً. يمكنك مسح الروشتة مرة أخرى.';
+       _setState(VisualSearchState.error);
+       return;
+    }
+
+    _currentImage = File(history.imagePath);
+    _setState(VisualSearchState.success);
+    await showDetailsForMedicine(history.text);
+  }
+
+  Future<void> clearHistory() async {
+    try {
+      for (var item in _history) {
+        await repository.deleteSearchHistory(item.key);
+      }
+      _history.clear();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error clearing history: $e");
+    }
+  }
+
   Future<void> loadHistory() async {
     try {
       final data = await repository.getSearchHistory();

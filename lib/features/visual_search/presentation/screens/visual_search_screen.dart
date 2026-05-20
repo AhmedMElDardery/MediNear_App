@@ -408,7 +408,7 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () => provider.openHistoryItem(item),
                             borderRadius: BorderRadius.circular(20),
                             child: Padding(
                               padding: const EdgeInsets.all(12),
