@@ -21,6 +21,82 @@ class SearchMedicationUseCase {
   }
 }
 
+// ─── NEW: Get full medicine details from Gemini ────────────────────────────
+class GetMedicineDetailsUseCase {
+  final GeminiService geminiService;
+  GetMedicineDetailsUseCase(this.geminiService);
+
+  Future<Map<String, dynamic>> execute(String medicineName) async {
+    final prompt = '''
+You are a medical information assistant. Provide detailed structured information about the medicine: "$medicineName".
+
+Return ONLY a valid JSON object (no markdown code blocks). The JSON must have these exact keys:
+{
+  "trade_name": "Commercial trade name",
+  "generic_name": "Generic/active ingredient name",
+  "category": "Drug category (e.g. Analgesic, Antibiotic...)",
+  "indications": "What it is used for (2-3 sentences)",
+  "dosage": "Standard dosage instructions",
+  "side_effects": ["side effect 1", "side effect 2", "side effect 3"],
+  "warnings": ["warning 1", "warning 2"],
+  "contraindications": "Who should NOT take this medicine",
+  "pregnancy_category": "Pregnancy and Lactation safety profile",
+  "interactions": ["major interaction 1", "major interaction 2"],
+  "overdose": "Symptoms of overdose and what to do",
+  "food_interactions": "Any foods or drinks to avoid",
+  "mechanism_of_action": "How the drug works in the body",
+  "alternatives": ["alternative 1", "alternative 2"],
+  "prescription_needed": true/false (boolean),
+  "storage": "How to store it",
+  "manufacturer": "Manufacturer name if known, otherwise Unknown"
+}
+If you cannot find reliable information, fill fields with "Not available" (or empty array/false).
+''';
+
+    try {
+      final response = await geminiService.getResponse(prompt);
+      String cleanJson = response
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
+      return jsonDecode(cleanJson) as Map<String, dynamic>;
+    } catch (e) {
+      throw Exception('Failed to fetch medicine details: $e');
+    }
+  }
+}
+
+// ─── NEW: Translate medicine details ──────────────────────────────────────
+class TranslateMedicineDetailsUseCase {
+  final GeminiService geminiService;
+  TranslateMedicineDetailsUseCase(this.geminiService);
+
+  Future<Map<String, dynamic>> execute(
+      Map<String, dynamic> details, String targetLanguage) async {
+    final prompt = '''
+Translate the following medicine information JSON into $targetLanguage.
+Keep the JSON structure and keys exactly the same. Only translate the string values.
+Translate arrays element by element.
+
+Input JSON:
+${jsonEncode(details)}
+
+Return ONLY a valid JSON object (no markdown code blocks).
+''';
+
+    try {
+      final response = await geminiService.getResponse(prompt);
+      String cleanJson = response
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
+      return jsonDecode(cleanJson) as Map<String, dynamic>;
+    } catch (e) {
+      throw Exception('Translation failed: $e');
+    }
+  }
+}
+
 class ParsePrescriptionUseCase {
   final GeminiService geminiService;
   ParsePrescriptionUseCase(this.geminiService);
@@ -41,7 +117,6 @@ If no medications are found, return an empty array [].
 
     try {
       final response = await geminiService.getResponse(prompt);
-      // Clean up markdown if the model hallucinates it
       String cleanJson = response.replaceAll('```json', '').replaceAll('```', '').trim();
       final List<dynamic> parsed = jsonDecode(cleanJson);
       return parsed.cast<Map<String, dynamic>>();
@@ -110,7 +185,7 @@ class CheckCounterfeitUseCase {
 ابحث عن علامات الغش التجاري مثل: رداءة الطباعة، أخطاء إملائية، ألوان باهتة، أو باركود غير واضح.
 أرجع النتيجة بصيغة JSON فقط كالتالي (بدون markdown code blocks):
 {
-  "is_authentic": true أو false,
+  "is_authentic": true or false,
   "analysis": "شرح مبسط لسبب الشك أو سبب الأمان"
 }
 ''';

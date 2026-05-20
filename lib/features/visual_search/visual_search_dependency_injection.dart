@@ -55,6 +55,14 @@ final checkFoodInteractionUseCaseProvider = Provider((ref) {
   return CheckFoodInteractionUseCase(ref.read(geminiServiceProvider));
 });
 
+final getMedicineDetailsUseCaseProvider = Provider((ref) {
+  return GetMedicineDetailsUseCase(ref.read(geminiServiceProvider));
+});
+
+final translateMedicineDetailsUseCaseProvider = Provider((ref) {
+  return TranslateMedicineDetailsUseCase(ref.read(geminiServiceProvider));
+});
+
 final visualSearchChangeNotifierProvider = ChangeNotifierProvider<VisualSearchProvider>((ref) {
   return VisualSearchProvider(
     repository: ref.read(visualSearchRepositoryProvider),
@@ -65,5 +73,7 @@ final visualSearchChangeNotifierProvider = ChangeNotifierProvider<VisualSearchPr
     identifyPillUseCase: ref.read(identifyPillUseCaseProvider),
     checkCounterfeitUseCase: ref.read(checkCounterfeitUseCaseProvider),
     checkFoodInteractionUseCase: ref.read(checkFoodInteractionUseCaseProvider),
+    getMedicineDetailsUseCase: ref.read(getMedicineDetailsUseCaseProvider),
+    translateMedicineDetailsUseCase: ref.read(translateMedicineDetailsUseCaseProvider),
   );
 });

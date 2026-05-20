@@ -16,6 +16,8 @@ class VisualSearchProvider extends ChangeNotifier {
   final IdentifyPillUseCase identifyPillUseCase;
   final CheckCounterfeitUseCase checkCounterfeitUseCase;
   final CheckFoodInteractionUseCase checkFoodInteractionUseCase;
+  final GetMedicineDetailsUseCase getMedicineDetailsUseCase;
+  final TranslateMedicineDetailsUseCase translateMedicineDetailsUseCase;
 
   VisualSearchProvider({
     required this.repository,
@@ -26,6 +28,8 @@ class VisualSearchProvider extends ChangeNotifier {
     required this.identifyPillUseCase,
     required this.checkCounterfeitUseCase,
     required this.checkFoodInteractionUseCase,
+    required this.getMedicineDetailsUseCase,
+    required this.translateMedicineDetailsUseCase,
   }) {
     loadHistory();
   }
@@ -63,6 +67,26 @@ class VisualSearchProvider extends ChangeNotifier {
   String? _interactionsResult;
   String? get interactionsResult => _interactionsResult;
 
+  // ─── Medicine Details ──────────────────────────────────────────────────────
+  Map<String, dynamic>? _medicineDetails;
+  Map<String, dynamic>? get medicineDetails => _medicineDetails;
+
+  bool _isLoadingDetails = false;
+  bool get isLoadingDetails => _isLoadingDetails;
+
+  String? _detailsError;
+  String? get detailsError => _detailsError;
+
+  // ─── Translation ───────────────────────────────────────────────────────────
+  Map<String, dynamic>? _translatedDetails;
+  Map<String, dynamic>? get translatedDetails => _translatedDetails;
+
+  bool _isTranslating = false;
+  bool get isTranslating => _isTranslating;
+
+  bool _showTranslation = false;
+  bool get showTranslation => _showTranslation;
+
   void _setState(VisualSearchState newState) {
     _state = newState;
     notifyListeners();
@@ -71,7 +95,6 @@ class VisualSearchProvider extends ChangeNotifier {
   Future<void> loadHistory() async {
     try {
       final data = await repository.getSearchHistory();
-      // Sort descending by timestamp
       data.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       _history = data;
       notifyListeners();
@@ -96,23 +119,17 @@ class VisualSearchProvider extends ChangeNotifier {
       _errorMessage = '';
       _searchResult = null;
       _prescriptionResult = null;
+      _medicineDetails = null;
+      _translatedDetails = null;
+      _showTranslation = false;
 
-      // 1. Pick Image
       final image = await repository.pickImage(source);
-      if (image == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (image == null) { _setState(VisualSearchState.initial); return; }
 
-      // 2. Crop Image
       final cropped = await repository.cropImage(image);
-      if (cropped == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (cropped == null) { _setState(VisualSearchState.initial); return; }
       _currentImage = cropped;
 
-      // 3. Extract Text (OCR)
       final text = await extractTextUseCase.execute(cropped);
       if (text.trim().isEmpty) {
         _errorMessage = 'لم نتمكن من التعرف على أي نص. يرجى التقاط صورة أوضح.';
@@ -120,30 +137,82 @@ class VisualSearchProvider extends ChangeNotifier {
         return;
       }
 
-      // 4. Search Medication
       final result = await searchMedicationUseCase.execute(text);
       if (result != null) {
         _searchResult = result;
-        
-        // 5. Save to History
-        final historyItem = SearchHistoryModel(
+
+        await repository.saveSearchHistory(SearchHistoryModel(
           text: text,
           imagePath: cropped.path,
           timestamp: DateTime.now(),
-        );
-        await repository.saveSearchHistory(historyItem);
+        ));
         await loadHistory();
 
         _setState(VisualSearchState.success);
+
+        // Auto-load details
+        _loadMedicineDetails(result['name'] ?? text);
       } else {
         _errorMessage = 'لم يتم العثور على نتائج للنص: $text';
         _setState(VisualSearchState.error);
       }
     } catch (e) {
-      _errorMessage = e.toString().contains("No medication") 
-          ? 'لم يتم العثور على الدواء' 
+      _errorMessage = e.toString().contains("No medication")
+          ? 'لم يتم العثور على الدواء'
           : 'حدث خطأ غير متوقع: $e';
       _setState(VisualSearchState.error);
+    }
+  }
+
+  Future<void> _loadMedicineDetails(String medicineName) async {
+    _isLoadingDetails = true;
+    _detailsError = null;
+    notifyListeners();
+
+    try {
+      _medicineDetails = await getMedicineDetailsUseCase.execute(medicineName);
+    } catch (e) {
+      _detailsError = e.toString();
+    } finally {
+      _isLoadingDetails = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> retryLoadDetails() async {
+    if (_searchResult == null) return;
+    await _loadMedicineDetails(_searchResult!['name'] ?? '');
+  }
+
+  Future<void> toggleTranslation() async {
+    if (_medicineDetails == null) return;
+
+    if (_showTranslation) {
+      _showTranslation = false;
+      notifyListeners();
+      return;
+    }
+
+    if (_translatedDetails != null) {
+      _showTranslation = true;
+      notifyListeners();
+      return;
+    }
+
+    _isTranslating = true;
+    notifyListeners();
+
+    try {
+      _translatedDetails = await translateMedicineDetailsUseCase.execute(
+        _medicineDetails!,
+        'Arabic',
+      );
+      _showTranslation = true;
+    } catch (e) {
+      debugPrint('Translation error: $e');
+    } finally {
+      _isTranslating = false;
+      notifyListeners();
     }
   }
 
@@ -154,22 +223,13 @@ class VisualSearchProvider extends ChangeNotifier {
       _searchResult = null;
       _prescriptionResult = null;
 
-      // 1. Pick Image
       final image = await repository.pickImage(source);
-      if (image == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (image == null) { _setState(VisualSearchState.initial); return; }
 
-      // 2. Crop Image (Optional for prescription, but kept to let user crop the medication list)
       final cropped = await repository.cropImage(image);
-      if (cropped == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (cropped == null) { _setState(VisualSearchState.initial); return; }
       _currentImage = cropped;
 
-      // 3. Extract Text
       final text = await extractTextUseCase.execute(cropped);
       if (text.trim().isEmpty) {
         _errorMessage = 'لم نتمكن من التعرف على أي نص في الروشتة.';
@@ -177,19 +237,16 @@ class VisualSearchProvider extends ChangeNotifier {
         return;
       }
 
-      // 4. Parse with Gemini
       final medications = await parsePrescriptionUseCase.execute(text);
-      
+
       if (medications.isNotEmpty) {
         _prescriptionResult = medications;
-        
-        // Save to history
-        final historyItem = SearchHistoryModel(
+
+        await repository.saveSearchHistory(SearchHistoryModel(
           text: 'روشتة: ${medications.length} أدوية',
           imagePath: cropped.path,
           timestamp: DateTime.now(),
-        );
-        await repository.saveSearchHistory(historyItem);
+        ));
         await loadHistory();
 
         _setState(VisualSearchState.success);
@@ -198,8 +255,8 @@ class VisualSearchProvider extends ChangeNotifier {
         _setState(VisualSearchState.error);
       }
     } catch (e) {
-      _errorMessage = e.toString().contains("No medication") 
-          ? 'لم يتم العثور على أدوية' 
+      _errorMessage = e.toString().contains("No medication")
+          ? 'لم يتم العثور على أدوية'
           : 'حدث خطأ غير متوقع أثناء تحليل الروشتة: $e';
       _setState(VisualSearchState.error);
     }
@@ -213,6 +270,11 @@ class VisualSearchProvider extends ChangeNotifier {
     _foodInteractionResult = null;
     _interactionsResult = null;
     _isCheckingInteractions = false;
+    _medicineDetails = null;
+    _translatedDetails = null;
+    _showTranslation = false;
+    _isLoadingDetails = false;
+    _detailsError = null;
   }
 
   Future<void> startPillIdentification(ImageSource source) async {
@@ -222,22 +284,15 @@ class VisualSearchProvider extends ChangeNotifier {
       _resetResults();
 
       final image = await repository.pickImage(source);
-      if (image == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (image == null) { _setState(VisualSearchState.initial); return; }
       final cropped = await repository.cropImage(image);
-      if (cropped == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (cropped == null) { _setState(VisualSearchState.initial); return; }
       _currentImage = cropped;
 
       final result = await identifyPillUseCase.execute(cropped);
       _pillResult = result;
       _setState(VisualSearchState.success);
 
-      // Save History
       await repository.saveSearchHistory(SearchHistoryModel(
         text: 'فحص حبة دواء: ${result['name']}',
         imagePath: cropped.path,
@@ -257,15 +312,9 @@ class VisualSearchProvider extends ChangeNotifier {
       _resetResults();
 
       final image = await repository.pickImage(source);
-      if (image == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (image == null) { _setState(VisualSearchState.initial); return; }
       final cropped = await repository.cropImage(image);
-      if (cropped == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (cropped == null) { _setState(VisualSearchState.initial); return; }
       _currentImage = cropped;
 
       final result = await checkCounterfeitUseCase.execute(cropped);
@@ -291,15 +340,9 @@ class VisualSearchProvider extends ChangeNotifier {
       _resetResults();
 
       final image = await repository.pickImage(source);
-      if (image == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (image == null) { _setState(VisualSearchState.initial); return; }
       final cropped = await repository.cropImage(image);
-      if (cropped == null) {
-        _setState(VisualSearchState.initial);
-        return;
-      }
+      if (cropped == null) { _setState(VisualSearchState.initial); return; }
       _currentImage = cropped;
 
       final result = await checkFoodInteractionUseCase.execute(cropped);
@@ -320,7 +363,7 @@ class VisualSearchProvider extends ChangeNotifier {
 
   Future<void> checkInteractions() async {
     if (_prescriptionResult == null || _prescriptionResult!.isEmpty) return;
-    
+
     try {
       _isCheckingInteractions = true;
       _interactionsResult = null;

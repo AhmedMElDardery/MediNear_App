@@ -641,7 +641,441 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
     );
   }
 
+  Widget _buildBoxResultWithDetails(
+    BuildContext context,
+    VisualSearchProvider provider,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    final details = provider.showTranslation
+        ? provider.translatedDetails
+        : provider.medicineDetails;
+    final name = '${provider.searchResult!['name']}';
+    final primaryColor = theme.colorScheme.primary;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Scanned Image ──────────────────────────────────────
+        if (provider.currentImage != null)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              children: [
+                Image.file(
+                  provider.currentImage!,
+                  width: double.infinity,
+                  height: 180,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(CupertinoIcons.photo, color: Colors.white, size: 12),
+                        const SizedBox(width: 4),
+                        Text('vs_image_scanned'.tr(context),
+                            style: const TextStyle(color: Colors.white, fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 20),
+
+        // ── Medicine Name Header ───────────────────────────────
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withValues(alpha: 0.15), primaryColor.withValues(alpha: 0.05)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: primaryColor.withValues(alpha: 0.2), width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: primaryColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.medication_rounded, color: primaryColor, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                    if (details != null && details['generic_name'] != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '${details['generic_name']}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Translate Button ───────────────────────────────────
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: OutlinedButton.icon(
+            onPressed: provider.isTranslating ? null : provider.toggleTranslation,
+            icon: provider.isTranslating
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor),
+                  )
+                : Icon(
+                    provider.showTranslation ? Icons.language : Icons.translate,
+                    color: primaryColor,
+                    size: 20,
+                  ),
+            label: Text(
+              provider.isTranslating
+                  ? 'vs_translating'.tr(context)
+                  : provider.showTranslation
+                      ? 'vs_translate_to_en'.tr(context)
+                      : 'vs_translate_to_ar'.tr(context),
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: primaryColor.withValues(alpha: 0.5), width: 1.5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Details Section ────────────────────────────────────
+        Text(
+          'vs_med_details_title'.tr(context),
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        if (provider.isLoadingDetails)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                CircularProgressIndicator(color: primaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  'vs_med_loading_details'.tr(context),
+                  style: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (provider.detailsError != null)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.error.withValues(alpha: 0.07),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Icon(CupertinoIcons.exclamationmark_circle, color: theme.colorScheme.error),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'vs_details_error'.tr(context),
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                ),
+                TextButton(
+                  onPressed: provider.retryLoadDetails,
+                  child: Text('vs_retry_details'.tr(context),
+                      style: TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          )
+        else if (details != null) ...[
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.category_rounded,
+              color: Colors.blueAccent,
+              label: 'vs_med_category'.tr(context),
+              value: '${details['category']}'),
+          const SizedBox(height: 10),
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.medical_information_rounded,
+              color: Colors.teal,
+              label: 'vs_med_indications'.tr(context),
+              value: '${details['indications']}'),
+          const SizedBox(height: 10),
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.schedule_rounded,
+              color: primaryColor,
+              label: 'vs_med_dosage'.tr(context),
+              value: '${details['dosage']}'),
+          const SizedBox(height: 10),
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.factory_rounded,
+              color: Colors.blueGrey,
+              label: 'vs_med_manufacturer'.tr(context),
+              value: '${details['manufacturer']}'),
+          const SizedBox(height: 10),
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.inventory_2_rounded,
+              color: Colors.brown,
+              label: 'vs_med_storage'.tr(context),
+              value: '${details['storage']}'),
+          const SizedBox(height: 10),
+          _buildDetailCard(context, isDark, theme,
+              icon: Icons.block_rounded,
+              color: Colors.deepOrange,
+              label: 'vs_med_contraindications'.tr(context),
+              value: '${details['contraindications']}'),
+          const SizedBox(height: 10),
+          // Side Effects list
+          if (details['side_effects'] is List && (details['side_effects'] as List).isNotEmpty)
+            _buildListDetailCard(
+              context, isDark, theme,
+              icon: CupertinoIcons.exclamationmark_triangle_fill,
+              color: Colors.orange,
+              label: 'vs_med_side_effects'.tr(context),
+              items: List<String>.from(details['side_effects']),
+            ),
+          const SizedBox(height: 10),
+          // Warnings list
+          if (details['warnings'] is List && (details['warnings'] as List).isNotEmpty)
+            _buildListDetailCard(
+              context, isDark, theme,
+              icon: CupertinoIcons.shield_fill,
+              color: Colors.red,
+              label: 'vs_med_warnings'.tr(context),
+              items: List<String>.from(details['warnings']),
+            ),
+          const SizedBox(height: 10),
+
+          // ── NEW FIELDS ───────────────────────────────────────────────────
+          if (details['pregnancy_category'] != null && details['pregnancy_category'] != 'Not available') ...[
+            _buildDetailCard(context, isDark, theme, 
+              icon: Icons.pregnant_woman_rounded, color: Colors.pink, 
+              label: 'vs_med_pregnancy_category'.tr(context), value: '${details['pregnancy_category']}'),
+            const SizedBox(height: 10),
+          ],
+          if (details['food_interactions'] != null && details['food_interactions'] != 'Not available') ...[
+            _buildDetailCard(context, isDark, theme, 
+              icon: Icons.restaurant_rounded, color: Colors.amber.shade700, 
+              label: 'vs_med_food_interactions'.tr(context), value: '${details['food_interactions']}'),
+            const SizedBox(height: 10),
+          ],
+          if (details['mechanism_of_action'] != null && details['mechanism_of_action'] != 'Not available') ...[
+            _buildDetailCard(context, isDark, theme, 
+              icon: Icons.settings_suggest_rounded, color: Colors.indigo, 
+              label: 'vs_med_mechanism'.tr(context), value: '${details['mechanism_of_action']}'),
+            const SizedBox(height: 10),
+          ],
+          if (details['overdose'] != null && details['overdose'] != 'Not available') ...[
+            _buildDetailCard(context, isDark, theme, 
+              icon: Icons.warning_amber_rounded, color: Colors.redAccent, 
+              label: 'vs_med_overdose'.tr(context), value: '${details['overdose']}'),
+            const SizedBox(height: 10),
+          ],
+          if (details['prescription_needed'] != null) ...[
+            _buildDetailCard(context, isDark, theme, 
+              icon: Icons.receipt_long_rounded, color: Colors.purpleAccent, 
+              label: 'vs_med_prescription'.tr(context), 
+              value: details['prescription_needed'] == true ? 'vs_med_prescription_yes'.tr(context) : 'vs_med_prescription_no'.tr(context)),
+            const SizedBox(height: 10),
+          ],
+          
+          // Lists
+          if (details['interactions'] is List && (details['interactions'] as List).isNotEmpty) ...[
+            _buildListDetailCard(context, isDark, theme, 
+              icon: Icons.compare_arrows_rounded, color: Colors.deepOrangeAccent, 
+              label: 'vs_med_interactions'.tr(context), items: List<String>.from(details['interactions'])),
+            const SizedBox(height: 10),
+          ],
+          if (details['alternatives'] is List && (details['alternatives'] as List).isNotEmpty) ...[
+            _buildListDetailCard(context, isDark, theme, 
+              icon: Icons.swap_horiz_rounded, color: Colors.green, 
+              label: 'vs_med_alternatives'.tr(context), items: List<String>.from(details['alternatives'])),
+            const SizedBox(height: 10),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _buildDetailCard(
+    BuildContext context,
+    bool isDark,
+    ThemeData theme, {
+    required IconData icon,
+    required Color color,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: isDark ? 0.1 : 0.06)),
+        boxShadow: isDark
+            ? []
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                      letterSpacing: 0.5,
+                    )),
+                const SizedBox(height: 5),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: theme.textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListDetailCard(
+    BuildContext context,
+    bool isDark,
+    ThemeData theme, {
+    required IconData icon,
+    required Color color,
+    required String label,
+    required List<String> items,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: isDark ? 0.1 : 0.06)),
+        boxShadow: isDark
+            ? []
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: Icon(icon, color: color, size: 18),
+              ),
+              const SizedBox(width: 14),
+              Text(label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                    letterSpacing: 0.5,
+                  )),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSuccessState(BuildContext context, VisualSearchProvider provider, bool isDark, ThemeData theme) {
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(30.0),
@@ -709,32 +1143,10 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
                 },
               )
 
-            // Box Result
+            // Box Result — Rich Details
             else if (provider.searchResult != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isDark
-                        ? [const Color(0xFF1E1E1E), const Color(0xFF2C2C2C)]
-                        : [Colors.white, const Color(0xFFF0FDF4)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.2), width: 1.5),
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.medication_rounded, size: 30, color: theme.colorScheme.primary),
-                    const SizedBox(height: 16),
-                    Text('${provider.searchResult!['name']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: theme.textTheme.bodyLarge?.color)),
-                    const SizedBox(height: 12),
-                    Text('${provider.searchResult!['description']}', textAlign: TextAlign.center, style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8), height: 1.5)),
-                  ],
-                ),
-              )
+              _buildBoxResultWithDetails(context, provider, isDark, theme)
+
 
             // Pill Result
             else if (provider.pillResult != null)
