@@ -368,6 +368,8 @@
   "vs_ai_extracting": "AI is extracting the medicine name",
   "vs_error_title": "Scan Failed",
   "vs_retry": "Retry",
+  "vs_details_error": "Failed to load medicine details.",
+  "vs_retry_details": "Retry Loading",
   "vs_success_title": "Match Successful!",
   "vs_confidence": "Confidence: {value}",
   "vs_authentic": "Box looks authentic and trusted",

@@ -216,6 +216,16 @@ class VisualSearchProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> showDetailsForMedicine(String medicineName) async {
+    _prescriptionResult = null;
+    _searchResult = {
+      "name": medicineName,
+      "description": "Selected from prescription"
+    };
+    notifyListeners();
+    await _loadMedicineDetails(medicineName);
+  }
+
   Future<void> startPrescriptionScan(ImageSource source) async {
     try {
       _setState(VisualSearchState.loading);

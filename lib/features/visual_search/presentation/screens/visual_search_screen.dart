@@ -825,7 +825,7 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'vs_details_error'.tr(context),
+                    provider.detailsError ?? 'vs_details_error'.tr(context),
                     style: TextStyle(color: theme.colorScheme.error),
                   ),
                 ),
@@ -1333,7 +1333,47 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () => provider.reset(),
+                onPressed: () {
+                  if (provider.prescriptionResult != null && provider.prescriptionResult!.isNotEmpty) {
+                    if (provider.prescriptionResult!.length == 1) {
+                      provider.showDetailsForMedicine(provider.prescriptionResult![0]['name']);
+                    } else {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: theme.scaffoldBackgroundColor,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+                        builder: (ctx) => SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Text('اختر الدواء لعرض تفاصيله وبدائله', 
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color)),
+                              ),
+                              ...provider.prescriptionResult!.map((med) => ListTile(
+                                leading: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle),
+                                  child: const Icon(Icons.medication, color: Colors.green),
+                                ),
+                                title: Text('${med['name']}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color)),
+                                subtitle: med['dosage'] != null ? Text('${med['dosage']}', style: TextStyle(color: theme.textTheme.bodyMedium?.color)) : null,
+                                onTap: () {
+                                  Navigator.pop(ctx);
+                                  provider.showDetailsForMedicine(med['name']);
+                                },
+                              )),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  } else {
+                    provider.reset();
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   elevation: 0,
