@@ -136,3 +136,4 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 }
+
