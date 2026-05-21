@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../domain/repositories/visual_search_repository.dart';
@@ -93,13 +94,49 @@ class VisualSearchProvider extends ChangeNotifier {
   }
 
   Future<void> openHistoryItem(SearchHistoryModel history) async {
-    if (history.text.startsWith('روشتة') || history.text.startsWith('Prescription')) {
-       _errorMessage = 'لا يمكن فتح تفاصيل روشتة كاملة من السجل حالياً. يمكنك مسح الروشتة مرة أخرى.';
-       _setState(VisualSearchState.error);
-       return;
+    _currentImage = File(history.imagePath);
+    
+    if (!_currentImage!.existsSync()) {
+      _errorMessage = 'الصورة لم تعد موجودة في الجهاز.';
+      _setState(VisualSearchState.error);
+      return;
     }
 
-    _currentImage = File(history.imagePath);
+    if (history.text.startsWith('روشتة') || history.text.startsWith('Prescription')) {
+      if (history.metadata != null && history.metadata!.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(history.metadata!);
+          _prescriptionResult = List<Map<String, dynamic>>.from(decoded.map((x) => Map<String, dynamic>.from(x)));
+          _setState(VisualSearchState.success);
+          return;
+        } catch (e) {
+          debugPrint("Failed to decode cached prescription: $e");
+        }
+      }
+
+      _setState(VisualSearchState.loading);
+      try {
+        final text = await extractTextUseCase.execute(_currentImage!);
+        if (text.trim().isEmpty) {
+          _errorMessage = 'لم نتمكن من التعرف على أي نص في الروشتة القديمة.';
+          _setState(VisualSearchState.error);
+          return;
+        }
+        final medications = await parsePrescriptionUseCase.execute(text);
+        if (medications.isNotEmpty) {
+          _prescriptionResult = medications;
+          _setState(VisualSearchState.success);
+        } else {
+          _errorMessage = 'لم يتعرف الذكاء الاصطناعي على أدوية واضحة.';
+          _setState(VisualSearchState.error);
+        }
+      } catch (e) {
+        _errorMessage = 'حدث خطأ أثناء تحميل الروشتة: $e';
+        _setState(VisualSearchState.error);
+      }
+      return;
+    }
+
     _setState(VisualSearchState.success);
     await showDetailsForMedicine(history.text);
   }
@@ -280,6 +317,7 @@ class VisualSearchProvider extends ChangeNotifier {
           text: 'روشتة: ${medications.length} أدوية',
           imagePath: cropped.path,
           timestamp: DateTime.now(),
+          metadata: jsonEncode(medications),
         ));
         await loadHistory();
 

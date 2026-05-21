@@ -4,11 +4,13 @@ class SearchHistoryModel extends HiveObject {
   final String text;
   final String imagePath;
   final DateTime timestamp;
+  final String? metadata;
 
   SearchHistoryModel({
     required this.text,
     required this.imagePath,
     required this.timestamp,
+    this.metadata,
   });
 }
 
@@ -26,18 +28,21 @@ class SearchHistoryModelAdapter extends TypeAdapter<SearchHistoryModel> {
       text: fields[0] as String,
       imagePath: fields[1] as String,
       timestamp: fields[2] as DateTime,
+      metadata: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SearchHistoryModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.text)
       ..writeByte(1)
       ..write(obj.imagePath)
       ..writeByte(2)
-      ..write(obj.timestamp);
+      ..write(obj.timestamp)
+      ..writeByte(3)
+      ..write(obj.metadata);
   }
 }
