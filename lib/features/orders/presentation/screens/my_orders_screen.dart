@@ -6,6 +6,7 @@ import '../manager/order_provider.dart'; // 🚀 استدعاء المدير
 import '../widgets/order_card.dart';
 import 'order_details_screen.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 class MyOrdersScreen extends ConsumerStatefulWidget {
   const MyOrdersScreen({super.key});
@@ -51,7 +52,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
-        title: "My Orders",
+        title: AppLocalizations.of(context)!.translate("myOrders"),
       ),
       // 🚀 استخدام Consumer لمراقبة حالة الطلبات
       body: Consumer(
@@ -68,7 +69,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                 TextField(
                   onChanged: (value) => setState(() => _searchText = value),
                   decoration: InputDecoration(
-                    hintText: "Search pharmacy or order ID...",
+                    hintText: AppLocalizations.of(context)!.translate("searchOrders"),
                     hintStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     filled: true,
@@ -86,16 +87,22 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                   children: [
                     Expanded(
                         child: _buildFilterMenu(
-                            title: "Filter By Status",
-                            currentValue: _selectedStatus,
+                            title: AppLocalizations.of(context)!.translate("filterStatus"),
+                            currentValue: _selectedStatus == "All" 
+                                ? AppLocalizations.of(context)!.translate("all")
+                                : _selectedStatus == "Completed" 
+                                    ? AppLocalizations.of(context)!.translate("completed")
+                                    : _selectedStatus == "Pending" 
+                                        ? AppLocalizations.of(context)!.translate("pending")
+                                        : AppLocalizations.of(context)!.translate("canceled"),
                             items: ["All", "Completed", "Pending", "Canceled"],
                             onSelected: (val) =>
                                 setState(() => _selectedStatus = val))),
                     const SizedBox(width: 10),
                     Expanded(
                         child: _buildFilterMenu(
-                            title: "Filter By Pharmacy",
-                            currentValue: _selectedPharmacy,
+                            title: AppLocalizations.of(context)!.translate("filterPharmacy"),
+                            currentValue: _selectedPharmacy == "All" ? AppLocalizations.of(context)!.translate("all") : _selectedPharmacy,
                             items: [
                               "All",
                               "MediNear",
@@ -153,7 +160,14 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
       onSelected: onSelected,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       itemBuilder: (context) => items
-          .map((choice) => PopupMenuItem(value: choice, child: Text(choice)))
+          .map((choice) {
+            String displayChoice = choice;
+            if (choice == "All") displayChoice = AppLocalizations.of(context)!.translate("all");
+            if (choice == "Completed") displayChoice = AppLocalizations.of(context)!.translate("completed");
+            if (choice == "Pending") displayChoice = AppLocalizations.of(context)!.translate("pending");
+            if (choice == "Canceled") displayChoice = AppLocalizations.of(context)!.translate("canceled");
+            return PopupMenuItem(value: choice, child: Text(displayChoice));
+          })
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -192,7 +206,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
       Icon(Icons.search_off,
           size: 80, color: Colors.grey.withValues(alpha: 0.5)),
       const SizedBox(height: 15),
-      Text("No orders found!",
+      Text(AppLocalizations.of(context)!.translate("noOrdersFound"),
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.bold, color: textColor))
     ]));

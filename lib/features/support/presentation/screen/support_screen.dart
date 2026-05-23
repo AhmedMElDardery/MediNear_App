@@ -529,8 +529,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 Icons.star_rounded, Colors.amber, itemsCount + 1,
                 onTap: () => _showFeedbackBottomSheet(context), theme: theme),
             _buildStaticOption(
-                "Privacy Policy",
-                "Terms and privacy policy",
+                context.tr("support_privacy"),
+                context.tr("support_privacy_desc"),
                 Icons.privacy_tip_rounded,
                 theme.colorScheme.secondary,
                 itemsCount + 2,

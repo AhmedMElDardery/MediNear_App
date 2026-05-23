@@ -186,7 +186,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               onPressed: () => provider.finishOnboarding(context),
               child: const Text(
                 "Skip",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color.fromARGB(255, 0, 150, 95)),
               ),
             ),
             const SizedBox(height: 20),

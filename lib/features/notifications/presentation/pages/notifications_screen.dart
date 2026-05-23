@@ -5,6 +5,7 @@ import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
 import '../widgets/notification_item_widget.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 // The notificationsProvider is now defined in global_providers.dart
 
@@ -69,7 +70,7 @@ class NotificationsScreen extends ConsumerWidget {
                                 child: FlexibleSpaceBar(
                                   titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
                                   title: Text(
-                                    'Notifications',
+                                    AppLocalizations.of(context)!.translate("notifications"),
                                     style: TextStyle(
                                       color: theme.textTheme.bodyLarge?.color,
                                       fontWeight: FontWeight.w800,
@@ -88,9 +89,9 @@ class NotificationsScreen extends ConsumerWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                _buildFilterButton(context, ref, 'All', theme.primaryColor, isDark),
+                                _buildFilterButton(context, ref, 'All', AppLocalizations.of(context)!.translate("all"), theme.primaryColor, isDark),
                                 const SizedBox(width: 12),
-                                _buildFilterButton(context, ref, 'Unread', theme.primaryColor, isDark),
+                                _buildFilterButton(context, ref, 'Unread', AppLocalizations.of(context)!.translate("unread"), theme.primaryColor, isDark),
                               ],
                             ),
                           ),
@@ -98,7 +99,7 @@ class NotificationsScreen extends ConsumerWidget {
                         if (notifications.isEmpty)
                           SliverFillRemaining(
                             hasScrollBody: false,
-                            child: _buildEmptyState(theme.textTheme.bodyMedium?.color),
+                            child: _buildEmptyState(context, theme.textTheme.bodyMedium?.color),
                           )
                         else
                           SliverPadding(
@@ -143,11 +144,11 @@ class NotificationsScreen extends ConsumerWidget {
                                         final deletedItem = provider.deleteItem(item.id);
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: const Text('Notification deleted'),
+                                            content: Text(AppLocalizations.of(context)!.translate("notificationDeleted")),
                                             behavior: SnackBarBehavior.floating,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                             action: SnackBarAction(
-                                              label: 'UNDO',
+                                              label: AppLocalizations.of(context)!.translate("undo"),
                                               textColor: theme.primaryColorLight,
                                               onPressed: () {
                                                 if (deletedItem != null) provider.restoreItem(deletedItem);
@@ -182,7 +183,7 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterButton(BuildContext context, WidgetRef ref, String text,
+  Widget _buildFilterButton(BuildContext context, WidgetRef ref, String text, String displayText,
       Color activeColor, bool isDark) {
     final provider = ref.watch(notificationsProvider);
     bool isSelected = provider.currentFilter == text;
@@ -210,7 +211,7 @@ class NotificationsScreen extends ConsumerWidget {
               : [],
         ),
         child: Text(
-          text,
+          displayText,
           style: TextStyle(
             color: isSelected
                 ? Colors.white
@@ -232,7 +233,7 @@ class NotificationsScreen extends ConsumerWidget {
         child: TextButton.icon(
           onPressed: provider.loadMore,
           icon: Icon(Icons.expand_more, color: color),
-          label: Text('Load More',
+          label: Text(AppLocalizations.of(context)!.translate("loadMore"),
               style: TextStyle(color: color, fontWeight: FontWeight.bold)),
           style: TextButton.styleFrom(
               backgroundColor: color.withValues(alpha: 0.1)),
@@ -241,7 +242,7 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState(Color? textColor) {
+  Widget _buildEmptyState(BuildContext context, Color? textColor) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +250,7 @@ class NotificationsScreen extends ConsumerWidget {
           Icon(Icons.notifications_off_outlined,
               size: 40, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text('No notifications',
+          Text(AppLocalizations.of(context)!.translate("noNotifications"),
               style: TextStyle(
                   color: textColor ?? Colors.grey[800],
                   fontSize: 18,
@@ -286,11 +287,11 @@ class NotificationsScreen extends ConsumerWidget {
             onPressed: () {
               provider.markAllAsRead();
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('All marked as read')));
+                  SnackBar(content: Text(AppLocalizations.of(context)!.translate("allMarkedAsRead"))));
             },
             icon: const Icon(Icons.done_all_rounded, color: Colors.white, size: 22),
-            label: const Text('Mark All as Read',
-                style: TextStyle(
+            label: Text(AppLocalizations.of(context)!.translate("markAllAsRead"),
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

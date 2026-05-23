@@ -17,6 +17,7 @@ import 'package:medinear_app/features/home/domain/entities/category_entity.dart'
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
+import 'package:medinear_app/core/widgets/app_shimmer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -29,6 +30,9 @@ class _HomeViewState extends ConsumerState<HomeScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
+
+  final GlobalKey _pharmaciesKey = GlobalKey();
+  final GlobalKey _medicinesKey = GlobalKey();
 
   @override
   void initState() {
@@ -189,32 +193,44 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               ],
 
               /// NEAR PHARMACIES
-              _buildSectionHeader(
-                title: AppLocalizations.of(context)!.translate("near_pharmacies"),
-                icon: Icons.local_pharmacy_rounded,
-                count: provider.pharmacies.length,
-                onSeeAll: () {
-                  final mapProv = ref.read(mapProvider);
-                  if (mapProv.isMedicineSearch) mapProv.toggleSearchType(false);
-                  mapProv.search(""); 
-                  ref.read(navigationProvider).changeIndex(3);
-                },
+              SizedBox(
+                key: _pharmaciesKey,
+                child: _buildSectionHeader(
+                  title: AppLocalizations.of(context)!.translate("near_pharmacies"),
+                  icon: Icons.local_pharmacy_rounded,
+                  count: provider.pharmacies.length,
+                  onSeeAll: () {
+                    final mapProv = ref.read(mapProvider);
+                    if (mapProv.isMedicineSearch) mapProv.toggleSearchType(false);
+                    mapProv.search(""); 
+                    ref.read(navigationProvider).changeIndex(3);
+                  },
+                ),
               ),
 
               const SizedBox(height: 12),
 
               SizedBox(
                 height: 175,
-                child: provider.filteredPharmacies.isEmpty
-                    ? _buildEmptyState(
-                        icon: Icons.local_pharmacy_outlined,
-                        message: provider.searchQuery.isNotEmpty
-                            ? AppLocalizations.of(context)!.translate(
-                              "no_pharmacies_match",
-                              params: {"query": provider.searchQuery},
-                            )
-                            : AppLocalizations.of(context)!.translate("no_pharmacies_nearby")
+                child: provider.isLocationLoading
+                    ? ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: 3,
+                        separatorBuilder: (_, __) => const SizedBox(width: 14),
+                        itemBuilder: (context, index) => const AppShimmer(width: 280, height: 175),
                       )
+                    : provider.filteredPharmacies.isEmpty
+                        ? _buildEmptyState(
+                            icon: Icons.local_pharmacy_outlined,
+                            message: provider.searchQuery.isNotEmpty
+                                ? AppLocalizations.of(context)!.translate(
+                                  "no_pharmacies_match",
+                                  params: {"query": provider.searchQuery},
+                                )
+                                : AppLocalizations.of(context)!.translate("no_pharmacies_nearby")
+                          )
                     : ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
@@ -246,16 +262,19 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               const SizedBox(height: 24),
 
               /// NEAR MEDICINES
-              _buildSectionHeader(
-                title: AppLocalizations.of(context)!.translate("near_medicines"),
-                icon: Icons.medication_rounded,
-                count: provider.medicines.length,
-                onSeeAll: () {
-                  final mapProv = ref.read(mapProvider);
-                  if (!mapProv.isMedicineSearch) mapProv.toggleSearchType(true);
-                  mapProv.search("");
-                  ref.read(navigationProvider).changeIndex(3);
-                },
+              SizedBox(
+                key: _medicinesKey,
+                child: _buildSectionHeader(
+                  title: AppLocalizations.of(context)!.translate("near_medicines"),
+                  icon: Icons.medication_rounded,
+                  count: provider.medicines.length,
+                  onSeeAll: () {
+                    final mapProv = ref.read(mapProvider);
+                    if (!mapProv.isMedicineSearch) mapProv.toggleSearchType(true);
+                    mapProv.search("");
+                    ref.read(navigationProvider).changeIndex(3);
+                  },
+                ),
               ),
 
               const SizedBox(height: 12),
@@ -263,16 +282,25 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               /// MEDICINES LIST
               SizedBox(
                 height: 210,
-                child: provider.filteredMedicines.isEmpty
-                    ? _buildEmptyState(
-                        icon: Icons.medication_outlined,
-                        message: provider.searchQuery.isNotEmpty
-                            ? AppLocalizations.of(context)!.translate(
-                              "no_mdicines_match",
-                              params: {"query": provider.searchQuery}
-                            )
-                            : AppLocalizations.of(context)!.translate("no_medicines_nearby"),
+                child: provider.isLocationLoading
+                    ? ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: 3,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) => const AppShimmer(width: 160, height: 210),
                       )
+                    : provider.filteredMedicines.isEmpty
+                        ? _buildEmptyState(
+                            icon: Icons.medication_outlined,
+                            message: provider.searchQuery.isNotEmpty
+                                ? AppLocalizations.of(context)!.translate(
+                                  "no_mdicines_match",
+                                  params: {"query": provider.searchQuery}
+                                )
+                                : AppLocalizations.of(context)!.translate("no_medicines_nearby"),
+                          )
                     : ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
@@ -417,16 +445,34 @@ class _HomeViewState extends ConsumerState<HomeScreen>
         children: [
           _StatChip(
             icon: Icons.local_pharmacy_rounded,
-            label: "${provider.pharmacies.length} Pharmacies",
+            label: "${provider.pharmacies.length} ${AppLocalizations.of(context)!.translate('pharmacies_tab')}",
             color: Theme.of(context).colorScheme.primary,
             bgColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            onTap: () {
+              if (_pharmaciesKey.currentContext != null) {
+                Scrollable.ensureVisible(
+                  _pharmaciesKey.currentContext!,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
           ),
           const SizedBox(width: 10),
           _StatChip(
             icon: Icons.medication_rounded,
-            label: "${provider.medicines.length} Medicines",
+            label: "${provider.medicines.length} ${AppLocalizations.of(context)!.translate('medications_tab')}",
             color: Colors.blue,
             bgColor: Colors.blue.withValues(alpha: 0.15),
+            onTap: () {
+              if (_medicinesKey.currentContext != null) {
+                Scrollable.ensureVisible(
+                  _medicinesKey.currentContext!,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
           ),
           const SizedBox(width: 10),
           _StatChip(
@@ -434,6 +480,9 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             label: AppLocalizations.of(context)!.translate("nearby"),
             color: Colors.orange,
             bgColor: Colors.orange.withValues(alpha: 0.15),
+            onTap: () {
+              ref.read(homeProvider).loadHome();
+            },
           ),
         ],
       ),
@@ -735,24 +784,31 @@ class _StatChip extends StatelessWidget {
   final String label;
   final Color color;
   final Color bgColor;
+  final VoidCallback? onTap;
 
   const _StatChip({
     required this.icon,
     required this.label,
     required this.color,
     required this.bgColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        decoration: BoxDecoration(
-          color: bgColor,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
-        ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
+            ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -773,6 +829,8 @@ class _StatChip extends StatelessWidget {
           ],
         ),
       ),
+    ),
+    ),
     );
   }
 }

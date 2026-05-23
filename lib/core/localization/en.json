@@ -406,5 +406,11 @@
   "vs_translating": "Translating...",
   "vs_details_error": "Could not load details",
   "vs_retry_details": "Retry",
-  "vs_image_scanned": "Scanned Image"
+  "vs_image_scanned": "Scanned Image",
+  "unread": "Unread",
+  "notificationDeleted": "Notification deleted",
+  "loadMore": "Load More",
+  "noNotifications": "No notifications",
+  "allMarkedAsRead": "All marked as read",
+  "markAllAsRead": "Mark All as Read"
 }

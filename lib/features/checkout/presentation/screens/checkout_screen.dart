@@ -6,6 +6,7 @@ import '../manager/checkout_provider.dart';
 import '../widgets/shipping_info_card.dart';
 import '../widgets/payment_method_card.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 final checkoutProvider =
     ChangeNotifierProvider.autoDispose<CheckoutProvider>((ref) {
@@ -72,7 +73,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
-        title: "Check Out",
+        title: AppLocalizations.of(context)!.translate("checkout"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -101,8 +102,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         width: 22,
                         child: CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2.5))
-                    : const Text("Confirm Order",
-                        style: TextStyle(
+                    : Text(AppLocalizations.of(context)!.translate("confirmOrder"),
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
@@ -123,7 +124,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Order Summary",
+        Text(AppLocalizations.of(context)!.translate("orderSummary"),
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
         const SizedBox(height: 10),
@@ -141,15 +142,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           child: Column(
             children: [
               _summaryRow(
-                  "Subtotal", "${subtotal.toStringAsFixed(2)} EGP", textColor),
+                  AppLocalizations.of(context)!.translate("subtotal"), "${subtotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", textColor),
               const SizedBox(height: 10),
-              _summaryRow("Delivery Fee", "Free",
+              _summaryRow(AppLocalizations.of(context)!.translate("deliveryFee"), AppLocalizations.of(context)!.translate("free"),
                   Theme.of(context).colorScheme.primary,
                   isBold: true),
               const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Divider(thickness: 0.5)),
-              _summaryRow("Grand Total", "${grandTotal.toStringAsFixed(2)} EGP",
+              _summaryRow(AppLocalizations.of(context)!.translate("grandTotal"), "${grandTotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}",
                   textColor,
                   isBold: true),
             ],
@@ -249,7 +250,7 @@ class _SuccessSheetState extends State<_SuccessSheet>
 
             const SizedBox(height: 24),
 
-            Text("Order Placed Successfully! 🎉",
+            Text(AppLocalizations.of(context)!.translate("orderPlaced"),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 20,
@@ -259,7 +260,9 @@ class _SuccessSheetState extends State<_SuccessSheet>
             const SizedBox(height: 10),
 
             Text(
-              "Your order is being prepared.\nWe'll notify you once it's on the way!",
+              AppLocalizations.of(context)!.translate("home") == "الرئيسية" 
+                  ? "جاري تجهيز طلبك.\nسنخبرك فور خروجه للتوصيل!"
+                  : "Your order is being prepared.\nWe'll notify you once it's on the way!",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
             ),
@@ -277,8 +280,8 @@ class _SuccessSheetState extends State<_SuccessSheet>
                       borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
-                child: const Text("Back to Home",
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context)!.translate("home"),
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold)),

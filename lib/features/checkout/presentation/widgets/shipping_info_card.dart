@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 class ShippingInfoCard extends ConsumerStatefulWidget {
   const ShippingInfoCard({super.key});
@@ -41,7 +43,7 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
          Text(
-          "Shipping Information",
+          AppLocalizations.of(context)!.translate("shippingInformation"),
           style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -63,15 +65,15 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
           child: Column(
             children: [
               // خانة الاسم العادية
-              _buildNormalTextField("Full Name", context),
+              _buildNormalTextField(AppLocalizations.of(context)!.translate("fullName"), context),
               const Divider(height: 15, thickness: 0.5),
 
               // 🚀 خانة التليفون الاحترافية (كود الدولة + الرقم)
-              _buildPhoneField("Phone Number", context),
+              _buildPhoneField(AppLocalizations.of(context)!.translate("phoneNumber"), context),
 
               const Divider(height: 15, thickness: 0.5),
               // خانة العنوان العادية
-              _buildNormalTextField("Full Address", context,
+              _buildNormalTextField(AppLocalizations.of(context)!.translate("fullAddress"), context,
                   icon: Icons.map_outlined),
             ],
           ),

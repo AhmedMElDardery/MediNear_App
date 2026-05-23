@@ -4,6 +4,8 @@ import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/provider/navigation_provider.dart';
 import 'bouncing_icon_button.dart';
 
+import 'package:medinear_app/core/localization/app_localizations.dart';
+
 class CustomBottomNavBar extends ConsumerWidget {
   const CustomBottomNavBar({super.key});
 
@@ -28,11 +30,11 @@ class CustomBottomNavBar extends ConsumerWidget {
         onTap: () {}, // Absorb taps
         child: Row(
           children: [
-            Expanded(child: _buildNavItem(context, Icons.bookmark_border_rounded, "Saved", 2, isDark, selectedIndex, nav)),
-            Expanded(child: _buildNavItem(context, Icons.shopping_cart_outlined, "Cart", 1, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.bookmark_border_rounded, AppLocalizations.of(context)!.translate("saved"), 2, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.shopping_cart_outlined, AppLocalizations.of(context)!.translate("cart"), 1, isDark, selectedIndex, nav)),
             const SizedBox(width: 70), // Leave space for the center FAB
-            Expanded(child: _buildNavItem(context, Icons.map_outlined, "Map", 3, isDark, selectedIndex, nav)),
-            Expanded(child: _buildNavItem(context, Icons.person_outline_rounded, "Profile", 4, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.map_outlined, AppLocalizations.of(context)!.translate("map"), 3, isDark, selectedIndex, nav)),
+            Expanded(child: _buildNavItem(context, Icons.person_outline_rounded, AppLocalizations.of(context)!.translate("profile"), 4, isDark, selectedIndex, nav)),
           ],
         ),
       ),

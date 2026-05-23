@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 class PaymentMethodCard extends StatelessWidget {
   const PaymentMethodCard({super.key});
@@ -12,7 +13,7 @@ class PaymentMethodCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Payment Method",
+          AppLocalizations.of(context)!.translate("paymentMethod"),
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
         ),
@@ -46,7 +47,7 @@ class PaymentMethodCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text("Paymob (Card Payment)",
+                  Text("Paymob (${AppLocalizations.of(context)!.translate('cardPayment')})",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: textColor,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 class AboutCard extends StatelessWidget {
   const AboutCard({super.key});
@@ -27,9 +28,9 @@ class AboutCard extends StatelessWidget {
             children: [
               Icon(Icons.account_circle,
                   color: theme.colorScheme.primary, size: 36),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Text(
-                "MediNear",
+                AppLocalizations.of(context)!.translate("aboutTitle"),
                 style: TextStyle(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w800,
@@ -47,14 +48,13 @@ class AboutCard extends StatelessWidget {
                   height: 1.5),
               children: [
                 TextSpan(
-                  text: "PharmaCare+",
+                  text: AppLocalizations.of(context)!.translate("aboutDescriptionPrefix"),
                   style: TextStyle(
                       color: theme.textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.bold),
                 ),
                 TextSpan(
-                  text:
-                      " is your trusted digital pharmacy, making access easy with a wide range of services and fast delivery.",
+                  text: AppLocalizations.of(context)!.translate("aboutDescription"),
                 ),
               ],
             ),

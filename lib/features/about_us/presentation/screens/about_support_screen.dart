@@ -4,7 +4,9 @@ import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../manager/about_provider.dart';
 import '../widgets/about_card.dart';
+import '../widgets/about_card.dart';
 import '../widgets/support_tile.dart';
+import 'package:medinear_app/core/localization/app_localizations.dart';
 
 class AboutSupportScreen extends ConsumerStatefulWidget {
   const AboutSupportScreen({super.key});
@@ -36,7 +38,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
           icon: Icon(Icons.arrow_back, color: theme.appBarTheme.foregroundColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("About Us & Support",
+        title: Text(AppLocalizations.of(context)!.translate("aboutSupport"),
             style: TextStyle(
                 color: theme.textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.bold,
@@ -60,7 +62,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
               children: [
                 const AboutCard(),
                 const SizedBox(height: 30),
-                Text("Support",
+                Text(AppLocalizations.of(context)!.translate("support"),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -75,7 +77,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
                     )),
 
                 const SizedBox(height: 30),
-                Text("Follow Us",
+                Text(AppLocalizations.of(context)!.translate("followUs"),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -107,7 +109,7 @@ class _AboutSupportScreenState extends ConsumerState<AboutSupportScreen> {
       ),
       child: Row(
         children: [
-          Text("App Version $version",
+          Text("${AppLocalizations.of(context)!.translate("appVersion")} $version",
               style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: theme.textTheme.bodyMedium?.color)),

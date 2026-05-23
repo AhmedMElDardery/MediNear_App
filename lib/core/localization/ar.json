@@ -394,5 +394,11 @@
   "vs_translating": "جارٍ الترجمة...",
   "vs_details_error": "تعذّر تحميل التفاصيل",
   "vs_retry_details": "إعادة المحاولة",
-  "vs_image_scanned": "الصورة الممسوحة"
+  "vs_image_scanned": "الصورة الممسوحة",
+  "unread": "غير مقروء",
+  "notificationDeleted": "تم حذف الإشعار",
+  "loadMore": "تحميل المزيد",
+  "noNotifications": "لا توجد إشعارات",
+  "allMarkedAsRead": "تم تحديد الكل كمقروء",
+  "markAllAsRead": "تحديد الكل كمقروء"
 }

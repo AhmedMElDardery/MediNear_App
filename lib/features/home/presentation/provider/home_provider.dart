@@ -49,12 +49,14 @@ class HomeProvider extends ChangeNotifier {
   }
 
   bool isLoading = true;
+  bool isLocationLoading = true;
   String? errorMessage;
   Position? currentLocation;
   String? currentLocationName;
 
   Future<void> loadHome() async {
     isLoading = true;
+    isLocationLoading = true;
     errorMessage = null;
     notifyListeners();
 
@@ -114,13 +116,20 @@ class HomeProvider extends ChangeNotifier {
             .then((value) => medicines = value);
       }
 
-      // استنى الإعلانات والصيدليات والأدوية والأقسام تخلص
-      await Future.wait([fetchAds, fetchCats, fetchPharmacies, fetchMedicines]);
-
+      // استنى الإعلانات والأقسام تخلص عشان نعرض الشاشة الأساسية بسرعة
+      await Future.wait([fetchAds, fetchCats]);
+      
       isLoading = false;
+      notifyListeners();
+
+      // استنى الصيدليات والأدوية
+      await Future.wait([fetchPharmacies, fetchMedicines]);
+
+      isLocationLoading = false;
       notifyListeners();
     } on DioException catch (e) {
       isLoading = false;
+      isLocationLoading = false;
       final errorMsg = e.response?.data?['message'] ??
           e.response?.data?.toString() ??
           e.message;
@@ -128,6 +137,7 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       isLoading = false;
+      isLocationLoading = false;
       errorMessage = e.toString().replaceAll("Exception: ", "");
       notifyListeners();
     }
