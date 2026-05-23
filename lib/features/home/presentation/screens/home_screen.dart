@@ -334,7 +334,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
               radius: 26,
               backgroundColor: Theme.of(context).colorScheme.primary,
               backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
-                  ? NetworkImage(photoUrl)
+                  ? CachedNetworkImageProvider(photoUrl, maxWidth: 100, maxHeight: 100) as ImageProvider
                   : null,
               child: (photoUrl == null || photoUrl.isEmpty)
                   ? Text(
@@ -537,6 +537,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                 child: CachedNetworkImage(
                   imageUrl: cat.image,
                   fit: BoxFit.contain,
+                  memCacheWidth: 150,
                   errorWidget: (context, url, error) => Icon(
                     Icons.medication_liquid_rounded,
                     color: Theme.of(context).textTheme.bodyMedium?.color,

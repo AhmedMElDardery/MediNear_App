@@ -62,6 +62,7 @@ class CategoriesScreen extends ConsumerWidget {
                             child: CachedNetworkImage(
                               imageUrl: cat.image,
                               fit: BoxFit.contain,
+                              memCacheWidth: 200,
                               errorWidget: (context, url, error) => Icon(
                                 Icons.medication_liquid_rounded,
                               color: Theme.of(context).unselectedWidgetColor,

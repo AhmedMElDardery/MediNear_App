@@ -605,6 +605,7 @@ class _PrescriptionCard extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  memCacheWidth: 600,
                   placeholder: (ctx, url) => Container(
                     height: 200,
                     color: Colors.blue.withValues(alpha: 0.05),
@@ -1251,6 +1252,7 @@ class _FullScreenImageViewer extends StatelessWidget {
               : CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.contain,
+                  memCacheWidth: 800,
                   placeholder: (_, __) => const CircularProgressIndicator(color: Colors.white),
                   errorWidget: (_, __, ___) => const Icon(Icons.broken_image_rounded, color: Colors.white, size: 80),
                 ),
@@ -1436,7 +1438,7 @@ class _MedicinePickerSheetState extends ConsumerState<_MedicinePickerSheet> {
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: m.imageUrl.isNotEmpty
-                                  ? CachedNetworkImage(imageUrl: m.imageUrl, width: 52, height: 52, fit: BoxFit.cover,
+                                  ? CachedNetworkImage(imageUrl: m.imageUrl, width: 52, height: 52, fit: BoxFit.cover, memCacheWidth: 100,
                                       errorWidget: (_, __, ___) => Container(width: 52, height: 52, color: Colors.redAccent.withValues(alpha: 0.1), child: const Icon(Icons.medication_rounded, color: Colors.redAccent)))
                                   : Container(width: 52, height: 52, decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.medication_rounded, color: Colors.redAccent)),
                             ),

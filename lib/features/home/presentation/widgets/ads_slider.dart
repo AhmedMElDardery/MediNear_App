@@ -166,6 +166,7 @@ class _AdsSliderState extends ConsumerState<AdsSlider> {
                             ? CachedNetworkImage(
                                 imageUrl: ad.iconUrl!,
                                 fit: BoxFit.cover,
+                                memCacheWidth: 100,
                                 errorWidget: (context, url, error) => const Icon(
                                   Icons.camera_alt_rounded,
                                   color: Colors.white,

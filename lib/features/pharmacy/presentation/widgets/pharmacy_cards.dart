@@ -47,6 +47,7 @@ class PharmacyMedicineCard extends StatelessWidget {
               child: medicine.image.startsWith('http')
                   ? CachedNetworkImage(imageUrl: medicine.image,
                       fit: BoxFit.cover,
+                      memCacheWidth: 150,
                       errorWidget: (_, __, ___) => Icon(Icons.medication,
                           color: theme.primaryColor, size: 40))
                   : Image.asset(medicine.image,
@@ -191,7 +192,7 @@ class PharmacyDoctorCard extends StatelessWidget {
             backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
             backgroundImage: doctor.image != null && doctor.image!.isNotEmpty
                 ? (doctor.image!.startsWith('http')
-                    ? CachedNetworkImageProvider(doctor.image!)
+                    ? CachedNetworkImageProvider(doctor.image!, maxWidth: 100, maxHeight: 100)
                     : AssetImage(doctor.image!)) as ImageProvider
                 : null,
             onBackgroundImageError: (_, __) {},
@@ -264,6 +265,7 @@ class PharmacyServiceCard extends StatelessWidget {
               child: service.image.startsWith('http')
                   ? CachedNetworkImage(imageUrl: service.image,
                       fit: BoxFit.cover,
+                      memCacheWidth: 150,
                       errorWidget: (_, __, ___) => Icon(Icons.medical_services,
                           color: theme.primaryColor, size: 40))
                   : Image.asset(service.image,
