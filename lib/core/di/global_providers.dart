@@ -160,14 +160,10 @@ final aboutProvider =
     ChangeNotifierProvider.autoDispose<AboutProvider>((ref) => AboutProvider());
 final profileProvider = ChangeNotifierProvider.autoDispose<ProfileProvider>(
     (ref) => ProfileProvider());
-<<<<<<< HEAD
 final orderProvider = ChangeNotifierProvider.autoDispose<OrderProvider>((ref) {
   final dataSource = OrderRemoteDataSource(dioClient: ref.read(dioClientProvider));
   return OrderProvider(dataSource);
 });
-=======
-final orderProvider =
-    ChangeNotifierProvider.autoDispose<OrderProvider>((ref) => OrderProvider());
 
 final pusherServiceProvider = Provider<PusherService>((ref) {
   return PusherService(dio: ref.read(dioClientProvider).dio);
@@ -187,8 +183,6 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
     localDataSource: ref.read(chatLocalDataSourceProvider),
   );
 });
-
->>>>>>> 417e6145c0e893ca10d1e5f2cd360ba803defe5c
 final chatsViewModelProvider =
     ChangeNotifierProvider.autoDispose<ChatsViewModel>(
         (ref) => ChatsViewModel(ref.read(chatRepositoryProvider)));
@@ -215,6 +209,7 @@ final notificationsProvider =
     repository: repository,
     tokenStorage: ref.read(tokenStorageProvider),
     userStorage: ref.read(userStorageProvider),
+    pusherService: ref.read(pusherServiceProvider),
   );
 });
 

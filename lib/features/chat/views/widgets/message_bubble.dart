@@ -22,9 +22,9 @@ class MessageBubble extends StatelessWidget {
     
     // تحديد نوع المرفق بناءً على الامتداد أو النص الافتراضي
     String path = message.filePath?.toLowerCase() ?? '';
-    bool isAudioPath = path.endsWith('.m4a') || path.endsWith('.mp3') || path.endsWith('.wav') || path.endsWith('.ogg');
+    bool isAudioPath = path.endsWith('.m4a') || path.endsWith('.mp3') || path.endsWith('.wav') || path.endsWith('.ogg') || path.endsWith('.webm') || path.endsWith('.aac');
     
-    bool isAudio = message.type == 'audio' || message.text == 'مقطع صوتي' || (message.filePath != null && isAudioPath);
+    bool isAudio = message.type == 'audio' || message.type == 'voice' || message.text == 'مقطع صوتي' || (message.filePath != null && isAudioPath);
     bool isDocument = message.type == 'file' || message.text == 'مستند';
     bool isLocation = message.text.contains('maps.google.com') || message.text.contains('google.com/maps');
     bool isContact = message.text.startsWith('جهة اتصال:');

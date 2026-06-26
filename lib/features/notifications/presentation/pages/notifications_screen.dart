@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
+import 'package:medinear_app/core/routes/routes.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
 import '../widgets/notification_item_widget.dart';
@@ -69,7 +71,7 @@ class NotificationsScreen extends ConsumerWidget {
                                   ? Colors.black.withValues(alpha: 0.2) 
                                   : Colors.white.withValues(alpha: 0.2),
                                 child: FlexibleSpaceBar(
-                                  titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+                                  titlePadding: const EdgeInsetsDirectional.only(start: 60, bottom: 16),
                                   title: Text(
                                     AppLocalizations.of(context)!.translate("notifications"),
                                     style: TextStyle(
@@ -98,9 +100,9 @@ class NotificationsScreen extends ConsumerWidget {
                                   icon: const Icon(Icons.delete_sweep_rounded),
                                   color: Colors.redAccent,
                                   onPressed: () {
-                                    ref.read(notificationsProvider).clearAllNotifications();
+                                    provider.clearAllNotifications();
                                   },
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -168,7 +170,14 @@ class NotificationsScreen extends ConsumerWidget {
                                       },
                                       child: NotificationItemWidget(
                                         item: item,
-                                        onTap: () => provider.markAsRead(item.id),
+                                        onTap: () {
+                                          provider.markAsRead(item.id);
+                                          if (item.actionUrl != null && item.actionUrl!.isNotEmpty) {
+                                            if (item.actionUrl!.startsWith('/')) {
+                                              context.push(item.actionUrl!);
+                                            }
+                                          }
+                                        },
                                       ),
                                     ),
                                   );

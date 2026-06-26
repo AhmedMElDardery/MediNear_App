@@ -19,7 +19,15 @@ class SplashProvider extends ChangeNotifier {
     await Future.wait([
       dotenv.load(fileName: ".env"),
       LocalStorageService.init(),
-      Firebase.initializeApp(),
+      Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyDugBhQ7bS88dIy2sjduP4A4qBAxgmmWG8',
+          appId: '1:96211022209:android:bc2e109c07bc52fb223880',
+          messagingSenderId: '96211022209',
+          projectId: 'newmedinear',
+          storageBucket: 'newmedinear.firebasestorage.app',
+        ),
+      ),
     ]);
 
     bool isFirstTime = LocalStorageService.isFirstTime();

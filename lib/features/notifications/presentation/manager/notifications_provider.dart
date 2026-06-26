@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
-import 'package:medinear_app/core/services/pusher_service.dart';
+import 'package:medinear_app/core/network/pusher_service.dart';
 import 'package:medinear_app/core/services/token_storage.dart';
 import 'package:medinear_app/core/services/user_storage.dart';
 import '../../domain/entities/notification_entity.dart';
@@ -14,6 +14,7 @@ class NotificationsProvider extends ChangeNotifier {
   final NotificationsRepository repository;
   final TokenStorage tokenStorage;
   final UserStorage userStorage;
+  final PusherService pusherService;
 
   List<NotificationEntity> _notifications = [];
   String _currentFilter = 'All';
@@ -24,18 +25,15 @@ class NotificationsProvider extends ChangeNotifier {
   int _lastPage = 1;
   int _unreadCount = 0;
 
-<<<<<<< HEAD
+  bool _isDisposed = false;
+
   NotificationsProvider({
     required this.getNotificationsUseCase,
     required this.repository,
     required this.tokenStorage,
     required this.userStorage,
+    required this.pusherService,
   }) {
-=======
-  bool _isDisposed = false;
-
-  NotificationsProvider({required this.getNotificationsUseCase}) {
->>>>>>> 417e6145c0e893ca10d1e5f2cd360ba803defe5c
     fetchData();
     _initPusher();
   }
@@ -48,63 +46,51 @@ class NotificationsProvider extends ChangeNotifier {
       return;
     }
 
-    final channelName = 'private-App.Models.User.${user.id}';
-    final eventName = 'Illuminate\\\\Notifications\\\\Events\\\\BroadcastNotificationCreated';
+    await pusherService.subscribeToNotifications(user.id.toString(), (event) {
+      if (event.eventName.startsWith('pusher')) return;
 
-    await PusherService().initPusher(
-      appKey: '0f70acb0d542c5b87ebf',
-      cluster: 'eu',
-      channelName: channelName,
-      eventName: eventName,
-      token: token,
-      onSubscriptionSucceeded: (channelName, data) {
-        debugPrint('Pusher Subscribed to $channelName');
-      },
-      onSubscriptionError: (message, error) {
-        debugPrint('Pusher Subscription Error: $message - $error');
-      },
-      onConnectionStateChange: (currentState, previousState) {
-        debugPrint('Pusher Connection State: $currentState');
-      },
-      onErrorCallback: (message, code, e) {
-        debugPrint('Pusher Error: $message - $code - $e');
-      },
-      onEvent: (event) {
-        if (event.eventName.startsWith('pusher')) return;
-
-        try {
-          dynamic payload = event.data;
-          if (payload is String) {
-            payload = jsonDecode(payload);
-          }
-          if (payload is String) {
-            payload = jsonDecode(payload);
-          }
-          
-          final newNotification = NotificationModel.fromJson({
-            'id': payload['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
-            'type': payload['type'] ?? '',
-            'data': {
-              'title': payload['title'] ?? payload['data']?['title'] ?? 'New Notification',
-              'message': payload['message'] ?? payload['data']?['message'] ?? '',
-              'type': payload['type'] ?? payload['data']?['type'] ?? 'info',
-              'action_url': payload['action_url'] ?? payload['data']?['action_url'],
-            },
-            'created_at': payload['created_at'] ?? DateTime.now().toIso8601String(),
-            'read_at': null,
-          });
-          
-          addRealtimeNotification(newNotification);
-        } catch (e, stack) {
-          debugPrint('Pusher Parse Error: $e');
+      try {
+        dynamic payload = event.data;
+        if (payload is String) {
+          payload = jsonDecode(payload);
         }
-      },
-    );
+        if (payload is String) {
+          payload = jsonDecode(payload);
+        }
+        
+        final newNotification = NotificationModel.fromJson({
+          'id': payload['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          'type': payload['type'] ?? '',
+          'data': {
+            'title': payload['title'] ?? payload['data']?['title'] ?? 'New Notification',
+            'message': payload['message'] ?? payload['data']?['message'] ?? '',
+            'type': payload['type'] ?? payload['data']?['type'] ?? 'info',
+            'action_url': payload['action_url'] ?? payload['data']?['action_url'],
+          },
+          'created_at': payload['created_at'] ?? DateTime.now().toIso8601String(),
+          'read_at': null,
+        });
+        
+        // Hide chat notifications
+        if (newNotification.title.contains('رسالة') || newNotification.type.toLowerCase().contains('chat')) {
+          return;
+        }
+        
+        addRealtimeNotification(newNotification);
+      } catch (e, stack) {
+        debugPrint('Pusher Parse Error: $e');
+      }
+    });
   }
 
   @override
   void dispose() {
     _isDisposed = true;
+    userStorage.loadUser().then((user) {
+      if (user != null) {
+        pusherService.unsubscribeFromNotifications(user.id.toString());
+      }
+    });
     super.dispose();
   }
 
@@ -122,10 +108,11 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   List<NotificationEntity> get displayedNotifications {
+    var filtered = _notifications.where((n) => !n.title.contains('رسالة') && !n.type.toLowerCase().contains('chat'));
     if (_currentFilter == 'Unread') {
-      return _notifications.where((n) => !n.isRead).toList();
+      return filtered.where((n) => !n.isRead).toList();
     }
-    return _notifications;
+    return filtered.toList();
   }
 
   bool get hasMoreItems => _currentPage < _lastPage;
@@ -238,12 +225,6 @@ class NotificationsProvider extends ChangeNotifier {
     _notifications.clear();
     _unreadCount = 0;
     notifyListeners();
-  }
-  
-  @override
-  void dispose() {
-    PusherService().disconnect();
-    super.dispose();
   }
 }
 

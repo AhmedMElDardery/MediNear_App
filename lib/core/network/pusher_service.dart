@@ -6,6 +6,9 @@ class PusherService {
   final Dio dio;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
   bool _isInitialized = false;
+  
+  // Store listeners by channel name
+  final Map<String, Function(PusherEvent)> _channelListeners = {};
 
   PusherService({required this.dio});
 
@@ -24,7 +27,16 @@ class PusherService {
           log("Pusher Error: $message");
         },
         onEvent: (PusherEvent event) {
-          log("Global Event: ${event.eventName}");
+          log("Global Event Received: Channel: ${event.channelName}, Event: ${event.eventName}");
+          final listener = _channelListeners[event.channelName];
+          if (listener != null) {
+            listener(event);
+          } else {
+             // Fallback for empty channel or global
+             for (var l in _channelListeners.values) {
+                l(event);
+             }
+          }
         },
       );
       await _pusher.connect();
@@ -57,12 +69,10 @@ class PusherService {
     try {
       // Laravel Echo prefixes private channels with 'private-'
       final channelName = 'private-chat.$sessionId';
+      _channelListeners[channelName] = onMessage;
+      
       await _pusher.subscribe(
         channelName: channelName,
-        onEvent: (event) {
-          log("Channel Event: ${event.eventName}");
-          onMessage(event);
-        },
       );
       log("Subscribed to $channelName");
     } catch (e) {
@@ -72,10 +82,38 @@ class PusherService {
 
   Future<void> unsubscribeFromChat(int sessionId) async {
     try {
-      await _pusher.unsubscribe(channelName: 'private-chat.$sessionId');
-      log("Unsubscribed from private-chat.$sessionId");
+      final channelName = 'private-chat.$sessionId';
+      await _pusher.unsubscribe(channelName: channelName);
+      _channelListeners.remove(channelName);
+      log("Unsubscribed from $channelName");
     } catch (e) {
       log("Unsubscribe Error: $e");
+    }
+  }
+
+  Future<void> subscribeToNotifications(String userId, Function(PusherEvent) onMessage) async {
+    await init();
+    try {
+      final channelName = 'private-App.Models.User.$userId';
+      _channelListeners[channelName] = onMessage;
+      
+      await _pusher.subscribe(
+        channelName: channelName,
+      );
+      log("Subscribed to $channelName");
+    } catch (e) {
+      log("Subscribe Notifications Error: $e");
+    }
+  }
+
+  Future<void> unsubscribeFromNotifications(String userId) async {
+    try {
+      final channelName = 'private-App.Models.User.$userId';
+      await _pusher.unsubscribe(channelName: channelName);
+      _channelListeners.remove(channelName);
+      log("Unsubscribed from notifications ($channelName)");
+    } catch (e) {
+      log("Unsubscribe Notifications Error: $e");
     }
   }
 }
