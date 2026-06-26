@@ -69,7 +69,8 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                 TextField(
                   onChanged: (value) => setState(() => _searchText = value),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)!.translate("searchOrders"),
+                    hintText:
+                        AppLocalizations.of(context)!.translate("searchOrders"),
                     hintStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     filled: true,
@@ -82,35 +83,62 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // 2. فلاتر الحالة والصيدلية
+                // 2. فلاتر الحالة (Tabs) و الصيدلية (Icon Filter)
                 Row(
                   children: [
                     Expanded(
-                        child: _buildFilterMenu(
-                            title: AppLocalizations.of(context)!.translate("filterStatus"),
-                            currentValue: _selectedStatus == "All" 
-                                ? AppLocalizations.of(context)!.translate("all")
-                                : _selectedStatus == "Completed" 
-                                    ? AppLocalizations.of(context)!.translate("completed")
-                                    : _selectedStatus == "Pending" 
-                                        ? AppLocalizations.of(context)!.translate("pending")
-                                        : AppLocalizations.of(context)!.translate("canceled"),
-                            items: ["All", "Completed", "Pending", "Canceled"],
-                            onSelected: (val) =>
-                                setState(() => _selectedStatus = val))),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildStatusTab("All",
+                                AppLocalizations.of(context)!.translate("all")),
+                            _buildStatusTab(
+                                "Pending",
+                                AppLocalizations.of(context)!
+                                    .translate("pending")),
+                            _buildStatusTab(
+                                "Completed",
+                                AppLocalizations.of(context)!
+                                    .translate("completed")),
+                            _buildStatusTab(
+                                "Canceled",
+                                AppLocalizations.of(context)!
+                                    .translate("canceled")),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(
-                        child: _buildFilterMenu(
-                            title: AppLocalizations.of(context)!.translate("filterPharmacy"),
-                            currentValue: _selectedPharmacy == "All" ? AppLocalizations.of(context)!.translate("all") : _selectedPharmacy,
-                            items: [
-                              "All",
-                              "MediNear",
-                              "El-Ezaby",
-                              "Seif Pharmacy"
-                            ],
-                            onSelected: (val) =>
-                                setState(() => _selectedPharmacy = val))),
+                    // Pharmacy Filter as a cool circular button
+                    PopupMenuButton<String>(
+                      onSelected: (val) =>
+                          setState(() => _selectedPharmacy = val),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      itemBuilder: (context) =>
+                          ["All", "MediNear", "El-Ezaby", "Seif Pharmacy"]
+                              .map((choice) => PopupMenuItem(
+                                    value: choice,
+                                    child: Text(choice == "All"
+                                        ? AppLocalizations.of(context)!
+                                            .translate("all")
+                                        : choice),
+                                  ))
+                              .toList(),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.filter_list,
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 25),
@@ -151,50 +179,27 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
 
   // --- Widgets مساعدة ---
 
-  Widget _buildFilterMenu(
-      {required String title,
-      required String currentValue,
-      required List<String> items,
-      required Function(String) onSelected}) {
-    return PopupMenuButton<String>(
-      onSelected: onSelected,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      itemBuilder: (context) => items
-          .map((choice) {
-            String displayChoice = choice;
-            if (choice == "All") displayChoice = AppLocalizations.of(context)!.translate("all");
-            if (choice == "Completed") displayChoice = AppLocalizations.of(context)!.translate("completed");
-            if (choice == "Pending") displayChoice = AppLocalizations.of(context)!.translate("pending");
-            if (choice == "Canceled") displayChoice = AppLocalizations.of(context)!.translate("canceled");
-            return PopupMenuItem(value: choice, child: Text(displayChoice));
-          })
-          .toList(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+  Widget _buildStatusTab(String status, String displayTitle) {
+    final isSelected = _selectedStatus == status;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return GestureDetector(
+      onTap: () => setState(() => _selectedStatus = status),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title,
-                style: const TextStyle(color: Colors.white70, fontSize: 10)),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Text(currentValue,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13),
-                        overflow: TextOverflow.ellipsis)),
-                const Icon(Icons.keyboard_arrow_down,
-                    color: Colors.white, size: 18),
-              ],
-            ),
-          ],
+          color:
+              isSelected ? primaryColor : primaryColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          displayTitle,
+          style: TextStyle(
+            color: isSelected ? Colors.white : primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -202,13 +207,32 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
 
   Widget _buildEmptyState(Color? textColor) {
     return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Icon(Icons.search_off,
-          size: 80, color: Colors.grey.withValues(alpha: 0.5)),
-      const SizedBox(height: 15),
-      Text(AppLocalizations.of(context)!.translate("noOrdersFound"),
-          style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: textColor))
-    ]));
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.receipt_long,
+                size: 60, color: Theme.of(context).colorScheme.primary),
+          ),
+          const SizedBox(height: 20),
+          Text(AppLocalizations.of(context)!.translate("noOrdersFound"),
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
+          const SizedBox(height: 10),
+          Text(
+            AppLocalizations.of(context)?.translate("home") == "الرئيسية"
+                ? "لا توجد طلبات سابقة لتظهر هنا."
+                : "Looks like you haven't placed any orders yet.",
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          ),
+        ],
+      ),
+    );
   }
 }

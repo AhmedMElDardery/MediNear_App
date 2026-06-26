@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // مسارات نسبية
 import '../../data/datasources/checkout_remote_data_source.dart';
+import '../../data/models/checkout_summary_model.dart';
 import '../../../cart/data/models/cart_item_model.dart';
 
 class CheckoutProvider extends ChangeNotifier {
@@ -18,6 +19,11 @@ class CheckoutProvider extends ChangeNotifier {
   ];
 
   late Map<String, dynamic> _selectedCountry;
+  
+  CheckoutSummaryModel? summary;
+  bool isLoadingSummary = false;
+  bool isApplyingCoupon = false;
+  String paymentMethod = 'cash'; // 'cash' or 'paymob'
 
   CheckoutProvider() {
     _selectedCountry = countries[0];
@@ -33,31 +39,76 @@ class CheckoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> confirmOrder(
-      double totalAmount, List<CartItemModel> cartItems) async {
+  void setPaymentMethod(String method) {
+    paymentMethod = method;
+    notifyListeners();
+  }
+
+  Future<void> fetchSummary() async {
+    isLoadingSummary = true;
+    notifyListeners();
+
+    summary = await _dataSource.getCheckoutSummary();
+
+    isLoadingSummary = false;
+    notifyListeners();
+  }
+
+  Future<void> applyCoupon(String code) async {
+    if (code.isEmpty) return;
+    
+    isApplyingCoupon = true;
+    notifyListeners();
+
+    final couponResult = await _dataSource.applyCoupon(code);
+    if (couponResult != null) {
+      // update the summary with the new numbers from coupon
+      summary = CheckoutSummaryModel(
+        pharmacyId: summary?.pharmacyId,
+        totalItems: summary?.totalItems,
+        subTotal: couponResult.newSubtotal ?? couponResult.subTotal,
+        deliveryFee: couponResult.deliveryFee,
+        taxAmount: couponResult.taxAmount,
+        grandTotal: couponResult.grandTotal,
+        couponCode: couponResult.couponCode,
+        couponTitle: couponResult.couponTitle,
+        originalSubtotal: couponResult.originalSubtotal,
+        discountAmount: couponResult.discountAmount,
+        newSubtotal: couponResult.newSubtotal,
+      );
+    }
+
+    isApplyingCoupon = false;
+    notifyListeners();
+  }
+
+  Future<String?> confirmOrder(List<CartItemModel> cartItems, int pharmacyId) async {
     if (nameController.text.isEmpty ||
         phoneController.text.isEmpty ||
         addressController.text.isEmpty) {
-      return false;
+      return "empty_fields";
     }
 
     _isLoading = true;
     notifyListeners();
 
     final orderData = {
+      'pharmacy_id': pharmacyId,
       'name': nameController.text,
-      'phone': '${_selectedCountry['code']} ${phoneController.text}',
+      'phone': phoneController.text, // Sending raw phone number without country code
       'address': addressController.text,
-      'total': totalAmount,
-      'items': cartItems.map((e) => e.toJson()).toList(),
+      'payment_method': paymentMethod,
     };
 
-    bool isSuccess = await _dataSource.placeOrder(orderData);
+    final result = await _dataSource.placeOrder(orderData);
 
     _isLoading = false;
     notifyListeners();
 
-    return isSuccess;
+    if (result['success'] == true) {
+      return result['payment_url'] ?? "cash_success";
+    }
+    return "error:${result['message'] ?? 'Unknown API error'}";
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../domain/entities/notification_entity.dart';
 
 class NotificationItemWidget extends StatelessWidget {
@@ -11,10 +12,54 @@ class NotificationItemWidget extends StatelessWidget {
     required this.onTap,
   });
 
+  IconData _getIconForType() {
+    switch (item.notificationType) {
+      case 'success':
+        return Icons.check_circle_outline;
+      case 'error':
+        return Icons.error_outline;
+      case 'warning':
+        return Icons.warning_amber_rounded;
+      case 'info':
+      default:
+        return Icons.info_outline_rounded;
+    }
+  }
+
+  Color _getColorForType() {
+    switch (item.notificationType) {
+      case 'success':
+        return Colors.green;
+      case 'error':
+        return Colors.redAccent;
+      case 'warning':
+        return Colors.orange;
+      case 'info':
+      default:
+        return Colors.blueAccent;
+    }
+  }
+
+  String _formatTime() {
+    final now = DateTime.now();
+    final difference = now.difference(item.createdAt);
+
+    if (difference.inDays > 0) {
+      return DateFormat('MMM d, yyyy').format(item.createdAt);
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final iconColor = _getColorForType();
 
     return GestureDetector(
       onTap: onTap,
@@ -25,7 +70,7 @@ class NotificationItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black.withOpacity(0.4) : item.iconColor.withOpacity(0.08),
+              color: isDark ? Colors.black.withOpacity(0.4) : iconColor.withOpacity(0.08),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -41,7 +86,7 @@ class NotificationItemWidget extends StatelessWidget {
                 Container(
                   width: 5,
                   decoration: BoxDecoration(
-                    color: item.isRead ? Colors.transparent : item.iconColor,
+                    color: item.isRead ? Colors.transparent : iconColor,
                   ),
                 ),
                 Expanded(
@@ -55,10 +100,10 @@ class NotificationItemWidget extends StatelessWidget {
                           height: 52,
                           width: 52,
                           decoration: BoxDecoration(
-                            color: item.iconColor.withOpacity(isDark ? 0.2 : 0.1),
+                            color: iconColor.withOpacity(isDark ? 0.2 : 0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Icon(item.icon, color: item.iconColor, size: 26),
+                          child: Icon(_getIconForType(), color: iconColor, size: 26),
                         ),
                         const SizedBox(width: 16),
                         // 📝 Text Content
@@ -84,7 +129,7 @@ class NotificationItemWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    item.time,
+                                    _formatTime(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -95,7 +140,7 @@ class NotificationItemWidget extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                item.body,
+                                item.message,
                                 style: TextStyle(
                                   fontSize: 13.5,
                                   height: 1.4,

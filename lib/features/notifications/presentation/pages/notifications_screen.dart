@@ -6,6 +6,7 @@ import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
 import '../widgets/notification_item_widget.dart';
 import 'package:medinear_app/core/localization/app_localizations.dart';
+import '../../data/models/notification_model.dart';
 
 // The notificationsProvider is now defined in global_providers.dart
 
@@ -92,6 +93,14 @@ class NotificationsScreen extends ConsumerWidget {
                                 _buildFilterButton(context, ref, 'All', AppLocalizations.of(context)!.translate("all"), theme.primaryColor, isDark),
                                 const SizedBox(width: 12),
                                 _buildFilterButton(context, ref, 'Unread', AppLocalizations.of(context)!.translate("unread"), theme.primaryColor, isDark),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_sweep_rounded),
+                                  color: Colors.redAccent,
+                                  onPressed: () {
+                                    ref.read(notificationsProvider).clearAllNotifications();
+                                  },
+                                )
                               ],
                             ),
                           ),
@@ -226,18 +235,20 @@ class NotificationsScreen extends ConsumerWidget {
 
   Widget _buildLoadMoreButton(
       BuildContext context, WidgetRef ref, Color color) {
-    final provider = ref.read(notificationsProvider);
+    final provider = ref.watch(notificationsProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Center(
-        child: TextButton.icon(
-          onPressed: provider.loadMore,
-          icon: Icon(Icons.expand_more, color: color),
-          label: Text(AppLocalizations.of(context)!.translate("loadMore"),
-              style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-          style: TextButton.styleFrom(
-              backgroundColor: color.withValues(alpha: 0.1)),
-        ),
+        child: provider.isLoadingMore
+            ? CircularProgressIndicator(color: color)
+            : TextButton.icon(
+                onPressed: provider.loadMore,
+                icon: Icon(Icons.expand_more, color: color),
+                label: Text(AppLocalizations.of(context)!.translate("loadMore"),
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+                style: TextButton.styleFrom(
+                    backgroundColor: color.withValues(alpha: 0.1)),
+              ),
       ),
     );
   }

@@ -1,4 +1,4 @@
-import '../entities/notification_entity.dart';
+import '../../data/models/notification_response_model.dart';
 import '../repositories/notifications_repository.dart';
 
 class GetNotificationsUseCase {
@@ -6,7 +6,7 @@ class GetNotificationsUseCase {
 
   GetNotificationsUseCase(this.repository);
 
-  Future<List<NotificationEntity>> execute() async {
-    return await repository.getNotifications();
+  Future<NotificationResponseModel> execute({int page = 1}) async {
+    return await repository.getNotifications(page: page);
   }
 }

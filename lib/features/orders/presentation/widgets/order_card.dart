@@ -35,32 +35,69 @@ class OrderCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 15),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
+              color: statusColor.withValues(alpha: 0.08),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             )
           ],
         ),
         child: Column(
           children: [
-            // 1. الصف الأول: اللوجو + الاسم + الحالة
+            // 1. Order ID & Status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Order #${order.id}",
+                  style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    order.status.toUpperCase(),
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // 2. Pharmacy Info
             Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
                   child: Icon(Icons.local_pharmacy,
-                      color: Theme.of(context).colorScheme.primary),
+                      color: Theme.of(context).colorScheme.primary, size: 24),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,87 +110,68 @@ class OrderCard extends StatelessWidget {
                             color: textColor),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        order.location,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 12),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on,
+                              size: 14, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              order.location,
+                              style: TextStyle(
+                                  color: Colors.grey[500], fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ),
-                // بادج الحالة الملون
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    order.status,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
 
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: 16),
               child: Divider(thickness: 0.5),
             ),
 
-            // 2. الصف الثاني: عدد العناصر والسعر
+            // 3. Footer: Date, Items, and Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Items: ${order.itemsCount}",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: textColor)),
-                Text(
-                  "${order.total} EGP",
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      order.date,
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "${order.itemsCount} Items",
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            // 3. الصف الثالث: التاريخ + زرار View Details (اللي رجعناه) 👇
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Date: ${order.date}",
-                  style: const TextStyle(color: Colors.grey, fontSize: 11),
-                ),
-                // زرار التفاصيل (شكل بس، والضغطة بتمسكها الكارت كله)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.primary),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        "View Details",
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Text(
+                      "${order.total} EGP",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
                       ),
-                      const SizedBox(width: 5),
-                      Icon(Icons.arrow_forward_ios,
-                          size: 10, color: Theme.of(context).colorScheme.primary),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(Icons.arrow_forward_ios,
+                        size: 16, color: Colors.grey[400]),
+                  ],
                 ),
               ],
             ),

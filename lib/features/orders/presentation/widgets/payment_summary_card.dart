@@ -13,62 +13,72 @@ class PaymentSummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 5))
+              blurRadius: 15,
+              offset: const Offset(0, 8))
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Payment Summary",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
-          const SizedBox(height: 15),
-
-          // ✅ التعديل الأول: الشحن بقى مجاني وبلون أخضر
+          Row(
+            children: [
+              Icon(Icons.receipt_long,
+                  color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 10),
+              Text("Payment Summary",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: textColor)),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildRow("Subtotal", "$totalOrderPrice EGP", textColor,
+              isBold: false),
+          const SizedBox(height: 12),
+          _buildRow("Shipping", "Free", Theme.of(context).colorScheme.primary,
+              isBold: true),
+          const SizedBox(height: 12),
+          _buildRow("Payment Type", "Paymob Visa", textColor, isBold: false),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Divider(thickness: 0.5),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Shipping :",
+              Text("Grand Total",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: textColor,
-                      fontSize: 14)),
-              Text("Free",
+                      fontSize: 16,
+                      color: textColor)),
+              Text("$totalOrderPrice EGP",
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14)),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.primary)),
             ],
           ),
-          const SizedBox(height: 10),
-
-          // ✅ التعديل التاني: شيلنا الـ 20 جنيه من الإجمالي
-          _buildRow("Total Price :", "$totalOrderPrice EGP", textColor),
-          const SizedBox(height: 10),
-
-          _buildRow("Payment Type :", "Paymob Visa", textColor),
         ],
       ),
     );
   }
 
   // دالة مساعدة للسطور العادية
-  Widget _buildRow(String label, String value, Color? textColor) {
+  Widget _buildRow(String label, String value, Color? valueColor,
+      {bool isBold = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: textColor, fontSize: 14)),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
         Text(value,
             style: TextStyle(
-                color: textColor?.withValues(alpha: 0.7),
-                fontWeight: FontWeight.bold,
+                color: valueColor,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
                 fontSize: 14)),
       ],
     );

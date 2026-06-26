@@ -1,71 +1,56 @@
-import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import '../../../../core/network/dio_clilent.dart'; // Typo in filename in original code
+import '../models/notification_response_model.dart';
 import '../models/notification_model.dart';
 
 class NotificationsRemoteDataSource {
-  Future<List<NotificationModel>> fetchNotificationsFromApi() async {
-    await Future.delayed(const Duration(seconds: 1));
+  final DioClient dioClient;
 
-    return [
-      NotificationModel(
-          id: '1',
-          title: 'Medication Reminder',
-          body: 'Time to take your Lipitor 20mg.',
-          time: '5m ago',
-          icon: Icons.medication,
-          iconColor: Colors.redAccent),
-      NotificationModel(
-          id: '2',
-          title: 'Order Confirmed',
-          body: 'Order #4092 is being prepared.',
-          time: '1h ago',
-          icon: Icons.check_circle,
-          iconColor: Colors.green),
-      NotificationModel(
-          id: '3',
-          title: 'Driver Nearby',
-          body: 'Ahmed is 5 minutes away.',
-          time: '2h ago',
-          icon: Icons.delivery_dining,
-          iconColor: Colors.blueAccent),
-      NotificationModel(
-          id: '4',
-          title: 'Flash Sale',
-          body: 'Get 50% off Multivitamins!',
-          time: '3h ago',
-          icon: Icons.flash_on,
-          iconColor: Colors.orange,
-          isRead: true),
-      NotificationModel(
-          id: '5',
-          title: 'Prescription Renewed',
-          body: 'Doctor approved Panadol Extra.',
-          time: '5h ago',
-          icon: Icons.receipt_long,
-          iconColor: Colors.teal),
-      NotificationModel(
-          id: '6',
-          title: 'Payment Successful',
-          body: 'VISA ending in 8821 was charged.',
-          time: 'Yesterday',
-          icon: Icons.credit_card,
-          iconColor: Colors.purple,
-          isRead: true),
-      NotificationModel(
-          id: '7',
-          title: 'Item Restocked',
-          body: 'CeraVe Cleanser is back.',
-          time: 'Yesterday',
-          icon: Icons.inventory_2,
-          iconColor: Colors.indigo,
-          isRead: true),
-      NotificationModel(
-          id: '8',
-          title: 'Points Earned',
-          body: 'You earned 50 loyalty points.',
-          time: 'Yesterday',
-          icon: Icons.star,
-          iconColor: Colors.amber,
-          isRead: true),
-    ];
+  NotificationsRemoteDataSource({required this.dioClient});
+
+  Future<NotificationResponseModel> fetchNotificationsFromApi({int page = 1}) async {
+    try {
+      final response = await dioClient.dio.get('/notifications', queryParameters: {
+        'page': page,
+      });
+
+      if (response.data['status'] == 'success') {
+        return NotificationResponseModel.fromJson(response.data);
+      } else {
+        throw Exception(response.data['message'] ?? 'Failed to load notifications');
+      }
+    } on DioException catch (e) {
+      throw Exception(e.message);
+    }
+  }
+
+  Future<int> getUnreadCount() async {
+    try {
+      final response = await dioClient.dio.get('/notifications/unread-count');
+      if (response.data['status'] == 'success') {
+        return response.data['unread_count'] ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    try {
+      // Assuming POST based on typical API designs, though we should confirm with user.
+      await dioClient.dio.post('/notifications/read-all');
+    } catch (e) {
+      throw Exception('Failed to mark all as read');
+    }
+  }
+
+  Future<void> markAsRead(String id) async {
+    try {
+      // Assuming POST
+      await dioClient.dio.post('/notifications/$id/read');
+    } catch (e) {
+      throw Exception('Failed to mark notification as read');
+    }
   }
 }

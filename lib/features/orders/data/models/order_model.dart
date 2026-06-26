@@ -22,14 +22,14 @@ class OrderModel {
   // 🚀 تحويل الـ JSON لموديل كامل
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      id: json['id'] ?? '',
-      pharmacyName: json['pharmacyName'] ?? '',
-      location: json['location'] ?? '',
+      id: json['id']?.toString() ?? '',
+      pharmacyName: json['pharmacy']?['pharmacy_name'] ?? 'Unknown Pharmacy',
+      location: json['address'] ?? json['pharmacy']?['address'] ?? '',
       status: json['status'] ?? '',
-      date: json['date'] ?? '',
-      items: (json['items'] as List)
-          .map((i) => OrderItemModel.fromJson(i))
-          .toList(),
+      date: json['created_at'] ?? '',
+      items: (json['items'] as List?)
+          ?.map((i) => OrderItemModel.fromJson(i))
+          .toList() ?? [],
     );
   }
 }

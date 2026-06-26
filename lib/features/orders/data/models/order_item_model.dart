@@ -11,9 +11,9 @@ class OrderItemModel {
   // 🚀 تحويل الـ JSON لموديل
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     return OrderItemModel(
-      name: json['name'] ?? '',
+      name: json['medicine']?['name'] ?? 'Unknown Medicine',
       quantity: json['quantity'] ?? 0,
-      price: (json['price'] ?? 0).toDouble(),
+      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
     );
   }
 }

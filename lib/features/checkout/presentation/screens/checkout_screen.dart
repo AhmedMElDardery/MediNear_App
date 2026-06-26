@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/features/cart/data/models/cart_item_model.dart';
 import '../manager/checkout_provider.dart';
@@ -17,12 +18,14 @@ class CheckoutScreen extends ConsumerStatefulWidget {
   final double subtotal;
   final List<CartItemModel> pharmacyItems;
   final String pharmacyName;
+  final int pharmacyId;
 
   const CheckoutScreen({
     super.key,
     required this.subtotal,
     required this.pharmacyItems,
     required this.pharmacyName,
+    required this.pharmacyId,
   });
 
   @override
@@ -31,21 +34,68 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   bool _isProcessing = false;
+  final TextEditingController _couponController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(checkoutProvider).fetchSummary());
+  }
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleConfirmOrder() async {
     setState(() => _isProcessing = true);
 
-    // ⏳ محاكاة مؤقتة — استبدلها بـ API حقيقي لاحقاً
-    await Future.delayed(const Duration(milliseconds: 1500));
+    final result = await ref.read(checkoutProvider).confirmOrder(widget.pharmacyItems, widget.pharmacyId);
 
     if (!mounted) return;
     setState(() => _isProcessing = false);
 
-    // تحديث الـ Cart
-    ref.read(cartProvider).loadCartPharmacies();
+    if (result != null) {
+      if (result == "empty_fields") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please fill in all shipping information (Name, Phone, Address)"),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
 
-    // ✅ عرض رسالة النجاح ثم الانتقال للـ Home
-    await _showSuccessSheet();
+      // تحديث الـ Cart
+      ref.read(cartProvider).loadCartPharmacies();
+
+      if (result == "cash_success") {
+        // ✅ عرض رسالة النجاح ثم الانتقال للـ Home
+        await _showSuccessSheet();
+      } else if (result.startsWith("error:")) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.replaceFirst("error:", "")),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        // Open payment URL
+        final url = Uri.parse(result);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+        await _showSuccessSheet();
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)?.translate("error") ?? "Failed to place order"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _showSuccessSheet() async {
@@ -80,79 +130,152 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           children: [
             const ShippingInfoCard(),
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
             const PaymentMethodCard(),
-            const SizedBox(height: 25),
-            _buildOrderSummary(context, cardColor, textColor, widget.subtotal),
+            const SizedBox(height: 30),
+            _buildCouponField(context, cardColor, textColor, ref.watch(checkoutProvider)),
+            const SizedBox(height: 30),
+            _buildOrderSummary(context, cardColor, textColor, ref.watch(checkoutProvider)),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
-              height: 54,
+              height: 56,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 2,
+                      borderRadius: BorderRadius.circular(16)),
+                  elevation: 5,
+                  shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                 ),
                 onPressed: _isProcessing ? null : _handleConfirmOrder,
                 child: _isProcessing
                     ? const SizedBox(
-                        height: 22,
-                        width: 22,
+                        height: 24,
+                        width: 24,
                         child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2.5))
+                            color: Colors.white, strokeWidth: 3))
                     : Text(AppLocalizations.of(context)!.translate("confirmOrder"),
                         style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold)),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildCouponField(
+      BuildContext context, Color cardColor, Color? textColor, CheckoutProvider provider) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 8))
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.discount_outlined, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: _couponController,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)?.translate("enterCoupon") ?? "Enter Coupon Code",
+                hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: provider.isApplyingCoupon || _couponController.text.isEmpty
+                ? null
+                : () => provider.applyCoupon(_couponController.text),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            child: provider.isApplyingCoupon
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                  )
+                : const Text("Apply", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildOrderSummary(
-      BuildContext context, Color cardColor, Color? textColor, double subtotal) {
-    const double deliveryFee = 0.0;
-    final double grandTotal = subtotal + deliveryFee;
+      BuildContext context, Color cardColor, Color? textColor, CheckoutProvider provider) {
+    if (provider.isLoadingSummary) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final double subtotal = provider.summary?.subTotal ?? widget.subtotal;
+    final double deliveryFee = provider.summary?.deliveryFee ?? 0.0;
+    final double discount = provider.summary?.discountAmount ?? 0.0;
+    final double grandTotal = provider.summary?.grandTotal ?? (subtotal + deliveryFee - discount);
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(AppLocalizations.of(context)!.translate("orderSummary"),
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-        const SizedBox(height: 10),
+        Row(
+          children: [
+            Icon(Icons.receipt_long_outlined, color: primary),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.translate("orderSummary"),
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold, color: primary)),
+          ],
+        ),
+        const SizedBox(height: 15),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5))
+                    blurRadius: 15,
+                    offset: const Offset(0, 8))
               ]),
           child: Column(
             children: [
               _summaryRow(
                   AppLocalizations.of(context)!.translate("subtotal"), "${subtotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", textColor),
-              const SizedBox(height: 10),
-              _summaryRow(AppLocalizations.of(context)!.translate("deliveryFee"), AppLocalizations.of(context)!.translate("free"),
-                  Theme.of(context).colorScheme.primary,
-                  isBold: true),
+              const SizedBox(height: 12),
+              _summaryRow("Shipping", "Free", primary, isBold: true),
+              if (discount > 0) ...[
+                const SizedBox(height: 12),
+                _summaryRow("Discount", "-${discount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", Colors.green, isBold: true),
+              ],
               const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(thickness: 0.5)),
-              _summaryRow(AppLocalizations.of(context)!.translate("grandTotal"), "${grandTotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}",
-                  textColor,
-                  isBold: true),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(AppLocalizations.of(context)!.translate("grandTotal"), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
+                  Text("${grandTotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: primary)),
+                ],
+              ),
             ],
           ),
         ),
@@ -167,12 +290,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       children: [
         Text(title,
             style: TextStyle(
-                color: isBold ? color : Colors.grey[600],
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                color: Colors.grey[600],
                 fontSize: 14)),
         Text(value,
             style: TextStyle(
-                color: color, fontWeight: FontWeight.bold, fontSize: 14)),
+                color: color, fontWeight: isBold ? FontWeight.bold : FontWeight.w600, fontSize: 14)),
       ],
     );
   }

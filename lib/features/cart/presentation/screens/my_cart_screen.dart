@@ -153,6 +153,7 @@ class _MyCartScreenState extends ConsumerState<MyCartScreen> {
                             subtotal: total,
                             pharmacyItems: List.from(items), 
                             pharmacyName: widget.pharmacyName,
+                            pharmacyId: widget.pharmacyId,
                           )),
                 );
               },

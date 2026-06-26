@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart';
 import 'package:medinear_app/core/localization/app_localizations.dart';
+import '../screens/checkout_screen.dart'; // To access checkoutProvider
 
 class ShippingInfoCard extends ConsumerStatefulWidget {
   const ShippingInfoCard({super.key});
@@ -38,43 +38,55 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
+    final primary = Theme.of(context).colorScheme.primary;
+    final provider = ref.read(checkoutProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Text(
-          AppLocalizations.of(context)!.translate("shippingInformation"),
-          style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary),
+        Row(
+          children: [
+            Icon(Icons.local_shipping_outlined, color: primary),
+            const SizedBox(width: 8),
+            Text(
+              AppLocalizations.of(context)!.translate("shippingInformation"),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: primary),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5))
+                  blurRadius: 15,
+                  offset: const Offset(0, 8))
             ],
           ),
           child: Column(
             children: [
-              // خانة الاسم العادية
-              _buildNormalTextField(AppLocalizations.of(context)!.translate("fullName"), context),
-              const Divider(height: 15, thickness: 0.5),
-
-              // 🚀 خانة التليفون الاحترافية (كود الدولة + الرقم)
-              _buildPhoneField(AppLocalizations.of(context)!.translate("phoneNumber"), context),
-
-              const Divider(height: 15, thickness: 0.5),
-              // خانة العنوان العادية
-              _buildNormalTextField(AppLocalizations.of(context)!.translate("fullAddress"), context,
-                  icon: Icons.map_outlined),
+              _buildModernTextField(
+                label: AppLocalizations.of(context)!.translate("fullName"),
+                icon: Icons.person_outline,
+                controller: provider.nameController,
+                context: context,
+              ),
+              const SizedBox(height: 16),
+              _buildModernPhoneField(AppLocalizations.of(context)!.translate("phoneNumber"), provider.phoneController, context),
+              const SizedBox(height: 16),
+              _buildModernTextField(
+                label: AppLocalizations.of(context)!.translate("fullAddress"),
+                icon: Icons.location_on_outlined,
+                controller: provider.addressController,
+                context: context,
+              ),
             ],
           ),
         ),
@@ -82,76 +94,61 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
     );
   }
 
-  // --- دالة رسم خانة التليفون الجديدة ---
-  Widget _buildPhoneField(String label, BuildContext context) {
-    final fillColor = Theme.of(context).cardColor;
-    return Row(
+  // --- Premium Phone Field ---
+  Widget _buildModernPhoneField(String label, TextEditingController controller, BuildContext context) {
+    final fillColor = Theme.of(context).scaffoldBackgroundColor;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 100,
-          child: Text(label,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-        ),
-        Expanded(
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey[700])),
+        const SizedBox(height: 8),
+        Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: fillColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+          ),
           child: Row(
             children: [
-              Container(
-                height: 35,
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                decoration: BoxDecoration(
-                  color: fillColor,
-                  borderRadius: BorderRadius.circular(6),
-                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<Map<String, dynamic>>(
                     value: selectedCountry,
-                    icon: const Icon(Icons.arrow_drop_down, size: 14),
+                    icon: const Icon(Icons.keyboard_arrow_down, size: 18),
                     items: countries.map((c) {
                       return DropdownMenuItem(
                         value: c,
                         child: Text('${c['flag']} ${c['code']}',
-                            style: const TextStyle(fontSize: 11)),
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                       );
                     }).toList(),
                     onChanged: (val) {
                       setState(() {
                         selectedCountry = val!;
-                        _phoneController.clear();
+                        controller.clear();
                       });
                     },
                   ),
                 ),
               ),
-              const SizedBox(width: 6),
+              Container(width: 1, height: 24, color: Colors.grey.withValues(alpha: 0.3)),
               Expanded(
-                child: Container(
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: fillColor,
-                    borderRadius: BorderRadius.circular(6),
+                child: TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(selectedCountry['maxLength']),
+                  ],
+                  decoration: InputDecoration(
+                    hintText: selectedCountry['code'] == '+20' ? "1xxxxxxxxx" : "",
+                    hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
-                  child: TextField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(
-                          selectedCountry['maxLength']),
-                    ],
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: InputDecoration(
-                      hintText:
-                          selectedCountry['code'] == '+20' ? "1xxxxxxxxx" : "",
-                      hintStyle:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                      isDense: true,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                    ),
-                    style: const TextStyle(fontSize: 13),
-                  ),
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
@@ -161,39 +158,29 @@ class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
     );
   }
 
-  // --- دالة رسم الخانات العادية (الاسم والعنوان) ---
-  Widget _buildNormalTextField(String label, BuildContext context, {IconData? icon}) {
-    final fillColor = Theme.of(context).cardColor;
-    return Row(
+  // --- Premium Normal Text Field ---
+  Widget _buildModernTextField({required String label, required IconData icon, required TextEditingController controller, required BuildContext context}) {
+    final fillColor = Theme.of(context).scaffoldBackgroundColor;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 100,
-          child: Text(label,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-        ),
-        Expanded(
-          child: Container(
-            height: 35,
-            decoration: BoxDecoration(
-              color: fillColor,
-              borderRadius: BorderRadius.circular(6),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey[700])),
+        const SizedBox(height: 8),
+        Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: fillColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+          ),
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, size: 20, color: Colors.grey[600]),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            child: TextField(
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                suffixIcon: icon != null
-                    ? Icon(icon, size: 16, color: Colors.black87)
-                    : null,
-                suffixIconConstraints:
-                    const BoxConstraints(minWidth: 35, minHeight: 20),
-              ),
-              style: const TextStyle(fontSize: 13),
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ),
       ],

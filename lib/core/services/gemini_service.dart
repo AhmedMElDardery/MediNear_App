@@ -5,14 +5,16 @@ import 'dart:io';
 import 'dart:convert';
 
 class GeminiService {
-  // ✅ حط المفتاح بتاعك هنا
-  static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? "";
+  static String get _apiKey {
+    final key = dotenv.env['GEMINI_API_KEY'] ?? "";
+    if (key == 'your_gemini_api_key_here') return "";
+    return key;
+  }
   static const String _apiUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
   final Dio _dio = Dio();
 
-  // ✅ الرولز الشاملة بتاعتنا
   static const String _systemRules = '''
 You are a professional medical assistant for the (MidiNear) app.
 

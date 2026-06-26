@@ -36,6 +36,7 @@ import 'package:medinear_app/features/onboarding/onboarding_provider.dart';
 import 'package:medinear_app/features/pharmacy/presentation/manager/pharmacy_provider.dart';
 import 'package:medinear_app/features/profile/view_models/profile_provider.dart';
 import 'package:medinear_app/features/orders/presentation/manager/order_provider.dart';
+import 'package:medinear_app/features/orders/data/datasources/order_remote_data_source.dart';
 import 'package:medinear_app/features/saved_items/presentation/manager/saved_items_provider.dart';
 import 'package:medinear_app/features/alarm/view_models/alarm_view_model.dart';
 import 'package:medinear_app/features/chat_bot/provider/chat_bot_provider.dart';
@@ -154,8 +155,10 @@ final aboutProvider =
     ChangeNotifierProvider.autoDispose<AboutProvider>((ref) => AboutProvider());
 final profileProvider = ChangeNotifierProvider.autoDispose<ProfileProvider>(
     (ref) => ProfileProvider());
-final orderProvider =
-    ChangeNotifierProvider.autoDispose<OrderProvider>((ref) => OrderProvider());
+final orderProvider = ChangeNotifierProvider.autoDispose<OrderProvider>((ref) {
+  final dataSource = OrderRemoteDataSource(dioClient: ref.read(dioClientProvider));
+  return OrderProvider(dataSource);
+});
 final chatsViewModelProvider =
     ChangeNotifierProvider.autoDispose<ChatsViewModel>(
         (ref) => ChatsViewModel());
@@ -171,12 +174,16 @@ final supportProvider = ChangeNotifierProvider.autoDispose<SupportProvider>(
     (ref) => SupportProvider());
 final notificationsProvider =
     ChangeNotifierProvider.autoDispose<NotificationsProvider>((ref) {
-  return NotificationsProvider(
-    getNotificationsUseCase: GetNotificationsUseCase(
-      NotificationsRepositoryImpl(
-        remoteDataSource: NotificationsRemoteDataSource(),
-      ),
+  final repository = NotificationsRepositoryImpl(
+    remoteDataSource: NotificationsRemoteDataSource(
+      dioClient: ref.read(dioClientProvider),
     ),
+  );
+  return NotificationsProvider(
+    getNotificationsUseCase: GetNotificationsUseCase(repository),
+    repository: repository,
+    tokenStorage: ref.read(tokenStorageProvider),
+    userStorage: ref.read(userStorageProvider),
   );
 });
 

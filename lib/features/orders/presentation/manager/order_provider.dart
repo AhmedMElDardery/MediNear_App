@@ -3,7 +3,9 @@ import '../../data/models/order_model.dart';
 import '../../data/datasources/order_remote_data_source.dart';
 
 class OrderProvider extends ChangeNotifier {
-  final OrderRemoteDataSource _dataSource = OrderRemoteDataSource();
+  final OrderRemoteDataSource _dataSource;
+
+  OrderProvider(this._dataSource);
 
   List<OrderModel> _orders = [];
   bool _isLoading = false;
