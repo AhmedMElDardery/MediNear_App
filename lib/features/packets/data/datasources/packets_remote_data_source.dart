@@ -67,7 +67,11 @@ class PacketsRemoteDataSourceImpl implements PacketsRemoteDataSource {
         } else if (rawData is Map && rawData.containsKey('data') && rawData['data'] is List) {
           listData = rawData['data'];
         }
-        return listData.map((e) => PacketItemModel.fromJson(e)).toList();
+        return listData.map((e) {
+          final map = Map<String, dynamic>.from(e);
+          map['packet_id'] ??= packetId;
+          return PacketItemModel.fromJson(map);
+        }).toList();
       } else {
         throw Exception(response.data['message']);
       }
@@ -110,7 +114,19 @@ class PacketsRemoteDataSourceImpl implements PacketsRemoteDataSource {
             options: Options(contentType: 'multipart/form-data'),
           );
           if (response.data['success'] == true) {
-            return PacketItemModel.fromJson(response.data['data']);
+            final data = response.data['data'] ?? {};
+            // Ensure type is 'prescription' and image url is set if backend echoed incorrectly
+            if (data['type'] == null || data['type'] != 'prescription' && data['type'] != 'image') {
+              data['type'] = 'prescription';
+            }
+            if (data['image'] == null && data['image_url'] == null) {
+              data['image'] = imagePath;
+            }
+            if (data['id'] == null) {
+              data['id'] = DateTime.now().millisecondsSinceEpoch.toString();
+            }
+            data['packet_id'] ??= packetId;
+            return PacketItemModel.fromJson(data);
           } else {
             throw Exception(response.data['message']);
           }
@@ -126,7 +142,9 @@ class PacketsRemoteDataSourceImpl implements PacketsRemoteDataSource {
         data: requestData,
       );
       if (response.data['success'] == true) {
-        return PacketItemModel.fromJson(response.data['data']);
+        final data = response.data['data'] ?? {};
+        data['packet_id'] ??= packetId;
+        return PacketItemModel.fromJson(data);
       } else {
         throw Exception(response.data['message']);
       }

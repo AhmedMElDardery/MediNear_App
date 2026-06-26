@@ -35,7 +35,6 @@ class PharmacyScreen extends ConsumerStatefulWidget {
 class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
-  late TabController _tabController;
 
   // Countdown timer
   Timer? _timer;
@@ -46,7 +45,6 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final isLocallySaved = ref.read(savedItemsProvider).isPharmacySaved(widget.pharmacyId);
@@ -80,7 +78,6 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
   @override
   void dispose() {
     _searchController.dispose();
-    _tabController.dispose();
     _timer?.cancel();
     _secondsNotifier.dispose();
     super.dispose();
@@ -246,82 +243,51 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                   SliverToBoxAdapter(
                     child: _buildSearchBar(provider, isDark),
                   ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _SliverAppBarDelegate(
-                      _buildTabBar(isDark),
-                    ),
-                  ),
                 ];
               },
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildList(
-                    isDark: isDark,
-                    isEmpty: provider.filteredMedicines.isEmpty,
-                    emptyMsg: 'No medicines found',
-                    emptyIcon: Icons.medication_outlined,
-                    itemCount: provider.filteredMedicines.length,
-                    itemBuilder: (i) {
-                      final pharmacyMed = provider.filteredMedicines[i];
-                      return GestureDetector(
-                        onTap: () {
-                          final medEntity = MedicineEntity(
-                            id: pharmacyMed.id.toString(),
-                            name: pharmacyMed.name,
-                            imageUrl: pharmacyMed.image,
-                            price: pharmacyMed.price,
-                            pharmacyId: widget.pharmacyId,
-                            pharmacyName: widget.pharmacyName,
-                          );
-                          context.push(AppRoutes.medicineDetails, extra: medEntity);
-                        },
-                        child: PharmacyMedicineCard(
-                          medicine: pharmacyMed,
-                          onToggleSave: () async {
-                            await provider.toggleMedicineSaved(pharmacyMed.id);
-                            if (context.mounted) {
-                              ref.read(savedItemsProvider).fetchSavedItems(silent: true);
-                            }
-                          },
-                          onToggleNotify: () => provider.toggleMedicineNotify(pharmacyMed.id),
-                          onAddToCart: () async {
-                            await provider.toggleMedicineInCart(pharmacyMed.id);
-                            if (context.mounted) {
-                              ref.read(cartProvider).loadCartPharmacies();
-                              if (pharmacyMed.inCart) {
-                                _showAddedToCart(pharmacyMed.name);
-                              } else {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              }
-                            }
-                          },
-                        ),
+              body: _buildList(
+                isDark: isDark,
+                isEmpty: provider.filteredMedicines.isEmpty,
+                emptyMsg: 'No medicines found',
+                emptyIcon: Icons.medication_outlined,
+                itemCount: provider.filteredMedicines.length,
+                itemBuilder: (i) {
+                  final pharmacyMed = provider.filteredMedicines[i];
+                  return GestureDetector(
+                    onTap: () {
+                      final medEntity = MedicineEntity(
+                        id: pharmacyMed.id.toString(),
+                        name: pharmacyMed.name,
+                        imageUrl: pharmacyMed.image,
+                        price: pharmacyMed.price,
+                        pharmacyId: widget.pharmacyId,
+                        pharmacyName: widget.pharmacyName,
                       );
+                      context.push(AppRoutes.medicineDetails, extra: medEntity);
                     },
-                  ),
-                  _buildList(
-                    isDark: isDark,
-                    isEmpty: provider.filteredDoctors.isEmpty,
-                    emptyMsg: 'No doctors found',
-                    emptyIcon: Icons.person_outline_rounded,
-                    itemCount: provider.filteredDoctors.length,
-                    itemBuilder: (i) => PharmacyDoctorCard(
-                      doctor: provider.filteredDoctors[i],
+                    child: PharmacyMedicineCard(
+                      medicine: pharmacyMed,
+                      onToggleSave: () async {
+                        await provider.toggleMedicineSaved(pharmacyMed.id);
+                        if (context.mounted) {
+                          ref.read(savedItemsProvider).fetchSavedItems(silent: true);
+                        }
+                      },
+                      onToggleNotify: () => provider.toggleMedicineNotify(pharmacyMed.id),
+                      onAddToCart: () async {
+                        await provider.toggleMedicineInCart(pharmacyMed.id);
+                        if (context.mounted) {
+                          ref.read(cartProvider).loadCartPharmacies();
+                          if (pharmacyMed.inCart) {
+                            _showAddedToCart(pharmacyMed.name);
+                          } else {
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          }
+                        }
+                      },
                     ),
-                  ),
-                  _buildList(
-                    isDark: isDark,
-                    isEmpty: provider.filteredServices.isEmpty,
-                    emptyMsg: 'No services found',
-                    emptyIcon: Icons.medical_services_outlined,
-                    itemCount: provider.filteredServices.length,
-                    itemBuilder: (i) => PharmacyServiceCard(
-                      service: provider.filteredServices[i],
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             );
           },
@@ -427,8 +393,32 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
               ),
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () {
-                  context.push(AppRoutes.chatdetails, extra: widget.pharmacyName);
+                onTap: () async {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(child: CircularProgressIndicator()),
+                  );
+                  try {
+                    final chatRepo = ref.read(chatRepositoryProvider);
+                    final pharmacyIdInt = int.tryParse(widget.pharmacyId) ?? 0;
+                    final chatModel = await chatRepo.startSession(pharmacyIdInt);
+                    if (context.mounted) {
+                      Navigator.pop(context); 
+                      context.push(AppRoutes.chatdetails, extra: {
+                        'chatName': widget.pharmacyName,
+                        'sessionId': int.tryParse(chatModel.id) ?? 0,
+                        'chatModel': chatModel,
+                      });
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Navigator.pop(context); 
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('فشل في فتح المحادثة، حاول مرة أخرى')),
+                      );
+                    }
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.all(10),
@@ -601,45 +591,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     );
   }
 
-  // ──────────────────────────────────────────────────────────
-  // TAB BAR
-  // ──────────────────────────────────────────────────────────
-  Widget _buildTabBar(bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-            bottom: BorderSide(
-                color: isDark ? Colors.grey.shade800 : Colors.grey.shade200)),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        labelColor: Theme.of(context).colorScheme.primary,
-        unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-        indicatorColor: Theme.of(context).colorScheme.primary,
-        indicatorWeight: 3,
-        labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-        unselectedLabelStyle:
-            const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
-        tabs: const [
-          Tab(
-            icon: Icon(Icons.medication_rounded, size: 17),
-            text: 'Medicines',
-            iconMargin: EdgeInsets.only(bottom: 2),
-          ),
-          Tab(
-            icon: Icon(Icons.person_rounded, size: 17),
-            text: 'Doctors',
-            iconMargin: EdgeInsets.only(bottom: 2),
-          ),
-          Tab(
-            icon: Icon(Icons.medical_services_rounded, size: 17),
-            text: 'Services',
-            iconMargin: EdgeInsets.only(bottom: 2),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   // ──────────────────────────────────────────────────────────
   // GENERIC LIST

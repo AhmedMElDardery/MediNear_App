@@ -115,13 +115,13 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
     final XFile? file = await picker.pickImage(source: source, imageQuality: 85, maxWidth: 1920, maxHeight: 1920);
     if (file == null || !mounted) return;
 
-    final bool? confirmed = await showModalBottomSheet<bool>(
+    final String? noteText = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => _PrescriptionPreviewSheet(imagePath: file.path),
     );
-    if (confirmed != true || !mounted) return;
+    if (noteText == null || !mounted) return;
 
     showDialog(context: context, barrierDismissible: false, builder: (_) => const _UploadingDialog());
     final sm = ScaffoldMessenger.of(context);
@@ -133,6 +133,14 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
         title: "Prescription".tr(context),
         imagePath: file.path,
       );
+      if (noteText.trim().isNotEmpty) {
+        await ref.read(packetsProvider).addPacketItem(
+          widget.packet.id,
+          PacketItemType.note,
+          title: "Prescription Note".tr(context),
+          content: noteText.trim(),
+        );
+      }
       nav.pop();
       if (mounted) sm.showSnackBar(_successSnack('packet_rx_uploaded'.tr(context)));
     } catch (e) {
@@ -395,6 +403,27 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
     );
   }
 
+  Future<void> _confirmAndDelete(PacketItemEntity item) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('packet_delete_item'.tr(context)),
+        content: Text('packet_delete_item_msg'.tr(context)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr(context))),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('packet_delete_confirm'.tr(context), style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      _deleteItem(item);
+    }
+  }
+
   // ─── Item Card Builder ──────────────────────────────
   Widget _buildItemCard(PacketItemEntity item) {
     return Dismissible(
@@ -438,11 +467,11 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
   Widget _buildCardContent(PacketItemEntity item) {
     switch (item.type) {
       case PacketItemType.note:
-        return _NoteCard(item: item);
+        return _NoteCard(item: item, onDelete: () => _confirmAndDelete(item));
       case PacketItemType.prescription:
-        return _PrescriptionCard(item: item, onOpenImage: _openImageFullScreen);
+        return _PrescriptionCard(item: item, onOpenImage: _openImageFullScreen, onDelete: () => _confirmAndDelete(item));
       case PacketItemType.medicine:
-        return _MedicineCard(item: item);
+        return _MedicineCard(item: item, onDelete: () => _confirmAndDelete(item));
     }
   }
 }
@@ -452,7 +481,8 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
 // ══════════════════════════════════════════
 class _NoteCard extends StatelessWidget {
   final PacketItemEntity item;
-  const _NoteCard({required this.item});
+  final VoidCallback onDelete;
+  const _NoteCard({required this.item, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -494,7 +524,10 @@ class _NoteCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey.shade400),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                  onPressed: onDelete,
+                ),
               ],
             ),
             if (item.content != null && item.content!.isNotEmpty) ...[
@@ -535,7 +568,8 @@ class _NoteCard extends StatelessWidget {
 class _PrescriptionCard extends StatelessWidget {
   final PacketItemEntity item;
   final void Function(String url, {String? localPath}) onOpenImage;
-  const _PrescriptionCard({required this.item, required this.onOpenImage});
+  final VoidCallback onDelete;
+  const _PrescriptionCard({required this.item, required this.onOpenImage, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -581,18 +615,28 @@ class _PrescriptionCard extends StatelessWidget {
                     ),
                   ),
                   if (hasImage)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.zoom_in_rounded, color: Colors.blue, size: 14),
-                          SizedBox(width: 4),
-                          Text("View", style: TextStyle(color: Colors.blue, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
+                    GestureDetector(
+                      onTap: () => onOpenImage(item.imageUrl!, localPath: !item.imageUrl!.startsWith('http') ? item.imageUrl : null),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.zoom_in_rounded, color: Colors.blue, size: 14),
+                            SizedBox(width: 4),
+                            Text("View", style: TextStyle(color: Colors.blue, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
                       ),
                     ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                    onPressed: onDelete,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
                 ],
               ),
             ),
@@ -600,32 +644,53 @@ class _PrescriptionCard extends StatelessWidget {
             if (hasImage)
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-                child: CachedNetworkImage(
-                  imageUrl: item.imageUrl!,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  memCacheWidth: 600,
-                  placeholder: (ctx, url) => Container(
-                    height: 200,
-                    color: Colors.blue.withValues(alpha: 0.05),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (ctx, url, err) => Container(
-                    height: 120,
-                    color: Colors.blue.withValues(alpha: 0.05),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.broken_image_rounded, color: Colors.blue, size: 40),
-                          SizedBox(height: 8),
-                          Text("Image unavailable", style: TextStyle(color: Colors.grey)),
-                        ],
+                child: item.imageUrl!.startsWith('http')
+                    ? CachedNetworkImage(
+                        imageUrl: item.imageUrl!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        memCacheWidth: 600,
+                        placeholder: (ctx, url) => Container(
+                          height: 200,
+                          color: Colors.blue.withValues(alpha: 0.05),
+                          child: const Center(child: CircularProgressIndicator()),
+                        ),
+                        errorWidget: (ctx, url, err) => Container(
+                          height: 120,
+                          color: Colors.blue.withValues(alpha: 0.05),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image_rounded, color: Colors.blue, size: 40),
+                                SizedBox(height: 8),
+                                Text("Image unavailable", style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    : Image.file(
+                        File(item.imageUrl!),
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, stack) => Container(
+                          height: 120,
+                          color: Colors.blue.withValues(alpha: 0.05),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image_rounded, color: Colors.blue, size: 40),
+                                SizedBox(height: 8),
+                                Text("Local image unavailable", style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               )
             else
               Container(
@@ -659,7 +724,8 @@ class _PrescriptionCard extends StatelessWidget {
 // ══════════════════════════════════════════
 class _MedicineCard extends StatelessWidget {
   final PacketItemEntity item;
-  const _MedicineCard({required this.item});
+  final VoidCallback onDelete;
+  const _MedicineCard({required this.item, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -710,7 +776,10 @@ class _MedicineCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+          IconButton(
+            icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+            onPressed: onDelete,
+          ),
         ],
       ),
     );
@@ -1110,80 +1179,115 @@ class _SourcePickerSheet extends StatelessWidget {
 // ══════════════════════════════════════════
 // 📸 PRESCRIPTION PREVIEW SHEET
 // ══════════════════════════════════════════
-class _PrescriptionPreviewSheet extends StatelessWidget {
+class _PrescriptionPreviewSheet extends StatefulWidget {
   final String imagePath;
   const _PrescriptionPreviewSheet({required this.imagePath});
 
   @override
+  State<_PrescriptionPreviewSheet> createState() => _PrescriptionPreviewSheetState();
+}
+
+class _PrescriptionPreviewSheetState extends State<_PrescriptionPreviewSheet> {
+  final TextEditingController _noteController = TextEditingController();
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.82,
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      child: Column(
-        children: [
-          Center(
-            child: Container(
-              width: 40, height: 5,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(10)),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                const Icon(Icons.receipt_long_rounded, color: Colors.blue),
-                const SizedBox(width: 8),
-                Text("Preview Prescription", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).textTheme.bodyLarge?.color)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.file(File(imagePath), fit: BoxFit.contain, width: double.infinity),
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.88,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(10)),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pop(context, false),
-                    icon: const Icon(Icons.close_rounded),
-                    label: const Text("Retake"),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton.icon(
-                    onPressed: () => Navigator.pop(context, true),
-                    icon: const Icon(Icons.cloud_upload_rounded, color: Colors.white),
-                    label: const Text("Upload Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                  ),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  const Icon(Icons.receipt_long_rounded, color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text("Preview Prescription", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).textTheme.bodyLarge?.color)),
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(File(widget.imagePath), fit: BoxFit.contain, width: double.infinity, height: 320),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: _noteController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Add a note to this prescription (Optional)",
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.pop(context, null),
+                      icon: const Icon(Icons.close_rounded),
+                      label: const Text("Retake"),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Navigator.pop(context, _noteController.text),
+                      icon: const Icon(Icons.cloud_upload_rounded, color: Colors.white),
+                      label: const Text("Upload Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

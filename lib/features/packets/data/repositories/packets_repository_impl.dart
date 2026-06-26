@@ -80,4 +80,9 @@ class PacketsRepositoryImpl implements PacketsRepository {
       createdAt: model.createdAt,
     );
   }
+
+  @override
+  Future<void> deletePacketItem(String packetId, String itemId) async {
+    await remoteDataSource.deletePacketItem(packetId, itemId);
+  }
 }

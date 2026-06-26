@@ -9,6 +9,7 @@ import 'package:medinear_app/core/services/user_storage.dart';
 import 'package:medinear_app/core/theme/theme_provider.dart';
 import 'package:medinear_app/core/provider/navigation_provider.dart';
 import 'package:medinear_app/core/provider/locale_provider.dart';
+import 'package:medinear_app/core/network/pusher_service.dart';
 
 // --- Features Imports ---
 import 'package:medinear_app/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -32,6 +33,10 @@ import 'package:medinear_app/features/map/presentation/provider/map_provider.dar
 
 import 'package:medinear_app/features/about_us/presentation/manager/about_provider.dart';
 import 'package:medinear_app/features/chat/view_models/chats_view_model.dart';
+import 'package:medinear_app/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:medinear_app/features/chat/data/datasources/chat_local_data_source.dart';
+import 'package:medinear_app/features/chat/data/repositories/chat_repository.dart';
+
 import 'package:medinear_app/features/onboarding/onboarding_provider.dart';
 import 'package:medinear_app/features/pharmacy/presentation/manager/pharmacy_provider.dart';
 import 'package:medinear_app/features/profile/view_models/profile_provider.dart';
@@ -156,10 +161,31 @@ final profileProvider = ChangeNotifierProvider.autoDispose<ProfileProvider>(
     (ref) => ProfileProvider());
 final orderProvider =
     ChangeNotifierProvider.autoDispose<OrderProvider>((ref) => OrderProvider());
+
+final pusherServiceProvider = Provider<PusherService>((ref) {
+  return PusherService(dio: ref.read(dioClientProvider).dio);
+});
+
+final chatRemoteDataSourceProvider = Provider<ChatRemoteDataSource>((ref) {
+  return ChatRemoteDataSourceImpl(dio: ref.read(dioClientProvider).dio);
+});
+
+final chatLocalDataSourceProvider = Provider<ChatLocalDataSource>((ref) {
+  return ChatLocalDataSourceImpl();
+});
+
+final chatRepositoryProvider = Provider<ChatRepository>((ref) {
+  return ChatRepositoryImpl(
+    remoteDataSource: ref.read(chatRemoteDataSourceProvider),
+    localDataSource: ref.read(chatLocalDataSourceProvider),
+  );
+});
+
 final chatsViewModelProvider =
     ChangeNotifierProvider.autoDispose<ChatsViewModel>(
-        (ref) => ChatsViewModel());
+        (ref) => ChatsViewModel(ref.read(chatRepositoryProvider)));
 final chatBotProvider = ChangeNotifierProvider.autoDispose<ChatBotProvider>(
+
     (ref) => ChatBotProvider());
 final walletViewModelProvider =
     ChangeNotifierProvider.autoDispose<WalletViewModel>(

@@ -119,10 +119,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.chatdetails,
       builder: (context, state) {
-        final chatName = state.extra as String? ?? "Pharmacy Chat";
-        return ChatDetailsView(chatName: chatName);
+        final Map<String, dynamic> args = state.extra as Map<String, dynamic>? ?? {};
+        final chatName = args['chatName'] as String? ?? "Pharmacy Chat";
+        final sessionId = args['sessionId'] as int? ?? 0;
+        final chatModel = args['chatModel'];
+        return ChatDetailsView(chatName: chatName, sessionId: sessionId, chatModel: chatModel);
       },
     ),
+
     GoRoute(
       path: AppRoutes.chatbot,
       builder: (context, state) => const ChatBotView(),

@@ -11,8 +11,23 @@ class NotificationsProvider extends ChangeNotifier {
   bool _isLoading = false;
   int _itemsToShow = 6;
 
+  bool _isDisposed = false;
+
   NotificationsProvider({required this.getNotificationsUseCase}) {
     fetchData();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
   }
 
   bool get isLoading => _isLoading;

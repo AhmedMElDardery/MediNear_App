@@ -11,6 +11,8 @@ import 'archived_chats_view.dart';
 import 'widgets/chat_list_item.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
+import 'package:medinear_app/core/di/global_providers.dart';
+
 class ChatsView extends ConsumerStatefulWidget {
   const ChatsView({super.key});
 
@@ -19,28 +21,23 @@ class ChatsView extends ConsumerStatefulWidget {
 }
 
 class _ChatsViewState extends ConsumerState<ChatsView> {
-  final ChatsViewModel _viewModel = ChatsViewModel();
-
   void _deleteWithUndo(int index, ChatModel chat) {
-    setState(() {
-      _viewModel.chats.remove(chat);
-      _viewModel.search(_viewModel.lastSearchQuery);
-    });
+    final viewModel = ref.read(chatsViewModelProvider);
+    viewModel.chats.remove(chat);
+    viewModel.search(viewModel.lastSearchQuery);
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Deleted ${chat.doctorName}"),
+        content: Text("Deleted ${chat.name}"),
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",
           textColor: Colors.white,
           onPressed: () {
-            setState(() {
-              _viewModel.chats.insert(index, chat);
-              _viewModel.search(_viewModel.lastSearchQuery);
-            });
+            viewModel.chats.insert(index, chat);
+            viewModel.search(viewModel.lastSearchQuery);
           },
         ),
       ),
@@ -48,64 +45,58 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
   }
 
   void _archiveChat(ChatModel chat) {
-    setState(() {
-      chat.isArchived = true;
-      _viewModel.search(_viewModel.lastSearchQuery);
-    });
+    final viewModel = ref.read(chatsViewModelProvider);
+    chat.isArchived = true;
+    viewModel.search(viewModel.lastSearchQuery);
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = ref.watch(chatsViewModelProvider);
+
     return Scaffold(
-      // ✅ الآن الخلفية ستتغير تلقائياً حسب الثيم (أبيض في الفاتح / أسود صريح في الدارك)
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
         backgroundColor: Colors.transparent,
         title: 'Chats',
       ),
-      body: ListenableBuilder(
-        listenable: _viewModel,
-        builder: (context, child) {
-          final archivedCount =
-              _viewModel.chats.where((c) => c.isArchived).length;
+      body: viewModel.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  _buildSearchBar(context, viewModel),
+                  const SizedBox(height: 16),
+                  if (viewModel.chats.where((c) => c.isArchived).isNotEmpty)
+                    _buildArchiveHeader(viewModel.chats.where((c) => c.isArchived).length, context, viewModel),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: viewModel.filteredChats.length,
+                      itemBuilder: (context, index) {
+                        final chat = viewModel.filteredChats[index];
+                        if (chat.isArchived) return const SizedBox.shrink();
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 8),
-                _buildSearchBar(context),
-                const SizedBox(height: 16),
-                if (archivedCount > 0)
-                  _buildArchiveHeader(archivedCount, context),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _viewModel.filteredChats.length,
-                    itemBuilder: (context, index) {
-                      final chat = _viewModel.filteredChats[index];
-                      if (chat.isArchived) return const SizedBox.shrink();
-
-                      return ChatListItem(
-                        chat: chat,
-                        onDelete: () => _deleteWithUndo(index, chat),
-                        onArchive: () => _archiveChat(chat),
-                      );
-                    },
+                        return ChatListItem(
+                          chat: chat,
+                          onDelete: () => _deleteWithUndo(index, chat),
+                          onArchive: () => _archiveChat(chat),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          );
-        },
-      ),
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
+
+  Widget _buildSearchBar(BuildContext context, ChatsViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        // ✅ استخدام لون الكارت المخصص للدارك من ملف الألوان
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
         border:
@@ -119,7 +110,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
         ],
       ),
       child: TextField(
-        onChanged: _viewModel.search,
+        onChanged: viewModel.search,
         style: TextStyle(color: Theme.of(context).colorScheme.primary),
         decoration: InputDecoration(
           icon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
@@ -131,7 +122,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
     );
   }
 
-  Widget _buildArchiveHeader(int count, BuildContext context) {
+  Widget _buildArchiveHeader(int count, BuildContext context, ChatsViewModel viewModel) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -139,10 +130,11 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ArchivedChatsView(viewModel: _viewModel),
+            builder: (context) => ArchivedChatsView(viewModel: viewModel),
           ),
         );
       },
+
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(12),

@@ -32,4 +32,29 @@ class PacketItemModel extends PacketItemEntity {
           : DateTime.now(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    String typeStr;
+    switch (type) {
+      case PacketItemType.note:
+        typeStr = 'note';
+        break;
+      case PacketItemType.prescription:
+        typeStr = 'prescription';
+        break;
+      case PacketItemType.medicine:
+        typeStr = 'medicine';
+        break;
+    }
+    return {
+      'id': id,
+      'packet_id': packetId,
+      'type': typeStr,
+      'title': title,
+      'content': content,
+      'image': imageUrl,
+      'medicine_id': medicineId,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
 }

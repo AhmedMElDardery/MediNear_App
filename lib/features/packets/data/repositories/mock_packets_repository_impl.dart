@@ -106,6 +106,22 @@ class MockPacketsRepositoryImpl implements PacketsRepository {
       }
     }
     
+    
     return newItem;
+  }
+
+  @override
+  Future<void> deletePacketItem(String packetId, String itemId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (_mockItems[packetId] != null) {
+      _mockItems[packetId]!.removeWhere((item) => item.id == itemId);
+      
+      final index = _mockPackets.indexWhere((p) => p.id == packetId);
+      if (index != -1) {
+        _mockPackets[index] = _mockPackets[index].copyWith(
+          itemCount: (_mockPackets[index].itemCount - 1).clamp(0, 9999),
+        );
+      }
+    }
   }
 }
