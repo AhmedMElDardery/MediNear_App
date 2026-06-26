@@ -24,12 +24,18 @@ class NotificationsProvider extends ChangeNotifier {
   int _lastPage = 1;
   int _unreadCount = 0;
 
+<<<<<<< HEAD
   NotificationsProvider({
     required this.getNotificationsUseCase,
     required this.repository,
     required this.tokenStorage,
     required this.userStorage,
   }) {
+=======
+  bool _isDisposed = false;
+
+  NotificationsProvider({required this.getNotificationsUseCase}) {
+>>>>>>> 417e6145c0e893ca10d1e5f2cd360ba803defe5c
     fetchData();
     _initPusher();
   }
@@ -94,6 +100,19 @@ class NotificationsProvider extends ChangeNotifier {
         }
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
   }
 
   bool get isLoading => _isLoading;

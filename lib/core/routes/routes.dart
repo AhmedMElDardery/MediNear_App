@@ -62,7 +62,7 @@ class AppRoutes {
     myorder: (_) => const MyOrdersScreen(),
     profile: (_) => const MainLayoutScreen(),
     chats: (_) => const ChatsView(),
-    chatdetails: (_) => const ChatDetailsView(),
+    chatdetails: (_) => const ChatDetailsView(sessionId: 0, chatName: "Pharmacy Chat"),
     chatbot: (_) => const ChatBotView(),
     alarm: (_) => const AlarmView(),
     wallet: (_) => const WalletView(),

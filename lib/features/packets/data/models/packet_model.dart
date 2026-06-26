@@ -24,4 +24,14 @@ class PacketModel extends PacketEntity {
           : DateTime.now(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': name,
+      'description': colorHex,
+      'itemCount': itemCount,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
 }

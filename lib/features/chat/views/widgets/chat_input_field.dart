@@ -1,43 +1,108 @@
 import 'package:flutter/material.dart';
-// تأكد من مسار ملف الألوان
+import 'package:medinear_app/features/chat/view_models/chat_details_view_model.dart';
 
 class ChatInputField extends StatelessWidget {
-  final TextEditingController controller;
-  final VoidCallback onSend;
+  final ChatDetailsViewModel viewModel;
 
-  const ChatInputField(
-      {super.key, required this.controller, required this.onSend});
+  const ChatInputField({
+    super.key, 
+    required this.viewModel,
+  });
 
-  // قائمة خيارات الـ (+)
+  // قائمة خيارات الـ (+) بتصميم احترافي (مستوحى من واتساب)
   void _showAttachmentMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      // ✅ دعم الدارك مود لخلفية القائمة المنبثقة
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      backgroundColor: Colors.transparent, // شفاف لعمل تأثير الـ Floating
       builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        height: 250,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            )
+          ]
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // الارتفاع يتناسب مع المحتوى
+          children: [
+            // مقبض السحب (Drag Handle)
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Wrap(
+              spacing: 30, // المسافة الأفقية
+              runSpacing: 24, // المسافة الرأسية
+              alignment: WrapAlignment.center,
+              children: [
+                _buildActionItem(Icons.insert_drive_file, "Document", const Color(0xFF5F66CD), context, () {
+                  Navigator.pop(context);
+                  viewModel.pickAndSendDocument();
+                }),
+                _buildActionItem(Icons.camera_alt, "Camera", const Color(0xFFD3396D), context, () {
+                  Navigator.pop(context);
+                  viewModel.pickAndSendCameraImage();
+                }),
+                _buildActionItem(Icons.photo_library, "Gallery", const Color(0xFFAC54FF), context, () {
+                  Navigator.pop(context);
+                  viewModel.pickAndSendImage();
+                }),
+                _buildActionItem(Icons.headphones, "Audio", const Color(0xFFF07128), context, () {
+                  Navigator.pop(context);
+                  viewModel.pickAndSendAudioFile();
+                }),
+                _buildActionItem(Icons.location_on, "Location", const Color(0xFF009688), context, () {
+                  Navigator.pop(context);
+                  viewModel.sendCurrentLocation();
+                }),
+                _buildActionItem(Icons.person, "Contact", const Color(0xFF00A3FF), context, () {
+                  Navigator.pop(context);
+                  viewModel.pickAndSendContact();
+                }),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionItem(IconData icon, String label, Color color,
+      BuildContext context, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 70, // تثبيت العرض لضمان ترتيب الشبكة
         child: Column(
           children: [
-            Text("Attach Files",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    // ✅ لون النص يتغير حسب الثيم
-                    color: Theme.of(context).colorScheme.primary)),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildActionItem(
-                    Icons.image, "Photo", Colors.blue, context, () {}),
-                _buildActionItem(
-                    Icons.videocam, "Video", Colors.orange, context, () {}),
-                _buildActionItem(Icons.insert_drive_file, "File", Colors.red,
-                    context, () {}),
-              ],
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color,
+              child: Icon(icon, color: Colors.white, size: 26),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -45,35 +110,13 @@ class ChatInputField extends StatelessWidget {
     );
   }
 
-  // ✅ تمرير context هنا عشان نقدر نغير لون النص
-  Widget _buildActionItem(IconData icon, String label, Color color,
-      BuildContext context, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          CircleAvatar(
-              // ✅ استخدام withValues بدلاً من withOpacity لتجنب التحذير
-              backgroundColor: color.withValues(alpha: 0.1),
-              child: Icon(icon, color: color)),
-          const SizedBox(height: 8),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 12, color: Theme.of(context).colorScheme.primary)),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    // جلب حالة الثيم
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: BoxDecoration(
-        // ✅ لون الخلفية الشريط السفلي يتغير حسب الثيم
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
@@ -83,63 +126,121 @@ class ChatInputField extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: Row(
-          children: [
-            IconButton(
-              // ✅ استخدام لون المشروع الأساسي بدلاً من اللون الثابت
-              icon: Icon(Icons.add,
-                  color: Theme.of(context).colorScheme.primary, size: 28),
-              onPressed: () => _showAttachmentMenu(context),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                    // ✅ لون فقاعة حقل الكتابة يتغير في الدارك مود
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(25)),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: controller,
-                        // ✅ لون النص المكتوب عشان ميبقاش أسود في الدارك
-                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                        decoration: const InputDecoration(
-                            hintText: 'Type a message...',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt_outlined,
-                          color: Colors.grey, size: 22),
-                      // ✅ استخدام debugPrint بدلاً من print لتجنب التحذيرات
-                      onPressed: () => debugPrint("Camera Active"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            ListenableBuilder(
-              listenable: controller,
-              builder: (context, child) {
-                bool isTyping = controller.text.isNotEmpty;
-                return GestureDetector(
-                  onTap: isTyping ? onSend : () => debugPrint("Mic Active"),
-                  child: CircleAvatar(
-                    // ✅ ألوان المايك تتجاوب مع الدارك مود لو مفيش كتابة
-                    backgroundColor: isTyping
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).cardColor,
-                    child: Icon(isTyping ? Icons.send : Icons.mic,
-                        color: isTyping ? Colors.white : Colors.grey, size: 20),
+        child: ListenableBuilder(
+          listenable: Listenable.merge([viewModel, viewModel.messageController]),
+          builder: (context, child) {
+            bool isTyping = viewModel.messageController.text.trim().isNotEmpty;
+            bool isRecording = viewModel.isRecording;
+            
+            String _formatDuration(int seconds) {
+              final minutes = (seconds / 60).floor();
+              final remainingSeconds = seconds % 60;
+              return "${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
+            }
+
+            return Row(
+              children: [
+                if (!isRecording)
+                  IconButton(
+                    icon: Icon(Icons.add,
+                        color: Theme.of(context).colorScheme.primary, size: 28),
+                    onPressed: () => _showAttachmentMenu(context),
                   ),
-                );
-              },
-            ),
-          ],
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(25)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            alignment: Alignment.centerLeft,
+                            children: [
+                              IgnorePointer(
+                                ignoring: isRecording,
+                                child: Opacity(
+                                  opacity: isRecording ? 0.0 : 1.0,
+                                  child: TextField(
+                                    controller: viewModel.messageController,
+                                    style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                                    decoration: const InputDecoration(
+                                        hintText: 'Type a message...',
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        border: InputBorder.none),
+                                  ),
+                                ),
+                              ),
+                              if (isRecording)
+                                Row(
+                                  children: [
+                                    // النقطة الحمراء النابضة للتسجيل
+                                    const Icon(Icons.mic, color: Colors.red, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _formatDuration(viewModel.recordingDuration),
+                                      style: const TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    const Spacer(),
+                                    const Text("Slide to cancel <", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (!isRecording)
+                          IconButton(
+                            icon: const Icon(Icons.camera_alt_outlined,
+                                color: Colors.grey, size: 22),
+                            onPressed: viewModel.pickAndSendCameraImage,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: isTyping ? viewModel.sendMessage : null,
+                  onLongPress: !isTyping ? viewModel.startRecording : null,
+                  onLongPressMoveUpdate: !isTyping ? (details) {
+                    if (viewModel.isRecording && details.localOffsetFromOrigin.dx < -50) {
+                      viewModel.cancelRecording();
+                    }
+                  } : null,
+                  onLongPressEnd: !isTyping ? (_) {
+                    if (viewModel.isRecording) {
+                      viewModel.stopRecording();
+                    }
+                  } : null,
+                  onLongPressCancel: !isTyping ? () {
+                    if (viewModel.isRecording) {
+                      viewModel.cancelRecording();
+                    }
+                  } : null,
+                  child: CircleAvatar(
+                    radius: isRecording ? 25 : 20, // يكبر الزر قليلاً أثناء التسجيل
+                    backgroundColor: isRecording 
+                        ? Colors.red 
+                        : (isTyping
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).cardColor),
+                    child: Icon(
+                        isRecording 
+                            ? Icons.mic 
+                            : (isTyping ? Icons.send : Icons.mic_none),
+                        color: isRecording 
+                            ? Colors.white 
+                            : (isTyping ? Colors.white : Colors.grey), 
+                        size: isRecording ? 24 : 20),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

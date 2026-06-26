@@ -33,7 +33,11 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
       onTapUp: (_) => setState(() => _scale = 1.0),
       onTapCancel: () => setState(() => _scale = 1.0),
       onTap: () => Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const ChatDetailsView())),
+          MaterialPageRoute(builder: (context) => ChatDetailsView(
+            sessionId: int.tryParse(widget.chat.id) ?? 0,
+            chatName: widget.chat.name,
+            chatModel: widget.chat,
+          ))),
       child: AnimatedScale(
         scale: _scale,
         duration: const Duration(milliseconds: 150),

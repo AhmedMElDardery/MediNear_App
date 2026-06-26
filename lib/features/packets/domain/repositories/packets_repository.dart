@@ -11,4 +11,5 @@ abstract class PacketsRepository {
     PacketItemType type, 
     {String? title, String? content, String? imageUrl, String? medicineId, String? imagePath}
   );
+  Future<void> deletePacketItem(String packetId, String itemId);
 }
