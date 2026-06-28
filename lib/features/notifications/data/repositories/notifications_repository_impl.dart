@@ -27,4 +27,14 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
   Future<void> markAsRead(String id) async {
     return await remoteDataSource.markAsRead(id);
   }
+
+  @override
+  Future<void> deleteNotification(String id) async {
+    return await remoteDataSource.deleteNotification(id);
+  }
+
+  @override
+  Future<void> deleteAllNotifications() async {
+    return await remoteDataSource.deleteAllNotifications();
+  }
 }

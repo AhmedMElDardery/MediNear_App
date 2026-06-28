@@ -53,4 +53,20 @@ class NotificationsRemoteDataSource {
       throw Exception('Failed to mark notification as read');
     }
   }
+
+  Future<void> deleteNotification(String id) async {
+    try {
+      await dioClient.dio.delete('/notifications/$id');
+    } catch (e) {
+      throw Exception('Failed to delete notification');
+    }
+  }
+
+  Future<void> deleteAllNotifications() async {
+    try {
+      await dioClient.dio.delete('/notifications');
+    } catch (e) {
+      throw Exception('Failed to delete all notifications');
+    }
+  }
 }

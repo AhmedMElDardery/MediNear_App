@@ -203,6 +203,14 @@ class NotificationsProvider extends ChangeNotifier {
       _notifications.removeAt(index);
       if (!removedItem.isRead && _unreadCount > 0) _unreadCount--;
       notifyListeners();
+
+      // Wait 4 seconds for a potential "Undo" action before deleting on server
+      Future.delayed(const Duration(seconds: 4), () {
+        if (!_notifications.any((n) => n.id == id)) {
+          repository.deleteNotification(id).catchError((_) {});
+        }
+      });
+
       return removedItem;
     }
     return null;
@@ -225,6 +233,11 @@ class NotificationsProvider extends ChangeNotifier {
     _notifications.clear();
     _unreadCount = 0;
     notifyListeners();
+
+    repository.deleteAllNotifications().catchError((_) {
+      // Re-fetch if API fails to clear all
+      fetchData();
+    });
   }
 }
 
