@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:medinear_app/core/di/global_providers.dart'; // 🚀 للتعامل مع الـ Provider
+import 'package:medinear_app/core/di/global_providers.dart'; // � للتعامل مع الـ Provider
 import '../../data/models/order_model.dart';
-import '../manager/order_provider.dart'; // 🚀 استدعاء المدير
+import '../manager/order_provider.dart'; // � استدعاء المدير
 import '../widgets/order_card.dart';
 import 'order_details_screen.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
@@ -23,13 +23,13 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    // 🚀 طلب جلب البيانات أول ما الشاشة تفتح
+    // � طلب جلب البيانات أول ما الشاشة تفتح
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(orderProvider).fetchOrders();
     });
   }
 
-  // 🚀 دالة الفلترة الذكية (بتطبق على الداتا اللي جاية من البروفايدر)
+  // � دالة الفلترة الذكية (بتطبق على الداتا اللي جاية من البروفايدر)
   List<OrderModel> _getFilteredOrders(List<OrderModel> allOrders) {
     return allOrders.where((order) {
       final matchesSearch = order.pharmacyName
@@ -54,7 +54,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.translate("myOrders"),
       ),
-      // 🚀 استخدام Consumer لمراقبة حالة الطلبات
+      // � استخدام Consumer لمراقبة حالة الطلبات
       body: Consumer(
         builder: (context, ref, child) {
           final provider = ref.watch(orderProvider);

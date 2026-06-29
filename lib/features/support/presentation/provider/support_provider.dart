@@ -9,29 +9,29 @@ class SupportProvider extends ChangeNotifier {
     items = [
       SupportItemModel(
         title: "Call Us",
-        subtitle: "+201234567890",
+        subtitle: "+20120000555555",
         buttonText: "Call now",
         icon: Icons.phone,
         onTap: () {
-          LauncherHelper.makePhoneCall("+201143173960");
+          LauncherHelper.makePhoneCall("+20120000555555");
         },
       ),
       SupportItemModel(
         title: "WhatsApp",
-        subtitle: "+201143173960",
+        subtitle: "+20120000555555",
         buttonText: "Chat now",
         icon: Icons.chat,
         onTap: () {
-          LauncherHelper.openWhatsApp("+201143173960");
+          LauncherHelper.openWhatsApp("+20120000555555");
         },
       ),
       SupportItemModel(
         title: "Email Us",
-        subtitle: "nharmdan15@gmail.com",
+        subtitle: "MediNearapp@Yahoo.com",
         buttonText: "Send Email",
         icon: Icons.email,
         onTap: () {
-          LauncherHelper.sendEmail("nharmdan15@gmail.com");
+          LauncherHelper.sendEmail("MediNearapp@Yahoo.com");
         },
       ),
     ];

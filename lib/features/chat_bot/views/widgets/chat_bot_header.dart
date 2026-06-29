@@ -9,7 +9,7 @@ class ChatBotHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ تحسين: استخدام sizeOf لتقليل الـ Rebuilds
+    // تحسين: استخدام sizeOf لتقليل الـ Rebuilds
     final top = MediaQuery.paddingOf(context).top;
 
     return Container(
@@ -73,7 +73,7 @@ class ChatBotHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
       decoration: BoxDecoration(
-        // ✅ شلنا الـ BackdropFilter وحطينا لون شفاف ثابت (أسرع بـ 100 مرة في الرندر)
+        // شلنا الـ BackdropFilter وحطينا لون شفاف ثابت (أسرع بـ 100 مرة في الرندر)
         color: Colors.white.withAlpha(40),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.white.withAlpha(50), width: 0.8),
@@ -81,7 +81,7 @@ class ChatBotHeader extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ✅ الـ PulsingDot لوحدها هي اللي بتتحرك، مفيش Blur وراها يتقل السكرول
+          // الـ PulsingDot لوحدها هي اللي بتتحرك، مفيش Blur وراها يتقل السكرول
           vm.isTyping ? const PulsingDot() : const _StaticOnlineDot(),
           const SizedBox(width: 8),
           Text(
@@ -98,7 +98,7 @@ class ChatBotHeader extends StatelessWidget {
   }
 }
 
-// ✅ فصلنا النقطة الثابتة في Widget مستقلة عشان الكود يبقى أنضف
+// فصلنا النقطة الثابتة في Widget مستقلة عشان الكود يبقى أنضف
 class _StaticOnlineDot extends StatelessWidget {
   const _StaticOnlineDot();
 

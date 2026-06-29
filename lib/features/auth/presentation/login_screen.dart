@@ -17,12 +17,12 @@ class LoginScreen extends ConsumerWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // 🚀 1. خلفية النقوش الطبية
+            // � 1. خلفية النقوش الطبية
             Positioned.fill(
               child: _buildMedicalPatternBackground(isDark),
             ),
 
-            // 🚀 2. المحتوى الأساسي
+            // � 2. المحتوى الأساسي
             SingleChildScrollView(
               child: SizedBox(
                 height: MediaQuery.of(context).size.height -
@@ -33,7 +33,7 @@ class LoginScreen extends ConsumerWidget {
                   children: [
                     const Spacer(flex: 2),
 
-                    // 🚀 اللوجو بتاعك الحقيقي
+                    // � اللوجو بتاعك الحقيقي
                     Container(
                       width: 130,
                       height: 130,
@@ -64,7 +64,7 @@ class LoginScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(5.0),
                         child: ClipOval(
                           child: Image.asset(
-                            'assets/images/logo.png', // ⚠️ تأكد من المسار واسم الصورة
+                            'assets/images/logo.png', // ⚠ تأكد من المسار واسم الصورة
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -73,7 +73,7 @@ class LoginScreen extends ConsumerWidget {
 
                     const SizedBox(height: 20),
 
-                    // 🚀 كلمة Digital Pharmacy
+                    // � كلمة Digital Pharmacy
                     const Text(
                       " MediNear Pharmacies",
                       style: TextStyle(
@@ -110,7 +110,7 @@ class LoginScreen extends ConsumerWidget {
 
                     const Spacer(flex: 2),
 
-                    // 🚀 زرار جوجل
+                    // � زرار جوجل
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 35),
                       child: _buildLoginButton(
@@ -148,7 +148,7 @@ class LoginScreen extends ConsumerWidget {
 
                     const SizedBox(height: 25),
 
-                    // 🚀 فاصل or
+                    // � فاصل or
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 60),
                       child: Row(
@@ -180,7 +180,7 @@ class LoginScreen extends ConsumerWidget {
 
                     const SizedBox(height: 25),
 
-                    // 🚀 زرار فيسبوك
+                    // � زرار فيسبوك
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 35),
                       child: _buildLoginButton(
@@ -213,7 +213,7 @@ class LoginScreen extends ConsumerWidget {
               ),
             ),
 
-            // 🚀 3. شاشة التحميل
+            // � 3. شاشة التحميل
             if (ref.watch(authProvider).isLoading)
               Container(
                 color: Colors.black.withValues(alpha: 0.3),
@@ -227,7 +227,7 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 
-  // 🚀🔥 تصميم البطاقة العائمة مع الأنيميشن (نزلت لتحت شوية)
+  // �� تصميم البطاقة العائمة مع الأنيميشن (نزلت لتحت شوية)
   void _showTopError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -238,7 +238,7 @@ class LoginScreen extends ConsumerWidget {
         elevation: 0,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.only(
-          // 🚀 الرقم ده اتعدل لـ 160 عشان الرسالة تنزل لتحت شوية
+          // � الرقم ده اتعدل لـ 160 عشان الرسالة تنزل لتحت شوية
           bottom: MediaQuery.of(context).size.height - 160,
           left: 15,
           right: 15,
@@ -320,7 +320,7 @@ class LoginScreen extends ConsumerWidget {
                 ),
               ),
 
-              // 🚀 شريط التحميل المتحرك
+              // � شريط التحميل المتحرك
               TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 1.0, end: 0.0),
                 duration: const Duration(seconds: 4),
@@ -342,7 +342,7 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 
-  // 🚀 دالة بناء نقشة الخلفية الطبية
+  // � دالة بناء نقشة الخلفية الطبية
   Widget _buildMedicalPatternBackground(bool isDark) {
     final List<Widget> iconWidgets = [
       FaIcon(FontAwesomeIcons.pills, color: Colors.green[200], size: 30),
@@ -382,7 +382,7 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 
-  // 🚀 ويدجت زراير تسجيل الدخول
+  // � ويدجت زراير تسجيل الدخول
   Widget _buildLoginButton({
     required String text,
     required Widget iconWidget,

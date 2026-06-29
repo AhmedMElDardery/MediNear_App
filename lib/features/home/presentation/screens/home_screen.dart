@@ -87,7 +87,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // 📷 Camera Button
+          // � Camera Button
           _CameraFab(
             onTap: () {
               Navigator.push(
@@ -115,12 +115,12 @@ class _HomeViewState extends ConsumerState<HomeScreen>
       return _buildLoadingState();
     }
 
-    // 🔴 Error
+    // � Error
     if (provider.errorMessage != null) {
       return _buildErrorState(provider);
     }
 
-    // 🟢 Content — trigger fade in
+    // � Content — trigger fade in
     if (!_fadeController.isCompleted) {
       _fadeController.forward();
     }
@@ -246,7 +246,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
                               MaterialPageRoute(
                                 builder: (_) => PharmacyScreen(
                                   pharmacyId: pharmacy.id
-                                      .toString(), // 🚀 ضفنا الـ ID بتاع الصيدلية هنا
+                                      .toString(), // � ضفنا الـ ID بتاع الصيدلية هنا
                                   pharmacyName: pharmacy.name,
                                   doctorName: pharmacy
                                       .name, // زي ما هي مكتوبة عندك في الكود
@@ -566,7 +566,7 @@ class _HomeViewState extends ConsumerState<HomeScreen>
             Container(
               width: 62,
               height: 62,
-              padding: const EdgeInsets.all(8), // 🚀 Reduced padding to make image larger
+              padding: const EdgeInsets.all(8), // � Reduced padding to make image larger
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Theme.of(context).cardColor,
@@ -915,7 +915,7 @@ class _AIChatFabState extends ConsumerState<_AIChatFab>
 }
 
 // ─────────────────────────────────────────
-// 📷 Camera FAB
+// � Camera FAB
 // ─────────────────────────────────────────
 class _CameraFab extends ConsumerStatefulWidget {
   final VoidCallback onTap;

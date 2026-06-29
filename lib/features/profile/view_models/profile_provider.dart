@@ -31,13 +31,13 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 🚀 دالة اختيار ورفع الصورة (بالتعديل الأخير)
-  // 🚀 دالة اختيار ورفع الصورة (الاعتماد الكلي على رسالة الباك إند)
-// 🚀 دالة اختيار ورفع الصورة (مع ضغط الصورة محلياً والاعتماد الكلي على رسالة الباك إند)
+  // � دالة اختيار ورفع الصورة (بالتعديل الأخير)
+  // � دالة اختيار ورفع الصورة (الاعتماد الكلي على رسالة الباك إند)
+// � دالة اختيار ورفع الصورة (مع ضغط الصورة محلياً والاعتماد الكلي على رسالة الباك إند)
   Future<void> pickImage(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
 
-    // 🚀 السحر هنا: بنطلب من الفلاتر يضغط الصورة ويصغر أبعادها قبل ما يرجعها عشان تترفع طلقة
+    // � السحر هنا: بنطلب من الفلاتر يضغط الصورة ويصغر أبعادها قبل ما يرجعها عشان تترفع طلقة
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 50, // ضغط الجودة لـ 50% (مش هتبان في البروفايل إنها قلت)
@@ -57,10 +57,10 @@ class ProfileProvider extends ChangeNotifier {
       try {
         bool success = await _dataSource.updateProfileImage(newImage);
         if (success && context.mounted) {
-          // 🚀 1. نقفل أي رسالة قديمة
+          // � 1. نقفل أي رسالة قديمة
           ScaffoldMessenger.of(context).clearSnackBars();
 
-          // 🚀 2. رسالة النجاح الاحترافية (Premium Success Banner)
+          // � 2. رسالة النجاح الاحترافية (Premium Success Banner)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               elevation: 10, // Shadow خفيف يرفعها عن الشاشة
@@ -99,7 +99,7 @@ class ProfileProvider extends ChangeNotifier {
         _user!.profileImage = oldImage;
         notifyListeners();
 
-        // 🚀 السحر التاني: بنطبع رسالة السيرفر زي ما هي بالظبط (e.toString)
+        // � السحر التاني: بنطبع رسالة السيرفر زي ما هي بالظبط (e.toString)
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', ''),
@@ -113,9 +113,9 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  //  دالة التحديث في الخلفية (اللي بتمنع التهنيج)
-  //  دالة التحديث في الخلفية (مع إظهار رسائل الخطأ من الباك إند)
-  //  دالة التحديث في الخلفية (مع إظهار رسائل الخطأ من الباك إند)
+  // دالة التحديث في الخلفية (اللي بتمنع التهنيج)
+  // دالة التحديث في الخلفية (مع إظهار رسائل الخطأ من الباك إند)
+  // دالة التحديث في الخلفية (مع إظهار رسائل الخطأ من الباك إند)
   Future<void> updateData(
       BuildContext context, String key, String value) async {
     if (_user == null) return;
@@ -139,16 +139,16 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 🚀 بنبعت الحقل اللي اتغير بس عشان الباك إند ميضربش Validation على الحقول الفاضية
+      // � بنبعت الحقل اللي اتغير بس عشان الباك إند ميضربش Validation على الحقول الفاضية
       await _dataSource.updateProfile(dataToSend);
       // لو نجح مش هنعمل حاجة عشان إنت قولت مش عايز رسالة خضرا والنافذة بتقفل طلقة
     } catch (e) {
-      // 🚀 لو السيرفر رفض (زي إن الاسم أقل من حرفين)، نرجع الداتا القديمة
+      // � لو السيرفر رفض (زي إن الاسم أقل من حرفين)، نرجع الداتا القديمة
       _user!.name = oldName;
       _user!.phone = oldPhone;
       notifyListeners();
 
-      // 🚀 ونطبع رسالة السيرفر زي ما هي بالظبط لليوزر
+      // � ونطبع رسالة السيرفر زي ما هي بالظبط لليوزر
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString().replaceAll('Exception: ', ''),

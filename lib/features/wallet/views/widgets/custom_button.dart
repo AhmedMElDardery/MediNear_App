@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// ✅ تعديل المسار ليكون صحيحاً (نخرج خطوة للمجلد الأب ثم ندخل core/theme)
+// تعديل المسار ليكون صحيحاً (نخرج خطوة للمجلد الأب ثم ندخل core/theme)
 
 class CustomButton extends StatelessWidget {
   final String label;
@@ -18,7 +18,7 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        // ✅ استخدام اللون الأساسي من الثيم أو من ملف AppColors الجديد
+        // استخدام اللون الأساسي من الثيم أو من ملف AppColors الجديد
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

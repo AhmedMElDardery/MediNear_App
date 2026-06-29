@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:medinear_app/features/chat/data/models/chat_model.dart';
 
-import '../chat_details_view.dart'; // ده مكانه الجديد في نفس المجلد// ✅ إضافة استيراد ملف الألوان الجديد للوصول لدالة لون النص
+import '../chat_details_view.dart'; // ده مكانه الجديد في نفس المجلد// إضافة استيراد ملف الألوان الجديد للوصول لدالة لون النص
 
 class ChatListItem extends ConsumerStatefulWidget {
   final ChatModel chat;
@@ -45,7 +45,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            // ✅ اللون المتجاوب: أبيض في الفاتح، ورمادي داكن في الدارك
+            // اللون المتجاوب: أبيض في الفاتح، ورمادي داكن في الدارك
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
@@ -54,7 +54,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
             ),
             boxShadow: [
               BoxShadow(
-                // ✅ تقليل الظل في الدارك مود ليكون التصميم أنظف
+                // تقليل الظل في الدارك مود ليكون التصميم أنظف
                 color: const Color(0xFF198B61)
                     .withValues(alpha: isDarkMode ? 0.0 : 0.05),
                 blurRadius: 15,
@@ -114,7 +114,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ✅ عرض اسم الصيدلية بدلاً من اسم المالك
+        // عرض اسم الصيدلية بدلاً من اسم المالك
         Text(widget.chat.name,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
@@ -124,7 +124,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
         Text(
           widget.chat.isTyping ? "typing..." : widget.chat.lastMessage,
           style: TextStyle(
-            // ✅ تعديل لون الرسالة ليكون مقروءاً في الوضعين
+            // تعديل لون الرسالة ليكون مقروءاً في الوضعين
             color: widget.chat.isTyping
                 ? const Color(0xFF198B61)
                 : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
@@ -146,7 +146,7 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
         PopupMenuButton<String>(
           icon:
               const Icon(Icons.more_horiz, color: Color(0xFF198B61), size: 28),
-          // ✅ خلفية القائمة المنسدلة أصبحت متجاوبة
+          // خلفية القائمة المنسدلة أصبحت متجاوبة
           color: Theme.of(context).cardColor,
           elevation: 8,
           shape: RoundedRectangleBorder(

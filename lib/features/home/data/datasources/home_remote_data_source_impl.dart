@@ -9,7 +9,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
   HomeRemoteDataSourceImpl({required this.dio, required this.tokenStorage});
 
-  // ✅ helper: بيتعامل مع status سواء جه true (bool) أو 1 (int) من الـ API
+  // helper: بيتعامل مع status سواء جه true (bool) أو 1 (int) من الـ API
   bool _isSuccess(dynamic status) {
     if (status == true) return true;
     if (status == 1) return true;
@@ -31,7 +31,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
       final data = response.data;
 
-      // ✅ Dio بيعمل throw تلقائي لو HTTP مش 200
+      // Dio بيعمل throw تلقائي لو HTTP مش 200
       // فلو وصلنا هنا يعني الـ response ناجح → نجيب الـ data مباشرة
       if (data is Map && data.containsKey('data')) {
         return List<Map<String, dynamic>>.from(data['data']);
@@ -82,7 +82,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
       final data = response.data;
 
-      // ✅ نعتمد على HTTP 200 مش على status field
+      // نعتمد على HTTP 200 مش على status field
       if (data is Map && data.containsKey('data')) {
         final inner = data['data'];
         if (inner is Map && inner.containsKey('data')) {
@@ -131,7 +131,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
       final data = response.data;
 
-      // ✅ نعتمد على HTTP 200 مش على status field
+      // نعتمد على HTTP 200 مش على status field
       if (data is Map && data.containsKey('data')) {
         final inner = data['data'];
         if (inner is Map && inner.containsKey('data')) {

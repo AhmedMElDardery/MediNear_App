@@ -33,7 +33,7 @@ class SavedMedicationModel {
   final String price;
   final String image;
   final bool isAvailable;
-  final String? pharmacyId; // 🚀 أضفنا pharmacyId عشان هنحتاجه واحنا بنلغي الحفظ
+  final String? pharmacyId; // � أضفنا pharmacyId عشان هنحتاجه واحنا بنلغي الحفظ
   final String? pharmacyName;
   final String? pharmacyImage;
   bool isSaved;

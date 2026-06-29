@@ -71,7 +71,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ref.read(cartProvider).loadCartPharmacies();
 
       if (result == "cash_success") {
-        // ✅ عرض رسالة النجاح ثم الانتقال للـ Home
+        // عرض رسالة النجاح ثم الانتقال للـ Home
         await _showSuccessSheet();
       } else if (result.startsWith("error:")) {
         ScaffoldMessenger.of(context).showSnackBar(

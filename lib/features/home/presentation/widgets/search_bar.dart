@@ -179,7 +179,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
             fontWeight: _isListening ? FontWeight.w600 : FontWeight.w400,
           ),
 
-          // 🔍 Search Icon
+          // � Search Icon
           prefixIcon: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: Icon(
@@ -192,7 +192,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget>
             ),
           ),
 
-          // 🎙️ Mic / Send Button
+          // � Mic / Send Button
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

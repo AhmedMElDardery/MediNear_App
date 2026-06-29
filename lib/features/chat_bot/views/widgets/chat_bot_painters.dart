@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// ✅ أبقينا فقط على رسام "ذيل الفقاعة" لأنه خفيف ومهم للشكل البصري
+// أبقينا فقط على رسام "ذيل الفقاعة" لأنه خفيف ومهم للشكل البصري
 class BubbleTailPainter extends CustomPainter {
   final bool isBot;
   final Color color;
@@ -31,7 +31,7 @@ class BubbleTailPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
-  // ✅ التعديل الأهم: false عشان المثلث يترسم مرة واحدة في العمر وميعملش Re-paint
+  // التعديل الأهم: false عشان المثلث يترسم مرة واحدة في العمر وميعملش Re-paint
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

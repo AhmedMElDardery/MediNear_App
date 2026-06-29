@@ -95,7 +95,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final finalPriceStr = pivotPrice ?? officialPrice ?? '0';
 
       return MedicineEntity(
-        id: e["id"]?.toString() ?? '', // ✅ int → String
+        id: e["id"]?.toString() ?? '', // int → String
         name: e["name"]?.toString() ?? 'Unknown',
         imageUrl: fullImg,
         price: num.tryParse(finalPriceStr)?.toDouble() ?? 0.0,
@@ -144,7 +144,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final finalPriceStr = pivotPrice ?? officialPrice ?? '0';
 
       return MedicineEntity(
-        id: e["id"]?.toString() ?? '', // ✅ int → String
+        id: e["id"]?.toString() ?? '', // int → String
         name: e["name"]?.toString() ?? 'Unknown',
         imageUrl: fullImg,
         price: num.tryParse(finalPriceStr)?.toDouble() ?? 0.0,

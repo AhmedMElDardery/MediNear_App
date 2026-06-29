@@ -10,7 +10,7 @@ class SavedItemsRemoteDataSource {
   Future<Map<String, List<dynamic>>> getSavedItems() async {
     try {
       final token = await tokenStorage.getToken();
-      // 🚀 إرسال طلبين في نفس الوقت عشان السرعة
+      // � إرسال طلبين في نفس الوقت عشان السرعة
       final responses = await Future.wait([
         dio.get(
           '/pharmacy/pharmacy/saved',
@@ -31,10 +31,10 @@ class SavedItemsRemoteDataSource {
       final pharmaciesResponse = responses[0];
       final medicinesResponse = responses[1];
 
-      // 🚀 1. فك شفرة الصفحات للصيدليات
+      // � 1. فك شفرة الصفحات للصيدليات
       final rawPharmaciesData = pharmaciesResponse.data['data']?['data'] as List? ?? [];
 
-      // 🚀 2. الترجمة للصيدليات
+      // � 2. الترجمة للصيدليات
       List<SavedPharmacyModel> realPharmacies = rawPharmaciesData.map((item) {
         String fullAddress = '${item['city'] ?? ''} - ${item['address'] ?? ''}'.replaceAll('\n', ' ');
         String rawImage = item['image'] ?? 'assets/images/dr1.jpg';
@@ -51,7 +51,7 @@ class SavedItemsRemoteDataSource {
         });
       }).toList();
 
-      // 🚀 3. فك شفرة الأدوية
+      // � 3. فك شفرة الأدوية
       final rawMedicinesData = medicinesResponse.data['data']?['data'] as List? ?? [];
       
       List<SavedMedicationModel> realMedicines = rawMedicinesData.map((item) {

@@ -58,7 +58,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // ✅ خلفية متجاوبة تتبع الثيم (أسود في الدارك، وفاتح في اللايت)
+      // خلفية متجاوبة تتبع الثيم (أسود في الدارك، وفاتح في اللايت)
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: PreferredSize(
@@ -179,7 +179,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
                       _viewModel.toggleMute();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(_viewModel.isMuted ? 'تم كتم الإشعارات لهذه المحادثة 🔕' : 'تم تفعيل الإشعارات 🔔'),
+                          content: Text(_viewModel.isMuted ? 'تم كتم الإشعارات لهذه المحادثة �' : 'تم تفعيل الإشعارات �'),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: const Color(0xFF198B61),
                           duration: const Duration(seconds: 2),
@@ -245,7 +245,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
       ),
       body: Stack(
         children: [
-          // 🚀 خلفية النقوش الطبية الفخمة (زي واتساب)
+          // � خلفية النقوش الطبية الفخمة (زي واتساب)
           Positioned.fill(
             child: _buildChatPatternBackground(isDarkMode),
           ),
@@ -290,12 +290,12 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
     );
   }
 
-  // 🚀 دالة بناء نقشة الخلفية باستخدام رموز طبية دقيقة وعشوائية (Doodles)
+  // � دالة بناء نقشة الخلفية باستخدام رموز طبية دقيقة وعشوائية (Doodles)
   Widget _buildChatPatternBackground(bool isDark) {
-    // 🎨 استخدام withValues(alpha) مباشرة بدلاً من Opacity لتحسين الأداء (Smooth Transition)
+    // � استخدام withValues(alpha) مباشرة بدلاً من Opacity لتحسين الأداء (Smooth Transition)
     final Color iconColor = (isDark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.08 : 0.06);
 
-    // 🌟 رموز طبية دقيقة (Size أكبر شوية عشان تبقى واضحة)
+    // رموز طبية دقيقة (Size أكبر شوية عشان تبقى واضحة)
     final List<Widget> iconWidgets = [
       Icon(Icons.medical_services_outlined, color: iconColor, size: 24),
       Icon(Icons.local_pharmacy_outlined, color: iconColor, size: 24),
@@ -320,7 +320,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          // 🚀 قللنا الأعمدة عشان مساحة الأيقونة تكبر وتتنفس
+          // � قللنا الأعمدة عشان مساحة الأيقونة تكبر وتتنفس
           crossAxisCount: 7,
           mainAxisSpacing: 35,
           crossAxisSpacing: 35,
@@ -330,7 +330,7 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
           final int pseudoRandomIndex = (index * 23 + 13) % iconWidgets.length;
           final widget = iconWidgets[pseudoRandomIndex];
 
-          // 🚀 الإزاحة يمين وشمال وفوق وتحت بشكل عشوائي عشان نكسر شكل الـ Grid المترتب
+          // � الإزاحة يمين وشمال وفوق وتحت بشكل عشوائي عشان نكسر شكل الـ Grid المترتب
           double offsetX = ((index * 13) % 40) - 20.0;
           double offsetY = ((index * 17) % 40) - 20.0;
 

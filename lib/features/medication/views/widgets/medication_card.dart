@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medinear_app/features/medication/data/models/medication_model.dart';
-// ✅ المسار صحيح ومطابق للهيكلة الجديدة
+// المسار صحيح ومطابق للهيكلة الجديدة
 
 class MedicationCard extends StatelessWidget {
   final MedicationModel medication;
@@ -24,7 +24,7 @@ class MedicationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            // ✅ استبدال withOpacity بـ withValues (لحل تنبيه الـ Info)
+            // استبدال withOpacity بـ withValues (لحل تنبيه الـ Info)
             color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -52,7 +52,7 @@ class MedicationCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    // ✅ استخدام withValues بدلاً من withOpacity
+                    // استخدام withValues بدلاً من withOpacity
                     color:
                         Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
@@ -88,7 +88,7 @@ class MedicationCard extends StatelessWidget {
                       _buildActionIcon(
                           Icons.info_outline,
                           Theme.of(context).primaryColor,
-                          // ✅ تحديث هنا أيضاً
+                          // تحديث هنا أيضاً
                           Theme.of(context)
                               .primaryColor
                               .withValues(alpha: 0.1)),
@@ -98,7 +98,7 @@ class MedicationCard extends StatelessWidget {
                         child: _buildActionIcon(
                             Icons.delete_outline,
                             Colors.redAccent,
-                            // ✅ تحديث هنا أيضاً
+                            // تحديث هنا أيضاً
                             Colors.redAccent.withValues(alpha: 0.1)),
                       ),
                     ],

@@ -8,7 +8,7 @@ class OrderItemModel {
 
   double get total => price * quantity;
 
-  // 🚀 تحويل الـ JSON لموديل
+  // � تحويل الـ JSON لموديل
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     return OrderItemModel(
       name: json['medicine']?['name'] ?? 'Unknown Medicine',

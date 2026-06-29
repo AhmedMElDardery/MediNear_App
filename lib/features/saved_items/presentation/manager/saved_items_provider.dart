@@ -23,8 +23,8 @@ class SavedItemsProvider extends ChangeNotifier {
   int get savedPharmaciesCount => _filteredPharmacies.length;
   int get savedMedicationsCount => _filteredMedications.length;
 
-  // 🚀 جلب البيانات من السيرفر
-  // 🚀 جلب البيانات من السيرفر
+  // � جلب البيانات من السيرفر
+  // � جلب البيانات من السيرفر
   Future<void> fetchSavedItems({bool silent = false}) async {
     // ❌ مسحنا السطر اللي كان بيعمل "بلوك" للـ API
     // وبكده كل ما تفتح الصفحة هيكلم السيرفر ويجيب أحدث حاجة
@@ -86,7 +86,7 @@ class SavedItemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 🚀 دالة الحذف (لما اليوزر يدوس مسح أو Swipe)
+  // � دالة الحذف (لما اليوزر يدوس مسح أو Swipe)
   Future<void> removePharmacy(SavedPharmacyModel item) async {
     final index = _allPharmacies.indexWhere((element) => element.id == item.id);
     if (index != -1) {
@@ -105,7 +105,7 @@ class SavedItemsProvider extends ChangeNotifier {
     }
   }
 
-  // 🚀 دالة التراجع (لما اليوزر يدوس Undo من رسالة الـ SnackBar)
+  // � دالة التراجع (لما اليوزر يدوس Undo من رسالة الـ SnackBar)
   Future<void> undoRemovePharmacy(SavedPharmacyModel item) async {
     final index = _allPharmacies.indexWhere((element) => element.id == item.id);
     if (index != -1) {
@@ -133,7 +133,7 @@ class SavedItemsProvider extends ChangeNotifier {
       _allMedications[index].isSaved = false;
       _applyFilters();
 
-      // 🚀 إرسال الطلب للسيرفر
+      // � إرسال الطلب للسيرفر
       var response = await _dataSource.toggleSaveMedicine(item.id.toString(), item.pharmacyId ?? '0');
       if (response != true) {
         _allMedications[index].isSaved = true;
@@ -152,7 +152,7 @@ class SavedItemsProvider extends ChangeNotifier {
       _allMedications[index].isSaved = true;
       _applyFilters();
 
-      // 🚀 إرسال الطلب للسيرفر
+      // � إرسال الطلب للسيرفر
       var response = await _dataSource.toggleSaveMedicine(item.id.toString(), item.pharmacyId ?? '0');
       if (response != true) {
         _allMedications[index].isSaved = false;

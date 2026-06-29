@@ -14,10 +14,10 @@ class ShippingInfoCard extends ConsumerStatefulWidget {
 class _ShippingInfoCardState extends ConsumerState<ShippingInfoCard> {
   // 1. ليستة الدول بنفس الفكرة
   final List<Map<String, dynamic>> countries = [
-    {'name': 'Egypt', 'flag': '🇪🇬', 'code': '+20', 'maxLength': 11},
-    {'name': 'Saudi Arabia', 'flag': '🇸🇦', 'code': '+966', 'maxLength': 9},
-    {'name': 'UAE', 'flag': '🇦🇪', 'code': '+971', 'maxLength': 9},
-    {'name': 'Kuwait', 'flag': '🇰🇼', 'code': '+965', 'maxLength': 8},
+    {'name': 'Egypt', 'flag': '��', 'code': '+20', 'maxLength': 11},
+    {'name': 'Saudi Arabia', 'flag': '��', 'code': '+966', 'maxLength': 9},
+    {'name': 'UAE', 'flag': '��', 'code': '+971', 'maxLength': 9},
+    {'name': 'Kuwait', 'flag': '��', 'code': '+965', 'maxLength': 8},
   ];
 
   late Map<String, dynamic> selectedCountry;

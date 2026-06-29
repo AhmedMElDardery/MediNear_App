@@ -15,7 +15,7 @@ class ChatBotBottomPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ 1. تم استبدال الحسبة القديمة بـ 0 لأننا بنتحكم في الارتفاع من الـ Wrapper الخارجي لسرعة خرافية
+    // 1. تم استبدال الحسبة القديمة بـ 0 لأننا بنتحكم في الارتفاع من الـ Wrapper الخارجي لسرعة خرافية
     final isEmpty = vm.messages.isEmpty;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -34,7 +34,7 @@ class ChatBotBottomPanel extends StatelessWidget {
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
-        // 🚀 تم إزالة BackdropFilter لرفع كفاءة المعالج أثناء حركة الكيبورد
+        // � تم إزالة BackdropFilter لرفع كفاءة المعالج أثناء حركة الكيبورد
         child: Container(
           decoration: BoxDecoration(
             color: isDark
@@ -74,7 +74,7 @@ class ChatBotBottomPanel extends StatelessWidget {
                   ),
                 ),
               Padding(
-                // ✅ 2. تم تثبيت البادينج لضمان عدم وجود "مط" أو "تأخير" أثناء الطلوع والنزول
+                // 2. تم تثبيت البادينج لضمان عدم وجود "مط" أو "تأخير" أثناء الطلوع والنزول
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,

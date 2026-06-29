@@ -16,7 +16,7 @@ class ProfileRemoteDataSource {
     ),
   );
 
-  // 1️⃣ جلب بيانات المستخدم
+  // 1⃣ جلب بيانات المستخدم
   Future<UserModel> getUserProfile() async {
     try {
       String? token = await TokenStorage().getToken();
@@ -45,12 +45,12 @@ class ProfileRemoteDataSource {
     }
   }
 
-  // 2️⃣ تحديث البيانات النصية (الاسم والرقم)
+  // 2⃣ تحديث البيانات النصية (الاسم والرقم)
   Future<bool> updateProfile(Map<String, dynamic> userData) async {
     try {
       String? token = await TokenStorage().getToken();
 
-      if (kDebugMode) print("📤 Data sent to update: $userData");
+      if (kDebugMode) print("� Data sent to update: $userData");
 
       final response = await _dio.post(
         '/profile/update',
@@ -59,7 +59,7 @@ class ProfileRemoteDataSource {
         data: userData,
       );
 
-      if (kDebugMode) print("📥 Update Response: ${response.data}");
+      if (kDebugMode) print("� Update Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -69,13 +69,13 @@ class ProfileRemoteDataSource {
       }
     } on DioException catch (e) {
       throw Exception(
-          _extractErrorMessage(e)); // 🚀 بنستخدم الدالة الذكية اللي تحت
+          _extractErrorMessage(e)); // � بنستخدم الدالة الذكية اللي تحت
     } catch (e) {
       throw Exception('حدث خطأ غير متوقع: $e');
     }
   }
 
-  // 3️⃣ رفع الصورة للسيرفر
+  // 3⃣ رفع الصورة للسيرفر
   Future<bool> updateProfileImage(File imageFile) async {
     try {
       String? token = await TokenStorage().getToken();
@@ -86,7 +86,7 @@ class ProfileRemoteDataSource {
             await MultipartFile.fromFile(imageFile.path, filename: fileName),
       });
 
-      if (kDebugMode) print("📤 Uploading Image: $fileName");
+      if (kDebugMode) print("� Uploading Image: $fileName");
 
       final response = await _dio.post(
         '/profile/update',
@@ -95,7 +95,7 @@ class ProfileRemoteDataSource {
         data: formData,
       );
 
-      if (kDebugMode) print("📥 Image Upload Response: ${response.data}");
+      if (kDebugMode) print("� Image Upload Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -104,13 +104,13 @@ class ProfileRemoteDataSource {
       }
     } on DioException catch (e) {
       throw Exception(
-          _extractErrorMessage(e)); // 🚀 بنستخدم الدالة الذكية اللي تحت
+          _extractErrorMessage(e)); // � بنستخدم الدالة الذكية اللي تحت
     } catch (e) {
       throw Exception('حدث خطأ غير متوقع: $e');
     }
   }
 
-  // 🚀 دالة ذكية مخصصة لاستخراج رسالة الـ Validation بتاعة لارافل
+  // � دالة ذكية مخصصة لاستخراج رسالة الـ Validation بتاعة لارافل
   String _extractErrorMessage(DioException e) {
     if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.receiveTimeout) {

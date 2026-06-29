@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../data/models/chat_model.dart';
 // تعريف واجهات التحكم في الحالة (ViewModels) - مسار نسبي للوصول للـ ViewModel داخل نفس الميزة
 import '../view_models/chats_view_model.dart';
-// ✅ Widgets - التعديل الأهم: الملف الآن موجود داخل مجلد الـ widgets الخاص بالـ chat
+// Widgets - التعديل الأهم: الملف الآن موجود داخل مجلد الـ widgets الخاص بالـ chat
 import 'widgets/chat_list_item.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
@@ -48,7 +48,7 @@ class _ArchivedChatsViewState extends ConsumerState<ArchivedChatsView> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // ✅ حل مشكلة البياض المستفز: الخلفية الآن مربوطة بـ AppColors.darkBackground تلقائياً
+      // حل مشكلة البياض المستفز: الخلفية الآن مربوطة بـ AppColors.darkBackground تلقائياً
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
@@ -73,7 +73,7 @@ class _ArchivedChatsViewState extends ConsumerState<ArchivedChatsView> {
                     itemCount: archivedChats.length,
                     itemBuilder: (context, index) {
                       final chat = archivedChats[index];
-                      // ✅ التأكد من أن الـ Item نفسه يدعم الثيم داخل الـ Widget الخاص به
+                      // التأكد من أن الـ Item نفسه يدعم الثيم داخل الـ Widget الخاص به
                       return ChatListItem(
                         chat: chat,
                         onDelete: () => _deleteChat(chat),

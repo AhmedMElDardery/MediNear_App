@@ -19,7 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (user != null) {
       await tokenStorage.saveToken(user.token);
       await userStorage.saveUser(user);
-      if (kDebugMode) print("✅ Google Token + User Saved");
+      if (kDebugMode) print(" Google Token + User Saved");
     }
     return user;
   }
@@ -30,7 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (user != null) {
       await tokenStorage.saveToken(user.token);
       await userStorage.saveUser(user);
-      if (kDebugMode) print("✅ FB Token + User Saved");
+      if (kDebugMode) print(" FB Token + User Saved");
     }
     return user;
   }
@@ -40,6 +40,6 @@ class AuthRepositoryImpl implements AuthRepository {
     await remoteDataSource.logout();
     await tokenStorage.clear();
     await userStorage.clear();
-    if (kDebugMode) print("🗑️ [Repository] Token + User Cleared");
+    if (kDebugMode) print("� [Repository] Token + User Cleared");
   }
 }

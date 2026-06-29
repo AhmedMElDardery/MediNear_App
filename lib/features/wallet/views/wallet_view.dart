@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 
-// 🚨 السطر اللي كان ناقص ومسبب كل المشاكل:
+// � السطر اللي كان ناقص ومسبب كل المشاكل:
 class WalletView extends ConsumerWidget {
   const WalletView({super.key});
 
@@ -17,7 +17,7 @@ class WalletView extends ConsumerWidget {
     final viewModel = ref.watch(walletViewModelProvider);
 
     return Scaffold(
-      // ✅ جعل الخلفية ديناميكية تتبع الثيم (Light/Dark)
+      // جعل الخلفية ديناميكية تتبع الثيم (Light/Dark)
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: CustomAppBar(
@@ -83,4 +83,4 @@ class WalletView extends ConsumerWidget {
       ),
     );
   }
-} // ✅ إغلاق الكلاس
+} // إغلاق الكلاس

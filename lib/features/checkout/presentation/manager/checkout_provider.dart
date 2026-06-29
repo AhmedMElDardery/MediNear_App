@@ -12,10 +12,10 @@ class CheckoutProvider extends ChangeNotifier {
   final TextEditingController addressController = TextEditingController();
 
   final List<Map<String, dynamic>> countries = [
-    {'name': 'Egypt', 'flag': '🇪🇬', 'code': '+20', 'maxLength': 11},
-    {'name': 'Saudi Arabia', 'flag': '🇸🇦', 'code': '+966', 'maxLength': 9},
-    {'name': 'UAE', 'flag': '🇦🇪', 'code': '+971', 'maxLength': 9},
-    {'name': 'Kuwait', 'flag': '🇰🇼', 'code': '+965', 'maxLength': 8},
+    {'name': 'Egypt', 'flag': '��', 'code': '+20', 'maxLength': 11},
+    {'name': 'Saudi Arabia', 'flag': '��', 'code': '+966', 'maxLength': 9},
+    {'name': 'UAE', 'flag': '��', 'code': '+971', 'maxLength': 9},
+    {'name': 'Kuwait', 'flag': '��', 'code': '+965', 'maxLength': 8},
   ];
 
   late Map<String, dynamic> _selectedCountry;

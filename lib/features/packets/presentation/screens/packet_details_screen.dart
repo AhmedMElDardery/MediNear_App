@@ -477,7 +477,7 @@ class _PacketDetailsScreenState extends ConsumerState<PacketDetailsScreen>
 }
 
 // ══════════════════════════════════════════
-// 📝 NOTE CARD
+// � NOTE CARD
 // ══════════════════════════════════════════
 class _NoteCard extends StatelessWidget {
   final PacketItemEntity item;
@@ -563,7 +563,7 @@ class _NoteCard extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📜 PRESCRIPTION CARD
+// � PRESCRIPTION CARD
 // ══════════════════════════════════════════
 class _PrescriptionCard extends StatelessWidget {
   final PacketItemEntity item;
@@ -720,7 +720,7 @@ class _PrescriptionCard extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 💊 MEDICINE CARD
+// � MEDICINE CARD
 // ══════════════════════════════════════════
 class _MedicineCard extends StatelessWidget {
   final PacketItemEntity item;
@@ -787,7 +787,7 @@ class _MedicineCard extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📊 STAT CHIP (in App Bar)
+// � STAT CHIP (in App Bar)
 // ══════════════════════════════════════════
 class _StatChip extends StatelessWidget {
   final IconData icon;
@@ -816,7 +816,7 @@ class _StatChip extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 🔘 FILTER CHIP
+// � FILTER CHIP
 // ══════════════════════════════════════════
 class _FilterChip extends StatelessWidget {
   final String label;
@@ -936,7 +936,7 @@ class _FabItem extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📝 NOTE INPUT SHEET
+// � NOTE INPUT SHEET
 // ══════════════════════════════════════════
 class _NoteInputSheet extends StatelessWidget {
   final TextEditingController titleController;
@@ -1022,7 +1022,7 @@ class _NoteInputSheet extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📝 NOTE DETAIL SHEET
+// � NOTE DETAIL SHEET
 // ══════════════════════════════════════════
 class _NoteDetailSheet extends StatelessWidget {
   final PacketItemEntity item;
@@ -1096,7 +1096,7 @@ class _NoteDetailSheet extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📸 SOURCE PICKER SHEET
+// � SOURCE PICKER SHEET
 // ══════════════════════════════════════════
 class _SourcePickerSheet extends StatelessWidget {
   final Color color;
@@ -1177,7 +1177,7 @@ class _SourcePickerSheet extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📸 PRESCRIPTION PREVIEW SHEET
+// � PRESCRIPTION PREVIEW SHEET
 // ══════════════════════════════════════════
 class _PrescriptionPreviewSheet extends StatefulWidget {
   final String imagePath;
@@ -1321,7 +1321,7 @@ class _UploadingDialog extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 🖼️ FULL SCREEN IMAGE VIEWER
+// � FULL SCREEN IMAGE VIEWER
 // ══════════════════════════════════════════
 class _FullScreenImageViewer extends StatelessWidget {
   final String imageUrl;
@@ -1410,7 +1410,7 @@ class _ErrorWidget extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 📭 EMPTY WIDGET
+// � EMPTY WIDGET
 // ══════════════════════════════════════════
 class _EmptyWidget extends StatelessWidget {
   final PacketItemType? filter;
@@ -1455,7 +1455,7 @@ class _EmptyWidget extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════
-// 💊 MEDICINE PICKER SHEET
+// � MEDICINE PICKER SHEET
 // ══════════════════════════════════════════
 class _MedicinePickerSheet extends ConsumerStatefulWidget {
   final Function(String medicineId, String medicineName) onMedicineSelected;

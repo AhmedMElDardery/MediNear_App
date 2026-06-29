@@ -3,7 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:medinear_app/features/auth/data/models/user_model.dart';
 import 'package:medinear_app/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:flutter/foundation.dart'; // 🚀 عشان الـ kDebugMode والـ print
+import 'package:flutter/foundation.dart'; // � عشان الـ kDebugMode والـ print
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final Dio dio;
@@ -32,7 +32,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
-      if (kDebugMode) print("📥 Google Login Response: ${response.data}");
+      if (kDebugMode) print("� Google Login Response: ${response.data}");
 
       if (response.statusCode == 200 && response.data['status'] == true) {
         return UserModel.fromJson(
@@ -63,7 +63,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           options: Options(headers: {'Accept': 'application/json'}),
         );
 
-        if (kDebugMode) print("📥 FB Login Response: ${response.data}");
+        if (kDebugMode) print("� FB Login Response: ${response.data}");
 
         if (response.statusCode == 200 && response.data['status'] == true) {
           return UserModel.fromJson(
@@ -85,7 +85,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  // 🚀 دالة الخروج مع الـ Logs للتأكيد
+  // � دالة الخروج مع الـ Logs للتأكيد
   @override
   Future<void> logout() async {
     try {
@@ -98,7 +98,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await FacebookAuth.instance.logOut();
       if (kDebugMode) print("🧹 [Remote] Facebook Signed Out");
     } catch (e) {
-      if (kDebugMode) print("⚠️ Local logout error: $e");
+      if (kDebugMode) print("⚠ Local logout error: $e");
     }
   }
 }

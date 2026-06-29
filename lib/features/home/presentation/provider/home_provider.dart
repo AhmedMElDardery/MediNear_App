@@ -20,7 +20,7 @@ class HomeProvider extends ChangeNotifier {
   List<MedicineEntity> medicines = [];
   List<CategoryEntity> categories = [];
 
-  // 🔍 Search
+  // � Search
   String searchQuery = '';
   List<PharmacyEntity> get filteredPharmacies {
     if (searchQuery.isEmpty) return pharmacies;
@@ -61,27 +61,27 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // ⚡️ ابدأ جلب الإعلانات والأقسام فوراً بالتوازي وماتستناش اللوكيشن!
+      // ⚡ ابدأ جلب الإعلانات والأقسام فوراً بالتوازي وماتستناش اللوكيشن!
       Future<void> fetchAds = repository
           .getAds()
           .then((value) => ads = value)
           .catchError((_) => ads = []);
           
       Future<void> fetchCats = repository
-          .getCategories(1, 100) // 🚀 Fetch up to 100 categories (ALL)
+          .getCategories(1, 100) // � Fetch up to 100 categories (ALL)
           .then((value) => categories = value)
           .catchError((_) => categories = []);
 
-      // 1️⃣ جيب اللوكيشن
+      // 1⃣ جيب اللوكيشن
       currentLocation = await LocationService.getCurrentLocation();
 
-      // 🆕 ابعت اللوكيشن للباك إند (شغله في الخلفية عشان ميعطلش الشاشة)
+      // � ابعت اللوكيشن للباك إند (شغله في الخلفية عشان ميعطلش الشاشة)
       if (currentLocation != null) {
         _sendLocationToServer(
             currentLocation!.latitude, currentLocation!.longitude);
       }
 
-      // 2️⃣ حوّل الإحداثيات لاسم مكان مقروء بدون ما نأخر باقي الصفحة
+      // 2⃣ حوّل الإحداثيات لاسم مكان مقروء بدون ما نأخر باقي الصفحة
       if (currentLocation != null) {
         _reverseGeocode(
           currentLocation!.latitude,
@@ -198,7 +198,7 @@ class HomeProvider extends ChangeNotifier {
     return null;
   }
 
-  // 🆕 ابعت اللوكيشن للسيرفر عشان يتحفظ في بروفايل اليوزر
+  // � ابعت اللوكيشن للسيرفر عشان يتحفظ في بروفايل اليوزر
   Future<void> _sendLocationToServer(double lat, double lng) async {
     try {
       final tokenStorage = TokenStorage();
@@ -226,9 +226,9 @@ class HomeProvider extends ChangeNotifier {
           },
         ),
       );
-      debugPrint("✅ HomeProvider: Location Update Response: ${response.data}");
+      debugPrint(" HomeProvider: Location Update Response: ${response.data}");
     } catch (e) {
-      debugPrint("⚠️ HomeProvider: Failed to send location: $e");
+      debugPrint("⚠ HomeProvider: Failed to send location: $e");
     }
   }
 }

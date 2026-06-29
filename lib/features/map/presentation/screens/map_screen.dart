@@ -23,7 +23,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final CartRemoteDataSource _cartDataSource = CartRemoteDataSource();
-  final Set<String> _addingToCart = {}; // 🆕 لتتبع الأزرار الجاري تحميلها
+  final Set<String> _addingToCart = {}; // � لتتبع الأزرار الجاري تحميلها
 
   @override
   void initState() {
@@ -46,14 +46,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       }
     });
 
-    // 🚀 مراقبة الفوكس
+    // � مراقبة الفوكس
     _searchFocusNode.addListener(() {
       if (!_searchFocusNode.hasFocus) {
         ref.read(mapProvider).setShowSuggestions(false);
       }
     });
 
-    // 🚀 الفلترة اللحظية (Real-time Filtering)
+    // � الفلترة اللحظية (Real-time Filtering)
     _searchController.addListener(() {
       if (mounted) {
         setState(() {}); // بيخلي ويدجت الاقتراحات تعيد بناء نفسها مع كل حرف
@@ -142,7 +142,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  // 🚀 ويدجت الاقتراحات - تعرض أدوية أو صيدليات حسب نوع البحث
+  // � ويدجت الاقتراحات - تعرض أدوية أو صيدليات حسب نوع البحث
   Widget _buildSearchSuggestions(MapProvider provider, bool isDark) {
     final query = _searchController.text.trim().toLowerCase();
 
@@ -308,12 +308,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             children: [
               Row(
                 children: [
-                  // 🚀 شيلنا الـ GestureDetector بتاع الدائرة البيضاء وشيلنا الـ SizedBox اللي بعده
+                  // � شيلنا الـ GestureDetector بتاع الدائرة البيضاء وشيلنا الـ SizedBox اللي بعده
                   Expanded(
                     child: TextField(
                       controller: _searchController,
                       focusNode: _searchFocusNode,
-                      // 🚀 علامة العدسة في الكيبورد
+                      // � علامة العدسة في الكيبورد
                       textInputAction: TextInputAction.search,
                       onTap: () {
                         provider.setShowSuggestions(true);
@@ -505,7 +505,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  // 🆕 دالة الإضافة الحقيقية للـ Cart
+  // � دالة الإضافة الحقيقية للـ Cart
   Future<void> _handleAddToCart({
     required BuildContext context,
     required MapProvider provider,
@@ -543,7 +543,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       if (!mounted) return;
 
       if (success) {
-        // 🆕 تحديث الـ CartProvider عشان الـ badge يتحدث
+        // � تحديث الـ CartProvider عشان الـ badge يتحدث
         ref.read(cartProvider).loadCartPharmacies();
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -599,7 +599,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 }
 
-// 🚀 Dark Mode JSON String لخرائط جوجل
+// � Dark Mode JSON String لخرائط جوجل
 const String _darkMapStyle = '''
 [
   {

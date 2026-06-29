@@ -44,10 +44,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     String? errorMessage;
 
     final List<Map<String, dynamic>> countries = [
-      {'name': 'Egypt', 'flag': '🇪🇬', 'code': '+20', 'maxLength': 11},
-      {'name': 'Saudi Arabia', 'flag': '🇸🇦', 'code': '+966', 'maxLength': 9},
-      {'name': 'UAE', 'flag': '🇦🇪', 'code': '+971', 'maxLength': 9},
-      {'name': 'Kuwait', 'flag': '🇰🇼', 'code': '+965', 'maxLength': 8},
+      {'name': 'Egypt', 'flag': '��', 'code': '+20', 'maxLength': 11},
+      {'name': 'Saudi Arabia', 'flag': '��', 'code': '+966', 'maxLength': 9},
+      {'name': 'UAE', 'flag': '��', 'code': '+971', 'maxLength': 9},
+      {'name': 'Kuwait', 'flag': '��', 'code': '+965', 'maxLength': 8},
     ];
 
     Map<String, dynamic> selectedCountry = countries[0];
@@ -674,7 +674,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                             ]),
                       ),
-                      const SizedBox(height: 120), // 🚀 زيادة المسافة السفلية عشان البار السفلي ميغطيش على زرار تسجيل الخروج
+                      const SizedBox(height: 120), // � زيادة المسافة السفلية عشان البار السفلي ميغطيش على زرار تسجيل الخروج
                     ],
                   ),
                 ),

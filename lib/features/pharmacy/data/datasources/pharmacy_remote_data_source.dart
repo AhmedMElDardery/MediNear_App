@@ -3,7 +3,7 @@ import 'package:medinear_app/core/services/token_storage.dart';
 import '../models/pharmacy_models.dart';
 
 class PharmacyRemoteDataSource {
-  // 🚀 تعريف الـ Dio مباشرة هنا عشان منبوظش الـ Provider Setup بتاعك
+  // � تعريف الـ Dio مباشرة هنا عشان منبوظش الـ Provider Setup بتاعك
   final Dio dio = Dio(BaseOptions(baseUrl: 'https://medinear-eg.com/api'));
   final TokenStorage tokenStorage = TokenStorage();
 
@@ -18,7 +18,7 @@ class PharmacyRemoteDataSource {
 
       final apiData = response.data['data'] ?? response.data;
 
-      // 🛑 الداتا الوهمية بتاعتك (سايبها كـ Fallback عشان لو السيرفر مرجعش أدوية الشاشة متضربش)
+      // � الداتا الوهمية بتاعتك (سايبها كـ Fallback عشان لو السيرفر مرجعش أدوية الشاشة متضربش)
       final dummyMedicines = [
         {
           'id': 1,
@@ -86,7 +86,7 @@ class PharmacyRemoteDataSource {
       }
 
       return {
-        // 🚀 بناخد حالة الحفظ من السيرفر
+        // � بناخد حالة الحفظ من السيرفر
         'is_saved': isSaved,
         // لو السيرفر رجع أدوية بناخدها، لو لأ بناخد الوهمية
         'medicines': parsedMedicines.isNotEmpty
@@ -114,7 +114,7 @@ class PharmacyRemoteDataSource {
     }
   }
 
-  // 2. 🚀 دالة حفظ الصيدلية الجديدة
+  // 2. � دالة حفظ الصيدلية الجديدة
   Future<bool> toggleSavePharmacy(String pharmacyId) async {
     try {
       final token = await tokenStorage.getToken();
@@ -134,7 +134,7 @@ class PharmacyRemoteDataSource {
       return false; // لو حصل مشكلة يرجع False
     }
   }
-  // 3. 🚀 دالة حفظ الدواء
+  // 3. � دالة حفظ الدواء
   Future<bool> toggleSaveMedicine(String medicineId, String pharmacyId) async {
     try {
       final token = await tokenStorage.getToken();

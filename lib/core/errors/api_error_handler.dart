@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiErrorHandler {
   static String getMessage(dynamic error) {
     if (error is DioException) {
-      // 🚀 لغينا قراءة رسائل السيرفر العربي، وهنعتمد على الإنجليزي بتاعنا بس
+      // � لغينا قراءة رسائل السيرفر العربي، وهنعتمد على الإنجليزي بتاعنا بس
       /*
       if (error.response != null && error.response?.data != null) {
         final data = error.response?.data;

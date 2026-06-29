@@ -18,7 +18,7 @@ class DioClient {
             receiveTimeout: const Duration(seconds: 30),
           ),
         ) {
-    // 🚀 1. Interceptor لسحب التوكن وإضافته أوتوماتيك لأي ريكويست
+    // � 1. Interceptor لسحب التوكن وإضافته أوتوماتيك لأي ريكويست
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         // نستخدم الكلاس بتاعك لسحب التوكن المتشفر
@@ -45,7 +45,7 @@ class DioClient {
       },
     ));
 
-    // 🚀 2. Interceptor الطباعة في الـ Debug Console
+    // � 2. Interceptor الطباعة في الـ Debug Console
     dio.interceptors.add(LogInterceptor(
       request: true,
       requestHeader: true, // عشان تشوف التوكن وهو مبعوت بعينك

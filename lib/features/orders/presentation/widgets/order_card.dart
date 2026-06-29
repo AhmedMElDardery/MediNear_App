@@ -11,7 +11,7 @@ class OrderCard extends StatelessWidget {
     required this.onTap,
   });
 
-  // 🎨 دالة اختيار اللون
+  // � دالة اختيار اللون
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'completed':

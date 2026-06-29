@@ -20,7 +20,7 @@ class HomeHeader extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 🌿 Logo + Name
+          // � Logo + Name
           Row(
             children: [
               Image.asset(
@@ -58,7 +58,7 @@ class HomeHeader extends ConsumerWidget {
 
           const Spacer(),
 
-          // 🌙 Theme Toggle
+          // � Theme Toggle
           _IconBtn(
             icon: isDark ? Icons.wb_sunny_outlined : Icons.dark_mode_outlined,
             onTap: themeProv.toggleTheme,
@@ -67,7 +67,7 @@ class HomeHeader extends ConsumerWidget {
 
           const SizedBox(width: 4),
 
-          // 💬 Chat
+          // � Chat
           _IconBtn(
             icon: Icons.chat_bubble_outline_rounded,
             onTap: () => context.push(AppRoutes.chats),
@@ -76,7 +76,7 @@ class HomeHeader extends ConsumerWidget {
 
           const SizedBox(width: 4),
 
-          // 🔔 Notifications with badge
+          // � Notifications with badge
           Stack(
             clipBehavior: Clip.none,
             children: [

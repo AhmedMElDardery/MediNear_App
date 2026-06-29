@@ -21,7 +21,7 @@ class _ChatBotViewState extends ConsumerState<ChatBotView> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  // ✅ دي دالة initState اللي ضفناها عشان تجيب الرسايل أول ما الشاشة تفتح
+  // دي دالة initState اللي ضفناها عشان تجيب الرسايل أول ما الشاشة تفتح
 @override
   void initState() {
     super.initState();

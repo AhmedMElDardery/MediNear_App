@@ -139,7 +139,7 @@ class _ChatsViewState extends ConsumerState<ChatsView> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          // ✅ ألوان متفاعلة مع الدارك مود لمنع البهتان أو البياض الزائد
+          // ألوان متفاعلة مع الدارك مود لمنع البهتان أو البياض الزائد
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),

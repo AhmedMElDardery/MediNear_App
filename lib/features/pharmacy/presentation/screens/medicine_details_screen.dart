@@ -515,7 +515,7 @@ class _MedicineDetailsScreenState extends ConsumerState<MedicineDetailsScreen> {
                         pId = 1; // Fallback to pharmacy 1 if not specified to allow adding to cart
                       }
 
-                      // 🚀 Add to Cart Logic
+                      // � Add to Cart Logic
                       bool success = await CartRemoteDataSource().toggleCartItem(
                         medicineId: mId,
                         pharmacyId: pId,

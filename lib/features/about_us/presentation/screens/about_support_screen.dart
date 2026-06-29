@@ -174,12 +174,12 @@ class AboutSupportScreen extends StatelessWidget {
                     context,
                     theme,
                     title: "WhatsApp",
-                    subtitle: "+201143173960",
+                    subtitle: "+20120000555555",
                     iconWidget: const FaIcon(FontAwesomeIcons.whatsapp, color: Color(0xFF25D366), size: 24),
                     color: const Color(0xFF25D366),
                     buttonText: "Chat now",
                     onTap: () async {
-                      final url = Uri.parse("https://wa.me/201143173960");
+                      final url = Uri.parse("https://wa.me/20120000555555");
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url, mode: LaunchMode.externalApplication);
                       }
@@ -190,12 +190,12 @@ class AboutSupportScreen extends StatelessWidget {
                     context,
                     theme,
                     title: "Email Us",
-                    subtitle: "nharmdan15@gmail.com",
+                    subtitle: "MediNearapp@Yahoo.com",
                     iconWidget: Icon(Icons.email_outlined, color: theme.colorScheme.primary, size: 24),
                     color: theme.colorScheme.primary,
                     buttonText: "Send Email",
                     onTap: () async {
-                      final url = Uri.parse("mailto:nharmdan15@gmail.com");
+                      final url = Uri.parse("mailto:MediNearapp@Yahoo.com");
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       }

@@ -211,13 +211,13 @@ class TypewriterTextState extends ConsumerState<TypewriterText>
   @override
   void initState() {
     super.initState();
-    // ✅ هنا بنمسح أي نجوم ** من النص قبل ما نعرضه عشان ميبوظش شكل الشات
+    // هنا بنمسح أي نجوم ** من النص قبل ما نعرضه عشان ميبوظش شكل الشات
     _cleanText = widget.text.replaceAll('**', '');
 
     _c = AnimationController(
       duration: Duration(
           milliseconds:
-              _cleanText.length * 10), // ✅ خليناها * 10 عشان تبقي سريعة ومريحة
+              _cleanText.length * 10), // خليناها * 10 عشان تبقي سريعة ومريحة
       vsync: this,
     );
     _n = StepTween(begin: 0, end: _cleanText.length)
@@ -248,7 +248,7 @@ class TypewriterTextState extends ConsumerState<TypewriterText>
                 : const Color(0xFF2D3132),
             fontSize: 15.5,
             height: 1.4,
-            fontWeight: FontWeight.w500, // ✅ وزن ثابت ومريح للعين لكل الكلام
+            fontWeight: FontWeight.w500, // وزن ثابت ومريح للعين لكل الكلام
           ),
         ),
       ),

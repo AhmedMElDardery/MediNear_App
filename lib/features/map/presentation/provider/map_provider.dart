@@ -18,7 +18,7 @@ class MapProvider extends ChangeNotifier {
   List<PharmacyEntity> pharmacies = [];
   String? selectedPharmacyId;
 
-  // 🚀 Cached markers and circles to prevent heavy rebuilds
+  // � Cached markers and circles to prevent heavy rebuilds
   Set<Marker> cachedMarkers = {};
   Set<Circle> cachedCircles = {};
 
@@ -27,11 +27,11 @@ class MapProvider extends ChangeNotifier {
   bool showSuggestions = false;
   List<RecentSearchEntity> recentSearches = [];
   List<MedicineEntity> medicineSuggestions = [];
-  List<PharmacyEntity> pharmacySuggestions = []; // 🆕 اقتراحات الصيدليات
+  List<PharmacyEntity> pharmacySuggestions = []; // � اقتراحات الصيدليات
 
-  // 🚀 بنحفظ آخر كلمة بحث عشان لو اليوزر بدل النوع (دواء/صيدلية) نبحث بيها فوراً
+  // � بنحفظ آخر كلمة بحث عشان لو اليوزر بدل النوع (دواء/صيدلية) نبحث بيها فوراً
   String lastQuery = "";
-  int? lastMedicineId; // 🆕 الـ ID الحقيقي للدواء المبحوث عنه
+  int? lastMedicineId; // � الـ ID الحقيقي للدواء المبحوث عنه
 
   final Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
@@ -44,7 +44,7 @@ class MapProvider extends ChangeNotifier {
       LocationPermission permission;
 
       if (!serviceEnabled) {
-        debugPrint('⚠️ GPS service disabled - using Cairo fallback');
+        debugPrint('⚠ GPS service disabled - using Cairo fallback');
         userLocation = const LatLng(30.0444, 31.2357);
       } else {
         permission = await Geolocator.checkPermission()
@@ -56,7 +56,7 @@ class MapProvider extends ChangeNotifier {
 
         if (permission == LocationPermission.deniedForever ||
             permission == LocationPermission.denied) {
-          debugPrint('⚠️ Location permission denied - using Cairo fallback');
+          debugPrint('⚠ Location permission denied - using Cairo fallback');
           userLocation = const LatLng(30.0444, 31.2357);
         } else {
           Position position = await Geolocator.getCurrentPosition(
@@ -66,11 +66,11 @@ class MapProvider extends ChangeNotifier {
           ).timeout(const Duration(seconds: 6));
           userLocation = LatLng(position.latitude, position.longitude);
           debugPrint(
-              '✅ GPS obtained: ${position.latitude}, ${position.longitude}');
+              ' GPS obtained: ${position.latitude}, ${position.longitude}');
         }
       }
     } catch (e) {
-      debugPrint('⚠️ GPS error ($e) - using Cairo fallback');
+      debugPrint('⚠ GPS error ($e) - using Cairo fallback');
       userLocation = const LatLng(30.0444, 31.2357);
     }
 
@@ -79,19 +79,19 @@ class MapProvider extends ChangeNotifier {
     await loadInitialPharmacies();
   }
 
-  // 🆕 إرسال موقع اليوزر للسيرفر عشان يتذكره ويقدر يبحث بيه
+  // � إرسال موقع اليوزر للسيرفر عشان يتذكره ويقدر يبحث بيه
   Future<void> _sendLocationToServer() async {
     if (userLocation == null) return;
     debugPrint(
-        '📤 Sending location to server: lat=${userLocation!.latitude}, lng=${userLocation!.longitude}');
+        '� Sending location to server: lat=${userLocation!.latitude}, lng=${userLocation!.longitude}');
     try {
       await repository.updateUserLocation(
         lat: userLocation!.latitude,
         lng: userLocation!.longitude,
       );
-      debugPrint('✅ Location sent to server successfully!');
+      debugPrint(' Location sent to server successfully!');
     } catch (e) {
-      debugPrint('⚠️ Failed to send location to server: $e');
+      debugPrint('⚠ Failed to send location to server: $e');
     }
   }
 
@@ -123,10 +123,10 @@ class MapProvider extends ChangeNotifier {
     if (isMedicineSearch == isMedicine) return;
 
     isMedicineSearch = isMedicine;
-    lastQuery = ''; // 🔧 إعادة تعيين البحث السابق عند تبديل النوع
+    lastQuery = ''; // � إعادة تعيين البحث السابق عند تبديل النوع
     notifyListeners();
 
-    // 🆕 لو بدّل لصيدلية، نحمل اقتراحات الصيدليات
+    // � لو بدّل لصيدلية، نحمل اقتراحات الصيدليات
     if (!isMedicine && pharmacySuggestions.isEmpty) {
       _loadPharmacySuggestions();
     }
@@ -160,7 +160,7 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
-  // 🆕 تحميل اقتراحات الصيدليات من الـ API
+  // � تحميل اقتراحات الصيدليات من الـ API
   Future<void> _loadPharmacySuggestions() async {
     try {
       if (pharmacies.isNotEmpty) {
@@ -178,10 +178,10 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
-  // 🚀 4. البحث المطور (دواء أو اسم صيدلية)
+  // � 4. البحث المطور (دواء أو اسم صيدلية)
   Future<void> search(String query) async {
     lastQuery = query.trim();
-    // 🆕 لو الـ query رقم، يبقى هو medicine_id
+    // � لو الـ query رقم، يبقى هو medicine_id
     lastMedicineId = int.tryParse(lastQuery);
     if (lastQuery.isEmpty) {
       lastMedicineId = null;

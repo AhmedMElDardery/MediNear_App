@@ -1,7 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
-  // 🚀 الدالة دي بتجيب الموقع أو بترمي إيرور لو في مشكلة
+  // � الدالة دي بتجيب الموقع أو بترمي إيرور لو في مشكلة
   static Future<Position> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -16,7 +16,7 @@ class LocationService {
     // 2. نتأكد من صلاحيات التطبيق (Permissions)
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      // 🚀 أضفنا تأخير بسيط هنا عشان لو اليوزر لسه مسجل دخول والصفحة بتفتح،
+      // � أضفنا تأخير بسيط هنا عشان لو اليوزر لسه مسجل دخول والصفحة بتفتح،
       // الانيميشن بتاع الصفحة ميمنعش ظهور نافذة الصلاحيات في الأندرويد
       await Future.delayed(const Duration(milliseconds: 500));
 

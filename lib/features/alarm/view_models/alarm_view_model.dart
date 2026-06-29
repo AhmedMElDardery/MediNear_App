@@ -29,7 +29,7 @@ class AlarmViewModel extends ChangeNotifier {
 
   String? editingAlarmId; // Tracks the ID of the alarm being edited
 
-  // ✅ التعديل الأول: استخدام Set لحفظ حالة كل سماعة بناءً على رقمها (Index)
+  // التعديل الأول: استخدام Set لحفظ حالة كل سماعة بناءً على رقمها (Index)
   Set<int> mutedIndices = {};
 
   // متغيرات الكروت الأخرى
@@ -38,7 +38,7 @@ class AlarmViewModel extends ChangeNotifier {
   List<String> frequencies = ['Daily', 'Weekly'];
   List<int> selectedDays = [6];
 
-  // ✅ التعديل الثاني: الدالة بقت تستقبل الـ index عشان تقفل/تفتح سماعة محددة
+  // التعديل الثاني: الدالة بقت تستقبل الـ index عشان تقفل/تفتح سماعة محددة
   void toggleVolume(int index) {
     if (mutedIndices.contains(index)) {
       mutedIndices.remove(index); // لو مقفولة، افتحها
@@ -48,7 +48,7 @@ class AlarmViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ التعديل الثالث: دالة بتسأل هل السماعة دي مقفولة ولا لأ
+  // التعديل الثالث: دالة بتسأل هل السماعة دي مقفولة ولا لأ
   bool isMuted(int index) {
     return mutedIndices.contains(index);
   }

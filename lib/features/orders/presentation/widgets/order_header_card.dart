@@ -5,7 +5,7 @@ class OrderHeaderCard extends StatelessWidget {
   final OrderModel order;
   const OrderHeaderCard({super.key, required this.order});
 
-  // 🎨 دالة اختيار اللون حسب الحالة (الاحترافية هنا)
+  // � دالة اختيار اللون حسب الحالة (الاحترافية هنا)
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'completed':

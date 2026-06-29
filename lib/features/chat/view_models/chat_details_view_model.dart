@@ -91,7 +91,7 @@ class ChatDetailsViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchMessages() async {
-    // 🚀 جلب الرسائل المخزنة محلياً أولاً ليتم عرضها فوراً وبدون تأخير
+    // � جلب الرسائل المخزنة محلياً أولاً ليتم عرضها فوراً وبدون تأخير
     try {
       final cachedMessages = await repository.getCachedMessages(sessionId);
       if (cachedMessages.isNotEmpty) {
@@ -106,7 +106,7 @@ class ChatDetailsViewModel extends ChangeNotifier {
       log("Error loading cached messages: $e");
     }
 
-    // 🚀 جلب الرسائل الجديدة من السيرفر وتحديث الشاشة في الخلفية
+    // � جلب الرسائل الجديدة من السيرفر وتحديث الشاشة في الخلفية
     try {
       final newMessages = await repository.getMessages(sessionId);
       

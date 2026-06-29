@@ -146,7 +146,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.wallet,
-      builder: (context, state) => const PacketsScreen(), // 🚀 تم ربط المحفظة بالميزة الجديدة
+      builder: (context, state) => const PacketsScreen(), // � تم ربط المحفظة بالميزة الجديدة
     ),
     GoRoute(
       path: AppRoutes.support,

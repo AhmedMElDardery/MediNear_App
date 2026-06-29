@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart'; // 🚀 لازم تضيفها في الـ pubspec.yaml
+import 'package:url_launcher/url_launcher.dart'; // � لازم تضيفها في الـ pubspec.yaml
 import '../../domain/entities/pharmacy_entity.dart';
 
 class PharmacyCard extends StatelessWidget {
@@ -7,7 +7,7 @@ class PharmacyCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final VoidCallback onNotify;
-  final VoidCallback? onAddToCart; // 🆕
+  final VoidCallback? onAddToCart; // �
   final VoidCallback? onGoTap;
   final bool isMapMode;
 
@@ -22,7 +22,7 @@ class PharmacyCard extends StatelessWidget {
     this.isMapMode = false,
   });
 
-  // 🚀 دالة لفتح الروابط الخارجية (خرائط أو اتصال)
+  // � دالة لفتح الروابط الخارجية (خرائط أو اتصال)
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -110,7 +110,7 @@ class PharmacyCard extends StatelessWidget {
                                       fontSize: 12)),
                               if (!isMapMode) ...[
                                 const SizedBox(width: 10),
-                                // 🚀 حالة التوفر بناءً على الداتا الحقيقية
+                                // � حالة التوفر بناءً على الداتا الحقيقية
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 2),
@@ -146,7 +146,7 @@ class PharmacyCard extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // 🚀 بيفتح خرائط جوجل ويرسم الطريق لموقع الصيدلية
+                          // � بيفتح خرائط جوجل ويرسم الطريق لموقع الصيدلية
                           _launchURL(
                               'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}');
                         },
@@ -205,7 +205,7 @@ class PharmacyCard extends StatelessWidget {
                 )
               ],
             ),
-            // 🚀 أيقونة السلة (Shopping Cart) تظهر فقط لو العلاج متاح
+            // � أيقونة السلة (Shopping Cart) تظهر فقط لو العلاج متاح
             if (item.hasMedicine)
               Positioned(
                 top: 0,

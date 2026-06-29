@@ -82,7 +82,7 @@ class NotificationItemWidget extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // 🎨 Left thick colored strip
+                // � Left thick colored strip
                 Container(
                   width: 5,
                   decoration: BoxDecoration(
@@ -95,7 +95,7 @@ class NotificationItemWidget extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ✨ Squircle Icon
+                        // Squircle Icon
                         Container(
                           height: 52,
                           width: 52,
@@ -106,7 +106,7 @@ class NotificationItemWidget extends StatelessWidget {
                           child: Icon(_getIconForType(), color: iconColor, size: 26),
                         ),
                         const SizedBox(width: 16),
-                        // 📝 Text Content
+                        // � Text Content
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +154,7 @@ class NotificationItemWidget extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // 🔴 Unread Dot Indicator
+                        // � Unread Dot Indicator
                         if (!item.isRead) ...[
                           const SizedBox(width: 12),
                           Container(

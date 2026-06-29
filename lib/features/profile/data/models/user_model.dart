@@ -5,7 +5,7 @@ class UserModel {
   final String email;
   String phone;
   File? profileImage;
-  // 🚀 ضفنا المتغيرين دول عشان نستقبل الصور من السيرفر
+  // � ضفنا المتغيرين دول عشان نستقبل الصور من السيرفر
   String? photoUrl;
   String? avatar;
 
@@ -23,7 +23,7 @@ class UserModel {
       name: json['name']?.toString() ?? 'No Name',
       email: json['email']?.toString() ?? 'No Email',
       phone: json['phone']?.toString() ?? 'No Phone',
-      // 🚀 خلينا الموديل يقرا روابط الصور من الـ JSON
+      // � خلينا الموديل يقرا روابط الصور من الـ JSON
       photoUrl: json['photo_url']?.toString(),
       avatar: json['avatar']?.toString(),
     );

@@ -14,14 +14,14 @@ import '../../../../core/widgets/app_shimmer.dart';
 import 'package:medinear_app/core/theme/app_colors.dart';
 
 class PharmacyScreen extends ConsumerStatefulWidget {
-  final String pharmacyId; // 🚀 ضفنا الـ ID هنا عشان نبعته للـ API
+  final String pharmacyId; // � ضفنا الـ ID هنا عشان نبعته للـ API
   final String pharmacyName;
   final String doctorName;
   final String? pharmacyImage;
 
   const PharmacyScreen({
     super.key,
-    required this.pharmacyId, // 🚀 خليناه مطلوب
+    required this.pharmacyId, // � خليناه مطلوب
     required this.pharmacyName,
     this.doctorName = 'Al-Noor Pharmacy',
     this.pharmacyImage,
@@ -45,10 +45,10 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
       final isLocallySaved = ref.read(savedItemsProvider).isPharmacySaved(widget.pharmacyId);
       final pharmacyProv = ref.read(pharmacyProvider);
       
-      // 🚀 تصفير البحث القديم عشان لو اليوزر كان بيبحث وخرج، ميفضلش متعلق
+      // � تصفير البحث القديم عشان لو اليوزر كان بيبحث وخرج، ميفضلش متعلق
       pharmacyProv.search('');
       
-      // 🚀 هنا بنقول للبروفايدر: "روح هات بيانات الصيدلية بالـ ID بتاعها"
+      // � هنا بنقول للبروفايدر: "روح هات بيانات الصيدلية بالـ ID بتاعها"
       pharmacyProv.fetchPharmacyData(widget.pharmacyId, isSavedLocally: isLocallySaved);
     });
   }

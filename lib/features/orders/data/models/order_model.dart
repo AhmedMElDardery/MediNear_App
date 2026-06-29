@@ -19,7 +19,7 @@ class OrderModel {
   int get itemsCount => items.fold(0, (sum, item) => sum + item.quantity);
   double get total => items.fold(0.0, (sum, item) => sum + item.total);
 
-  // 🚀 تحويل الـ JSON لموديل كامل
+  // � تحويل الـ JSON لموديل كامل
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id']?.toString() ?? '',

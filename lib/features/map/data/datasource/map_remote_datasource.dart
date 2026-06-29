@@ -129,7 +129,7 @@ class MapRemoteDataSource {
     await dio.post('/pharmacy/notify', data: {'pharmacyId': pharmacyId});
   }
 
-  // 🆕 إرسال موقع اليوزر للسيرفر عشان يستخدمه في البحث
+  // � إرسال موقع اليوزر للسيرفر عشان يستخدمه في البحث
   Future<void> updateUserLocation(
       {required double lat, required double lng}) async {
     final formData = FormData.fromMap({

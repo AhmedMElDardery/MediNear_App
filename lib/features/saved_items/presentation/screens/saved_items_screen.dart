@@ -26,7 +26,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = ref.read(savedItemsProvider);
-      // 🚀 تصفير البحث القديم عشان ميظهرش داتا غلط لو اليوزر خرج ورجع
+      // � تصفير البحث القديم عشان ميظهرش داتا غلط لو اليوزر خرج ورجع
       provider.search('');
       provider.fetchSavedItems();
     });

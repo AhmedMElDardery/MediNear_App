@@ -46,7 +46,7 @@ class FolderCardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              // 🎨 Background decorative elements
+              // � Background decorative elements
               Positioned(
                 right: -20,
                 top: -20,
@@ -68,7 +68,7 @@ class FolderCardWidget extends StatelessWidget {
                   color: folderColor.withValues(alpha: 0.05),
                 ),
               ),
-              // 📂 Main Content
+              // � Main Content
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

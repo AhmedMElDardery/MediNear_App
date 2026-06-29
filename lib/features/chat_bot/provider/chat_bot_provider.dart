@@ -13,7 +13,7 @@ class ChatBotProvider extends ChangeNotifier {
   final GroqService _groqService = GroqService();
   final stt.SpeechToText _speech = stt.SpeechToText();
 
-  // ✅ الإضافات الجديدة الخاصة بالاتصال بالسيرفر (الباك إند)
+  // الإضافات الجديدة الخاصة بالاتصال بالسيرفر (الباك إند)
   final ChatBotRemoteDataSource _api = ChatBotRemoteDataSource();
   String? _userToken;
 
@@ -26,7 +26,7 @@ class ChatBotProvider extends ChangeNotifier {
   List<ChatMessage> get messages => _messages;
   
   // ==========================================
-  // ✅ الدالة اللي كانت ناقصة عشان تجيب الشات أول ما تفتح
+  // الدالة اللي كانت ناقصة عشان تجيب الشات أول ما تفتح
   // ==========================================
   Future<void> initChat(String token) async {
     _userToken = token;
@@ -113,7 +113,7 @@ class ChatBotProvider extends ChangeNotifier {
 
     _messages.add(userMsg);
 
-    // ✅ الإضافة الأولى: رفع رسالة المستخدم للسيرفر في الخلفية
+    // الإضافة الأولى: رفع رسالة المستخدم للسيرفر في الخلفية
     if (_userToken != null) {
       _api.saveMessage(userMsg, _userToken!);
     }
@@ -130,11 +130,11 @@ class ChatBotProvider extends ChangeNotifier {
             response.contains("رفض") ||
             response.contains("Unavailable") ||
             response.contains("Error")) {
-          debugPrint("⚠️ جيميناي مشغول.. جاري التحويل لـ جروك...");
+          debugPrint("⚠ جيميناي مشغول.. جاري التحويل لـ جروك...");
           response = await _groqService.getResponse(text);
         }
       } catch (e) {
-        debugPrint("⚠️ كراش في جيميناي.. جاري التحويل لـ جروك...");
+        debugPrint("⚠ كراش في جيميناي.. جاري التحويل لـ جروك...");
         try {
           response = await _groqService.getResponse(text);
         } catch (e2) {
@@ -155,7 +155,7 @@ class ChatBotProvider extends ChangeNotifier {
 
     _messages.add(botMsg);
 
-    // ✅ الإضافة الثانية: رفع رسالة البوت للسيرفر في الخلفية
+    // الإضافة الثانية: رفع رسالة البوت للسيرفر في الخلفية
     if (_userToken != null) {
       _api.saveMessage(botMsg, _userToken!);
     }
@@ -172,7 +172,7 @@ class ChatBotProvider extends ChangeNotifier {
   String _analyzeMedicalInput(String input) {
     input = input.toLowerCase().trim();
     if (input == 'hi' || input == 'hey' || input.startsWith('hi ') || input.contains('hello') || input.contains('welcome')) {
-      return 'Welcome! I am your MidiNear assistant 💙\nHow can I guide you today?';
+      return 'Welcome! I am your MidiNear assistant �\nHow can I guide you today?';
     }
     if (input.contains('medicine') || input.contains('order') || input.contains('guide') || input.contains('buy')) {
       return 'To complete your order easily, follow these steps:\n1. Use the Smart Search bar on the home screen.\n2. Select the required medicine and add it to your cart.\n3. Click "Checkout" to confirm the process.';
@@ -192,7 +192,7 @@ class ChatBotProvider extends ChangeNotifier {
     if (input.contains('account') || input.contains('wallet') || input.contains('pay')) {
       return 'To manage your account and payment:\n1. Open "Profile" to edit your data.\n2. You can pay via E-wallet or cards.';
     }
-    return "Sorry, I didn't quite understand your inquiry.\nI am the MidiNear guide, does your question concern:\n- Medicine Order Guide\n- Track Shipment\n- Instant Consultation\n- Find a Pharmacy\n- Medication Schedule\n- Account & Wallet? 💙";
+    return "Sorry, I didn't quite understand your inquiry.\nI am the MidiNear guide, does your question concern:\n- Medicine Order Guide\n- Track Shipment\n- Instant Consultation\n- Find a Pharmacy\n- Medication Schedule\n- Account & Wallet? �";
   }
 
 void clearChat() {
@@ -200,7 +200,7 @@ void clearChat() {
     _isTyping = false;
     notifyListeners();
 
-    // ✅ مسح الشات من قاعدة بيانات السيرفر (لو المستخدم مسجل دخول)
+    // مسح الشات من قاعدة بيانات السيرفر (لو المستخدم مسجل دخول)
     if (_userToken != null) {
       _api.clearChat(_userToken!);
     }

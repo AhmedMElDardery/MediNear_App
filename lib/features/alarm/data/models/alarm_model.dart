@@ -3,7 +3,7 @@ class AlarmModel {
   final String title;
   final String time;
   final bool isEnabled;
-  // ضيف السطرين دول هنا 👇
+  // ضيف السطرين دول هنا �
   final String medicationName;
   final String dosageInfo;
 

@@ -14,7 +14,7 @@ class AboutProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> loadAboutData() async {
-    // 🚀 منع التحميل المتكرر لو الداتا موجودة فعلاً
+    // � منع التحميل المتكرر لو الداتا موجودة فعلاً
     if (_supportOptions.isNotEmpty) return;
 
     _isLoading = true;

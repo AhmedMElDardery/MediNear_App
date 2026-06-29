@@ -12,14 +12,14 @@ class PharmacyProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   String _searchQuery = '';
-  String _currentPharmacyId = ''; // 🚀 غيرناها لـ ID
+  String _currentPharmacyId = ''; // � غيرناها لـ ID
 
-  // 🚀 المتغير اللي هينور زرار الحفظ
+  // � المتغير اللي هينور زرار الحفظ
   bool _isPharmacySaved = false;
 
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
-  bool get isPharmacySaved => _isPharmacySaved; // 🚀 Getter عشان الـ UI يقراه
+  bool get isPharmacySaved => _isPharmacySaved; // � Getter عشان الـ UI يقراه
   String get currentPharmacyId => _currentPharmacyId;
 
   // 1. جلب البيانات من الـ API
@@ -34,7 +34,7 @@ class PharmacyProvider extends ChangeNotifier {
     try {
       final data = await _dataSource.getPharmacyDetails(pharmacyId);
 
-      // 🚀 بنقرا حالة الحفظ اللي جاية من الـ API، ولو مش موجودة بنعتمد على اللوكال
+      // � بنقرا حالة الحفظ اللي جاية من الـ API، ولو مش موجودة بنعتمد على اللوكال
       _isPharmacySaved = (data['is_saved'] == true) || isSavedLocally;
 
       _medicines = data['medicines'] as List<PharmacyMedicineModel>;
@@ -67,7 +67,7 @@ class PharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 🚀 2. دالة الضغط على زرار الحفظ
+  // � 2. دالة الضغط على زرار الحفظ
   Future<void> togglePharmacySave() async {
     if (_currentPharmacyId.isEmpty) return;
 
@@ -122,7 +122,7 @@ class PharmacyProvider extends ChangeNotifier {
     item.isSaved = !item.isSaved;
     notifyListeners();
 
-    // 🚀 تحديث السيرفر
+    // � تحديث السيرفر
     bool success = await _dataSource.toggleSaveMedicine(id.toString(), _currentPharmacyId);
     if (!success) {
       // لو فشل نرجع الحالة زي ما كانت

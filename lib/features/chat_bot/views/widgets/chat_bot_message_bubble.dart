@@ -12,7 +12,7 @@ class ChatBotMessageBubble extends StatelessWidget {
 
   const ChatBotMessageBubble({super.key, required this.msg, required this.vm});
 
-  // ✅ دالة اكتشاف اللغة لضبط الاتجاهات
+  // دالة اكتشاف اللغة لضبط الاتجاهات
   bool _isArabic(String text) {
     return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
   }
@@ -20,7 +20,7 @@ class ChatBotMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isBot = msg.isBot;
-    // ✅ استخدام sizeOf للأداء العالي
+    // استخدام sizeOf للأداء العالي
     final double screenWidth = MediaQuery.sizeOf(context).width;
 
     return Padding(
@@ -78,7 +78,7 @@ class ChatBotMessageBubble extends StatelessWidget {
     final TextDirection bubbleDirection = isMsgArabic ? TextDirection.rtl : TextDirection.ltr;
 
     return Container(
-      // ✅ دمج أقصى عرض من الملفين لضمان التوافق
+      // دمج أقصى عرض من الملفين لضمان التوافق
       constraints: BoxConstraints(maxWidth: screenWidth * 0.85),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       decoration: BoxDecoration(
