@@ -8,6 +8,7 @@ import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_scr
 import 'package:medinear_app/features/pharmacy/presentation/screens/medicine_details_screen.dart';
 import 'package:medinear_app/features/home/domain/entities/medicine_entity.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
+import 'package:medinear_app/core/widgets/custom_empty_state.dart';
 
 class SavedItemsScreen extends ConsumerStatefulWidget {
   const SavedItemsScreen({super.key});
@@ -199,7 +200,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
   Widget _buildPharmaciesList(SavedItemsProvider provider, ThemeData theme) {
     final pharmacies = provider.pharmacies;
     if (pharmacies.isEmpty) {
-      return _emptyState(context.tr("no_saved_pharmacies"), theme);
+      return _emptyState(context.tr("no_saved_pharmacies"), context.tr("no_saved_pharmacies_desc"), Icons.bookmark_border, theme);
     }
 
     return ListView.builder(
@@ -243,7 +244,7 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
   Widget _buildMedicationsList(SavedItemsProvider provider, ThemeData theme) {
     final medications = provider.medications;
     if (medications.isEmpty) {
-      return _emptyState(context.tr("no_saved_medications",), theme);
+      return _emptyState(context.tr("no_saved_medications"), context.tr("no_saved_medications_desc"), Icons.bookmark_border, theme);
     }
 
     return ListView.builder(
@@ -333,22 +334,13 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen> {
     );
   }
 
-  Widget _emptyState(String msg, ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.bookmark_border,
-              size: 80,
-              color: theme.dividerColor),
-          const SizedBox(height: 16),
-          Text(msg,
-              style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500)),
-        ],
+  Widget _emptyState(String title, String subtitle, IconData icon, ThemeData theme) {
+    return Transform.translate(
+      offset: const Offset(0, -40), // Shift upwards to match cart empty state visual level
+      child: CustomEmptyState(
+        title: title,
+        subtitle: subtitle,
+        icon: icon,
       ),
     );
   }

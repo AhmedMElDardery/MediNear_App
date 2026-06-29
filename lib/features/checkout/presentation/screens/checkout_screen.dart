@@ -260,8 +260,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             children: [
               _summaryRow(
                   AppLocalizations.of(context)!.translate("subtotal"), "${subtotal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", textColor),
-              const SizedBox(height: 12),
-              _summaryRow("Shipping", "Free", primary, isBold: true),
+
               if (discount > 0) ...[
                 const SizedBox(height: 12),
                 _summaryRow("Discount", "-${discount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.translate('egp')}", Colors.green, isBold: true),

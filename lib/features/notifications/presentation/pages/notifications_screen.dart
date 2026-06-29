@@ -173,7 +173,9 @@ class NotificationsScreen extends ConsumerWidget {
                                         onTap: () {
                                           provider.markAsRead(item.id);
                                           if (item.actionUrl != null && item.actionUrl!.isNotEmpty) {
-                                            if (item.actionUrl!.startsWith('/')) {
+                                            if (item.actionUrl == '/pharmacy/dashboard') {
+                                              // Do nothing, just mark as read (prevent navigation to non-existent route)
+                                            } else if (item.actionUrl!.startsWith('/')) {
                                               context.push(item.actionUrl!);
                                             }
                                           }

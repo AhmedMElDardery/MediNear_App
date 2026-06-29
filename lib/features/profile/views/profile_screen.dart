@@ -623,12 +623,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () => context.push(AppRoutes.packets),
                           ),
                           PremiumProfileTile(
-                            title: 'familyMembers'.tr(context),
-                            icon: Icons.family_restroom_rounded,
-                            iconColor: const Color(0xFFF43F5E),
-                            onTap: () {},
-                          ),
-                          PremiumProfileTile(
                             title: 'medicineReminder'.tr(context),
                             icon: Icons.alarm_rounded,
                             iconColor: const Color(0xFF8B5CF6),

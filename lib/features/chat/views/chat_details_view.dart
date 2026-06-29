@@ -6,6 +6,7 @@ import 'widgets/chat_input_field.dart';
 import 'package:medinear_app/core/widgets/custom_app_bar.dart';
 import 'package:medinear_app/core/di/global_providers.dart';
 import 'package:medinear_app/features/chat/data/models/chat_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:medinear_app/features/pharmacy/presentation/screens/pharmacy_screen.dart';
 
 class ChatDetailsView extends ConsumerStatefulWidget {
@@ -82,15 +83,28 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
                   Stack(
                     children: [
                       Container(
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFF198B61).withValues(alpha: 0.5), width: 1.5),
+                            color: Colors.white,
+                            border: Border.all(color: const Color(0xFF198B61).withValues(alpha: 0.2), width: 1.5),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                            ],
                         ),
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[100],
-                          child: Icon(Icons.local_pharmacy,
-                              color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 24),
+                        child: ClipOval(
+                          child: (widget.chatModel?.avatarImagePath ?? '').isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl: widget.chatModel!.avatarImagePath,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Icon(Icons.local_pharmacy,
+                                      color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 24),
+                                  errorWidget: (context, url, error) => Icon(Icons.local_pharmacy,
+                                      color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 24),
+                                )
+                              : Icon(Icons.local_pharmacy,
+                                  color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 24),
                         ),
                       ),
                       Positioned(
@@ -355,10 +369,30 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
                 alignment: Alignment.center,
                 children: [
                   const SizedBox(width: double.infinity),
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[100],
-                    child: const Icon(Icons.local_pharmacy, color: Color(0xFF198B61), size: 40),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFF198B61).withValues(alpha: 0.2), width: 1.5),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: (widget.chatModel?.avatarImagePath ?? '').isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: widget.chatModel!.avatarImagePath,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Icon(Icons.local_pharmacy,
+                                  color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 40),
+                              errorWidget: (context, url, error) => Icon(Icons.local_pharmacy,
+                                  color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 40),
+                            )
+                          : Icon(Icons.local_pharmacy,
+                              color: isDarkMode ? Colors.white70 : const Color(0xFF198B61), size: 40),
+                    ),
                   ),
                   if (widget.chatModel != null && widget.chatModel!.pharmacyId != 0)
                     Positioned(
@@ -480,10 +514,30 @@ class _ChatDetailsViewState extends ConsumerState<ChatDetailsView> {
               const SizedBox(height: 8),
               const Text('جاري الاتصال...', style: TextStyle(color: Color(0xFF198B61))),
               const SizedBox(height: 32),
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: const Color(0xFF198B61).withValues(alpha: 0.1),
-                child: const Icon(Icons.local_pharmacy, color: Color(0xFF198B61), size: 40),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: const Color(0xFF198B61).withValues(alpha: 0.2), width: 1.5),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+                  ],
+                ),
+                child: ClipOval(
+                  child: (widget.chatModel?.avatarImagePath ?? '').isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: widget.chatModel!.avatarImagePath,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Icon(Icons.local_pharmacy,
+                              color: Color(0xFF198B61), size: 40),
+                          errorWidget: (context, url, error) => const Icon(Icons.local_pharmacy,
+                              color: Color(0xFF198B61), size: 40),
+                        )
+                      : const Icon(Icons.local_pharmacy,
+                          color: Color(0xFF198B61), size: 40),
+                ),
               ),
               const SizedBox(height: 40),
               FloatingActionButton(

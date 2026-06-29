@@ -39,9 +39,7 @@ class PaymentSummaryCard extends StatelessWidget {
           const SizedBox(height: 20),
           _buildRow("Subtotal", "$totalOrderPrice EGP", textColor,
               isBold: false),
-          const SizedBox(height: 12),
-          _buildRow("Shipping", "Free", Theme.of(context).colorScheme.primary,
-              isBold: true),
+
           const SizedBox(height: 12),
           _buildRow("Payment Type", "Paymob Visa", textColor, isBold: false),
           const Padding(

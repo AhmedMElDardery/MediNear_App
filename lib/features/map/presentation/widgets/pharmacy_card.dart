@@ -177,17 +177,16 @@ class PharmacyCard extends StatelessWidget {
                             )
                           : ElevatedButton.icon(
                               onPressed: item.hasMedicine
-                                  ? () => _launchURL(
-                                      'tel:123456789') // 🚀 حط هنا رقم الصيدلية لو موجود في الـ Entity
+                                  ? (onGoTap ?? onTap)
                                   : onNotify,
                               icon: Icon(
                                   item.hasMedicine
-                                      ? Icons.call
+                                      ? Icons.arrow_forward_rounded
                                       : Icons.notifications_active,
                                   size: 16,
                                   color: Colors.white),
                               label: Text(
-                                  item.hasMedicine ? "Call" : "Notify Me",
+                                  item.hasMedicine ? "Page" : "Notify Me",
                                   style: const TextStyle(color: Colors.white)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: item.hasMedicine
@@ -195,6 +194,10 @@ class PharmacyCard extends StatelessWidget {
                                     : Colors.redAccent,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
+                                shape: item.hasMedicine
+                                    ? RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20))
+                                    : null,
                               ),
                             ),
                     ),

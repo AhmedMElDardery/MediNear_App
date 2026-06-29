@@ -27,13 +27,18 @@ class ChatModel {
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     final pharmacy = json['pharmacy'] ?? {};
+    final img = pharmacy['image']?.toString();
+    final fullImg = (img != null && img.isNotEmpty)
+        ? (img.startsWith('http') ? img : 'https://medinear-eg.com/storage/$img')
+        : '';
+        
     return ChatModel(
       id: json['id']?.toString() ?? '',
       name: pharmacy['pharmacy_name'] ?? 'صيدلية',
       doctorName: pharmacy['owner_name'] ?? '',
       lastMessage: '', // The API response doesn't include the last message text yet
       time: json['updated_at'] ?? '',
-      avatarImagePath: pharmacy['image'] ?? '',
+      avatarImagePath: fullImg,
       unreadCount: json['unread_count'] ?? 0,
       pharmacyId: json['pharmacy_id'] ?? 0,
       pharmacyData: pharmacy,

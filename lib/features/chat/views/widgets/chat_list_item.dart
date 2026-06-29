@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:medinear_app/features/chat/data/models/chat_model.dart';
 
 import '../chat_details_view.dart'; // ده مكانه الجديد في نفس المجلد// ✅ إضافة استيراد ملف الألوان الجديد للوصول لدالة لون النص
@@ -78,7 +79,10 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
   }
 
   Widget _buildAvatar(bool isDarkMode) {
+    final hasImage = widget.chat.avatarImagePath.isNotEmpty;
     return Container(
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -86,13 +90,23 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
           width: 2,
         ),
       ),
-      child: CircleAvatar(
-        radius: 26,
-        // ✅ خلفية متجاوبة لصورة الطبيب
-        backgroundColor:
-            isDarkMode ? Colors.grey[800] : const Color(0xFFF0F5F2),
-        backgroundImage: AssetImage(widget.chat.avatarImagePath),
+      child: ClipOval(
+        child: hasImage
+            ? CachedNetworkImage(
+                imageUrl: widget.chat.avatarImagePath,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildPlaceholder(isDarkMode),
+                errorWidget: (context, url, error) => _buildPlaceholder(isDarkMode),
+              )
+            : _buildPlaceholder(isDarkMode),
       ),
+    );
+  }
+
+  Widget _buildPlaceholder(bool isDarkMode) {
+    return Container(
+      color: isDarkMode ? Colors.grey[800] : const Color(0xFFF0F5F2),
+      child: const Icon(Icons.local_pharmacy, color: Color(0xFF198B61)),
     );
   }
 
@@ -100,8 +114,8 @@ class _ChatListItemState extends ConsumerState<ChatListItem> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ✅ لون اسم الطبيب متجاوب (أسود/أبيض) لعدم البهتان
-        Text(widget.chat.doctorName,
+        // ✅ عرض اسم الصيدلية بدلاً من اسم المالك
+        Text(widget.chat.name,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,

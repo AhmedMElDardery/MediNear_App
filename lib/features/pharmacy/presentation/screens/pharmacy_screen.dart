@@ -36,16 +36,11 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
 
-  // Countdown timer
-  Timer? _timer;
-  final ValueNotifier<int> _secondsNotifier = ValueNotifier<int>(10 * 3600 + 20 * 60 + 29); // 10:20:29
-
   static const _greenLight = Color(0xFFE0F5F2);
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final isLocallySaved = ref.read(savedItemsProvider).isPharmacySaved(widget.pharmacyId);
       final pharmacyProv = ref.read(pharmacyProvider);
@@ -58,28 +53,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
     });
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_secondsNotifier.value > 0) {
-        _secondsNotifier.value--;
-      } else {
-        _timer?.cancel();
-      }
-    });
-  }
-
-  String _formatTime(int seconds) {
-    final h = (seconds ~/ 3600).toString().padLeft(2, '0');
-    final m = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
-    final s = (seconds % 60).toString().padLeft(2, '0');
-    return '$h:$m:$s';
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
-    _timer?.cancel();
-    _secondsNotifier.dispose();
     super.dispose();
   }
 
@@ -236,9 +212,6 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                         );
                       },
                     ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: _buildFlashSaleBanner(),
                   ),
                   SliverToBoxAdapter(
                     child: _buildSearchBar(provider, isDark),
@@ -434,104 +407,6 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen>
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ──────────────────────────────────────────────────────────
-  // FLASH SALE BANNER
-  // ──────────────────────────────────────────────────────────
-  Widget _buildFlashSaleBanner() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF5722), Color(0xFFFF8C42)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFF5722).withValues(alpha: 0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Title row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('⚡', style: TextStyle(fontSize: 22)),
-              SizedBox(width: 8),
-              Text(
-                'Flash Sale!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              SizedBox(width: 8),
-              Text('⚡', style: TextStyle(fontSize: 22)),
-            ],
-          ),
-
-          const SizedBox(height: 4),
-
-          // Subtitle
-          const Text(
-            'Up to 50% off on all medicines',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          // Timer box
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: ValueListenableBuilder<int>(
-              valueListenable: _secondsNotifier,
-              builder: (context, seconds, child) {
-                return Text(
-                  _formatTime(seconds),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 2,
-                    fontFeatures: [FontFeature.tabularFigures()],
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
-          const Text(
-            'Time remaining',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
           ),
         ],
       ),
