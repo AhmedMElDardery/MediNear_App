@@ -3,15 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
 import 'dart:convert';
+import '../network/api_metrics_interceptor.dart';
 
 class GeminiService {
   static String get _apiKey {
-    return ""; // 🚀 Forced Mock Mode for Presentation
+    return dotenv.env['GEMINI_API_KEY'] ?? "AIzaSy_GUEST_MODE_KEY";
   }
   static const String _apiUrl =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
   final Dio _dio = Dio();
+
+  GeminiService() {
+    _dio.interceptors.add(ApiMetricsInterceptor());
+  }
 
   static const String _systemRules = '''
 You are a professional medical assistant for the (MidiNear) app.
@@ -30,9 +35,6 @@ General Rules:
 ''';
 
   Future<String> getResponse(String prompt) async {
-    if (_apiKey.isEmpty) {
-      return await _getMockResponse(prompt);
-    }
     try {
       final response = await _dio.post(
         _apiUrl,
@@ -78,9 +80,6 @@ General Rules:
   }
 
   Future<String> getResponseWithImage(String prompt, File imageFile) async {
-    if (_apiKey.isEmpty) {
-      return await _getMockResponse(prompt);
-    }
     try {
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
@@ -139,81 +138,4 @@ General Rules:
     }
   }
 
-  Future<String> _getMockResponse(String prompt) async {
-    await Future.delayed(const Duration(seconds: 2));
-    
-    if (prompt.contains("Translate the following medicine information JSON into")) {
-      return '''
-      {
-        "trade_name": "بانادول إكسترا (تجريبي)",
-        "generic_name": "باراسيتامول وكافيين",
-        "category": "مسكن للألم وخافض للحرارة",
-        "indications": "يستخدم لتخفيف الآلام الخفيفة والمتوسطة مثل الصداع، وألم الأسنان.",
-        "dosage": "قرص إلى قرصين كل 4-6 ساعات. الحد الأقصى 8 أقراص يومياً.",
-        "side_effects": ["غثيان خفيف", "أرق", "اضطراب في المعدة"],
-        "warnings": ["لا تتجاوز الجرعة الموصى بها", "قلل من تناول الكافيين"],
-        "contraindications": "المرضى الذين يعانون من حساسية تجاه الباراسيتامول.",
-        "pregnancy_category": "آمن بشكل عام أثناء الحمل والرضاعة (ينصح باستشارة الطبيب بسبب الكافيين).",
-        "interactions": ["أدوية السيولة مثل الوارفارين", "بعض مضادات الاكتئاب"],
-        "overdose": "أعراض: غثيان، ألم بالمعدة، تلف كبدي محتمل. الإجراء: اذهب للمستشفى فوراً.",
-        "food_interactions": "تجنب شرب القهوة ومشروبات الطاقة بكثرة أثناء استخدامه.",
-        "mechanism_of_action": "يقلل من إنتاج البروستاجلاندين في الدماغ لتقليل الألم والحرارة، والكافيين يعزز تأثيره.",
-        "alternatives": ["أدول إكسترا", "فيفادول إكسترا", "أبيمول"],
-        "prescription_needed": false,
-        "storage": "يحفظ في درجة حرارة أقل من 30 مئوية.",
-        "manufacturer": "جلاكسو سميث كلاين"
-      }
-      ''';
-    } else if (prompt.contains("Provide detailed structured information about the medicine")) {
-      return '''
-      {
-        "trade_name": "Panadol Extra (Mock)",
-        "generic_name": "Paracetamol & Caffeine",
-        "category": "Analgesic & Antipyretic",
-        "indications": "Used to relieve mild to moderate pain such as headache, toothache, and fever.",
-        "dosage": "1-2 tablets every 4-6 hours as needed. Max 8 tablets/day.",
-        "side_effects": ["Mild nausea", "Insomnia", "Stomach upset"],
-        "warnings": ["Do not exceed recommended dose", "Limit caffeine intake"],
-        "contraindications": "Patients hypersensitive to Paracetamol.",
-        "pregnancy_category": "Generally safe, but caution advised due to caffeine content.",
-        "interactions": ["Blood thinners like Warfarin", "Some antidepressants"],
-        "overdose": "Symptoms: Nausea, stomach pain, liver damage. Action: Seek immediate medical help.",
-        "food_interactions": "Avoid excessive consumption of coffee or energy drinks.",
-        "mechanism_of_action": "Reduces prostaglandin production in the brain to lower pain/fever; caffeine enhances this effect.",
-        "alternatives": ["Adol Extra", "Fevadol Extra", "Abimol"],
-        "prescription_needed": false,
-        "storage": "Store below 30°C in a dry place.",
-        "manufacturer": "GSK"
-      }
-      ''';
-    } else if (prompt.contains("extracted from a medical prescription")) {
-      return '''
-      [
-        {"name": "Augmentin 1g", "dosage": "Every 12 hours for 7 days (Mock)"},
-        {"name": "Panadol 500mg", "dosage": "When needed for pain (Mock)"}
-      ]
-      ''';
-    } else if (prompt.contains("أي تعارضات دوائية خطيرة")) {
-      return "آمن: لا توجد تعارضات خطيرة معروفة بين هذه الأدوية (نتيجة تجريبية).";
-    } else if (prompt.contains("التعرف على الدواء من خلال اللون، الشكل")) {
-      return '''
-      {
-        "name": "Ibuprofen 400mg (Mock)",
-        "description": "مسكن للآلام ومضاد للالتهاب.",
-        "confidence": "عالية"
-      }
-      ''';
-    } else if (prompt.contains("كشف الأدوية المغشوشة")) {
-      return '''
-      {
-        "is_authentic": true,
-        "analysis": "تبدو العلبة أصلية والطباعة واضحة (نتيجة تجريبية)."
-      }
-      ''';
-    } else if (prompt.contains("تفاعلات دوائية مع الغذاء")) {
-      return "هذا طعام صحي. يرجى تجنب عصير الجريب فروت مع بعض أدوية الضغط (نتيجة تجريبية).";
-    }
-
-    return "رد تجريبي عام من النظام لعدم توفر مفتاح الـ API.";
-  }
 }
