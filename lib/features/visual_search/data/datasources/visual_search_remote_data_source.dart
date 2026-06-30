@@ -8,15 +8,10 @@ class VisualSearchRemoteDataSourceImpl implements VisualSearchRemoteDataSource {
     // Mock API Call
     await Future.delayed(const Duration(seconds: 2));
 
-    // Simulate fuzzy match success if query has some length
-    if (query.trim().length > 2) {
-      return {
-        "id": "mock_id_123",
-        "name": "Mock Medication for '$query'",
-        "description": "This is a mocked result for the visual search.",
-      };
-    } else {
-      throw Exception("No medication found.");
-    }
+    return {
+      "id": "mock_id_123",
+      "name": query.length > 2 ? query : "Panadol Extra",
+      "description": "This is a mocked result for the visual search.",
+    };
   }
 }

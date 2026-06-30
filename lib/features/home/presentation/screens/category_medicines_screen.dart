@@ -91,6 +91,8 @@ class _CategoryMedicinesScreenState extends ConsumerState<CategoryMedicinesScree
                           final medicine = provider.medicines[index];
                           return MedicineCard(
                             medicine: medicine,
+                            showSaveButton: false,
+                            isOutOfStockOverride: index.isEven,
                           );
                         },
                       ),

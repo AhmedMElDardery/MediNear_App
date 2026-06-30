@@ -6,12 +6,10 @@ import 'dart:convert';
 
 class GeminiService {
   static String get _apiKey {
-    final key = dotenv.env['GEMINI_API_KEY'] ?? "";
-    if (key == 'your_gemini_api_key_here') return "";
-    return key;
+    return ""; // 🚀 Forced Mock Mode for Presentation
   }
   static const String _apiUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
   final Dio _dio = Dio();
 

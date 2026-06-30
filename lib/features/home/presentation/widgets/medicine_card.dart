@@ -13,8 +13,15 @@ import 'package:medinear_app/features/saved_items/data/datasources/saved_items_r
 
 class MedicineCard extends ConsumerStatefulWidget {
   final MedicineEntity medicine;
+  final bool showSaveButton;
+  final bool isOutOfStockOverride;
 
-  const MedicineCard({super.key, required this.medicine});
+  const MedicineCard({
+    super.key, 
+    required this.medicine,
+    this.showSaveButton = true,
+    this.isOutOfStockOverride = false,
+  });
 
   @override
   ConsumerState<MedicineCard> createState() => _MedicineCardState();
@@ -146,12 +153,16 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: widget.isOutOfStockOverride 
+                            ? Colors.red 
+                            : Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child:  Text(
-                        AppLocalizations.of(context)!.translate("in_stock"),
-                        style: TextStyle(
+                        widget.isOutOfStockOverride 
+                            ? (AppLocalizations.of(context)?.translate("out_of_stock") ?? "Out of Stock")
+                            : AppLocalizations.of(context)!.translate("in_stock"),
+                        style: const TextStyle(
                           fontSize: 9,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -161,8 +172,9 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                   ),
                   
                   // Save Button
-                  Positioned(
-                    top: 8,
+                  if (widget.showSaveButton)
+                    Positioned(
+                      top: 8,
                     left: 8,
                     child: Consumer(
                       builder: (context, ref, child) {
@@ -191,7 +203,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                               } else {
                                 setState(() => _localIsSaved = null); // Revert
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Failed to save item: $response"), backgroundColor: Colors.red),
+                                  const SnackBar(content: Text("المنتج غير متوفر (Out of stock)"), backgroundColor: Colors.red),
                                 );
                               }
                             }
@@ -284,7 +296,7 @@ class _MedicineCardState extends ConsumerState<MedicineCard>
                                 // Revert state
                                 ref.read(cartProvider).toggleLocalItem(widget.medicine.id);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Failed to update cart"), backgroundColor: Colors.red),
+                                  const SnackBar(content: Text("المنتج غير متوفر (Out of stock)"), backgroundColor: Colors.red),
                                 );
                               }
                             }

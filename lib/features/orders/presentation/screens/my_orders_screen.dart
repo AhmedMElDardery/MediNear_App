@@ -23,13 +23,13 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    // � طلب جلب البيانات أول ما الشاشة تفتح
+    //  طلب جلب البيانات أول ما الشاشة تفتح
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(orderProvider).fetchOrders();
     });
   }
 
-  // � دالة الفلترة الذكية (بتطبق على الداتا اللي جاية من البروفايدر)
+  //  دالة الفلترة الذكية (بتطبق على الداتا اللي جاية من البروفايدر)
   List<OrderModel> _getFilteredOrders(List<OrderModel> allOrders) {
     return allOrders.where((order) {
       final matchesSearch = order.pharmacyName
@@ -37,7 +37,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
               .contains(_searchText.toLowerCase()) ||
           order.id.contains(_searchText);
       final matchesStatus =
-          _selectedStatus == "All" || order.status == _selectedStatus;
+          _selectedStatus == "All" || order.status.toLowerCase() == _selectedStatus.toLowerCase();
       final matchesPharmacy =
           _selectedPharmacy == "All" || order.pharmacyName == _selectedPharmacy;
       return matchesSearch && matchesStatus && matchesPharmacy;
