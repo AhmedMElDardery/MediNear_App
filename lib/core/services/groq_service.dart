@@ -1,13 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../network/api_metrics_interceptor.dart';
 
 class GroqService {
-  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? "";
+  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? "gsk_GUEST_MODE_KEY";
   static const String _apiUrl =
       "https://api.groq.com/openai/v1/chat/completions";
 
   final Dio _dio = Dio();
+
+  GroqService() {
+    _dio.interceptors.add(ApiMetricsInterceptor());
+  }
 
   static const String _systemRules = '''
 You are a professional medical assistant for the (MidiNear) app.
@@ -52,14 +57,18 @@ General Rules:
       if (response.statusCode == 200) {
         return response.data['choices'][0]['message']['content'];
       } else {
-        return "عذراً، لم أتمكن من معالجة طلبك الآن.";
+        throw Exception("كود الخطأ: ${response.statusCode}");
       }
     } on DioException catch (e) {
-      debugPrint("❌ Groq Server Error: ${e.response?.data}");
-      return "خطأ في الاتصال. يرجى التحقق من الإنترنت الخاص بك.";
+      if (e.response != null) {
+        debugPrint("❌ Groq Server Error: ${e.response?.data}");
+        String errorMessage = e.response?.data['error']['message'] ?? 'خطأ غير معروف';
+        throw Exception("رفض من السيرفر: $errorMessage");
+      } else {
+        throw Exception("تأكد من اتصال الإنترنت: ${e.message}");
+      }
     } catch (e) {
-      debugPrint("❌ Exception: $e");
-      return "حدث خطأ غير متوقع.";
+      throw Exception("خطأ غير متوقع: $e");
     }
   }
 }

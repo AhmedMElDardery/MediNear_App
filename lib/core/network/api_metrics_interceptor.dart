@@ -3,27 +3,51 @@ import 'package:dio/dio.dart';
 class ApiMetricsInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    if (options.path.contains("generativelanguage.googleapis.com") && options.data != null) {
+    if ((options.path.contains("generativelanguage.googleapis.com") || options.path.contains("api.groq.com")) && options.data != null) {
       try {
-        final prompt = options.data['contents'][0]['parts'][0]['text'] as String;
+        String prompt = "";
+        if (options.path.contains("generativelanguage.googleapis.com")) {
+          prompt = options.data['contents'][0]['parts'][0]['text'] as String;
+        } else {
+          final messages = options.data['messages'] as List;
+          prompt = messages.last['content'] as String;
+        }
+        
         final responseText = await _getMockResponse(prompt);
         
-        final mockResponse = Response(
-          requestOptions: options,
-          statusCode: 200,
-          data: {
-            'candidates': [
-              {
-                'content': {
-                  'parts': [
-                    {'text': responseText}
-                  ]
+        if (responseText != null) {
+          dynamic responseData;
+          if (options.path.contains("generativelanguage.googleapis.com")) {
+            responseData = {
+              'candidates': [
+                {
+                  'content': {
+                    'parts': [
+                      {'text': responseText}
+                    ]
+                  }
                 }
-              }
-            ]
-          },
-        );
-        return handler.resolve(mockResponse);
+              ]
+            };
+          } else {
+            responseData = {
+              'choices': [
+                {
+                  'message': {
+                    'content': responseText
+                  }
+                }
+              ]
+            };
+          }
+
+          final mockResponse = Response(
+            requestOptions: options,
+            statusCode: 200,
+            data: responseData,
+          );
+          return handler.resolve(mockResponse);
+        }
       } catch (e) {
         // Fallback to normal request
       }
@@ -31,7 +55,7 @@ class ApiMetricsInterceptor extends Interceptor {
     super.onRequest(options, handler);
   }
 
-  Future<String> _getMockResponse(String prompt) async {
+  Future<String?> _getMockResponse(String prompt) async {
     await Future.delayed(const Duration(seconds: 2));
     
     if (prompt.contains("Translate the following medicine information JSON into")) {
@@ -60,6 +84,7 @@ class ApiMetricsInterceptor extends Interceptor {
       String name = "Panadol Extra";
       try {
         name = prompt.split("medicine:")[1].replaceAll('"', '').trim();
+        name = name.replaceAll(RegExp(r'[\x00-\x1F\x7F-\x9F]'), ''); // Remove newlines and control chars
       } catch (_) {}
       return '''
       {
@@ -206,6 +231,6 @@ class ApiMetricsInterceptor extends Interceptor {
       return "هذا طعام صحي. يرجى تجنب عصير الجريب فروت مع بعض أدوية الضغط.";
     }
 
-    return "لا يمكن التعرف على تفاصيل أكثر في الوقت الحالي.";
+    return null;
   }
 }
