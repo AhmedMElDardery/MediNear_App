@@ -219,63 +219,7 @@ class _VisualSearchScreenState extends ConsumerState<VisualSearchScreen>
                           if (source != null) provider.startPrescriptionScan(source);
                         },
                       ),
-                      _buildScanOptionCard(
-                        context,
-                        title: 'vs_pill_id'.tr(context),
-                        icon: Icons.medication,
-                        color: Colors.purpleAccent,
-                        onTap: () async {
-                          final source = await ImageSourceBottomSheet.show(context);
-                          if (source != null) provider.startPillIdentification(source);
-                        },
-                      ),
-                      _buildScanOptionCard(
-                        context,
-                        title: 'vs_counterfeit'.tr(context),
-                        icon: CupertinoIcons.shield_lefthalf_fill,
-                        color: Colors.redAccent,
-                        onTap: () async {
-                          final source = await ImageSourceBottomSheet.show(context);
-                          if (source != null) provider.startCounterfeitCheck(source);
-                        },
-                      ),
                     ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Food Interaction Button (Full Width)
-                  Container(
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.orange.withValues(alpha: 0.1),
-                      border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 1.5),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final source = await ImageSourceBottomSheet.show(context);
-                        if (source != null) provider.startFoodInteractionCheck(source);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.orange,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.restaurant_menu, color: Colors.orange),
-                          const SizedBox(width: 10),
-                          Text(
-                            'vs_food_analyzer'.tr(context),
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),
